@@ -1,0 +1,424 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer components {
+  .gradblue {
+    background-image: linear-gradient(-225deg, #dee2ff, #9376e0);
+  }
+
+  .gradviolet {
+    background-image: linear-gradient(
+      245deg,
+      hsl(256deg 63% 67%) 0%,
+      hsl(236deg 87% 89%) 29%,
+      hsl(234deg 100% 97%) 43%,
+      hsl(234deg 100% 97%) 57%,
+      hsl(236deg 87% 89%) 71%,
+      hsl(256deg 63% 67%) 100%
+    );
+  }
+
+  .gradvioletrev {
+    background-image: linear-gradient(
+      150deg,
+      hsl(256deg 63% 67%) 0%,
+      hsl(236deg 87% 89%) 29%,
+      hsl(234deg 100% 97%) 43%,
+      hsl(234deg 100% 97%) 57%,
+      hsl(236deg 87% 89%) 71%,
+      hsl(256deg 63% 67%) 100%
+    );
+  }
+
+  .backimage {
+    background-image: linear-gradient(
+      135deg,
+      hsl(256deg 63% 67%) 0%,
+      hsl(236deg 87% 89%) 29%,
+      hsl(234deg 100% 97%) 43%,
+      hsl(234deg 100% 97%) 57%,
+      hsl(236deg 87% 89%) 71%,
+      hsl(256deg 63% 67%) 100%
+    );
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center;
+    height: 100vh;
+    width: 100vw;
+  }
+
+  .backimagerev {
+    background-image: linear-gradient(
+      245deg,
+      hsl(233deg 100% 94%) 0%,
+      hsl(233deg 100% 94%) 29%,
+      hsl(234deg 100% 97%) 43%,
+      hsl(234deg 100% 97%) 57%,
+      hsl(233deg 100% 94%) 71%,
+      hsl(233deg 100% 94%) 100%
+    );
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center;
+    /* height: 100vh;
+    width: 100vw; */
+  }
+
+  .bg-image {
+    background-image: url("../assets/image1.jpg");
+    background-position: center;
+    background-size: cover;
+    z-index: 10;
+    position: fixed;
+    height: 100%;
+    width: 100%;
+  }
+
+  .add-people-btn:hover:not(.active) {
+    background-color: #dee2ff;
+    scale: 110%;
+    transition-duration: 200ms;
+  }
+
+  .add-people-btn.active {
+    background-color: #dee2ff;
+    scale: 110%;
+  }
+
+  .to-user-info-btn.active {
+    @apply scale-110;
+  }
+
+  .popup {
+    background-color: #f3f8ff;
+  }
+
+  .inside-popup {
+    background-color: #7e30e1;
+  }
+
+  #close {
+    transform: translate(12%, -210%);
+  }
+
+  .popup-search-icon {
+    transform: translate(-5px, -5px) scaleX(-1);
+  }
+
+  *::-webkit-scrollbar {
+    @apply w-1;
+  }
+
+  *::-webkit-scrollbar-track {
+    @apply rounded-lg opacity-0;
+  }
+
+  *::-webkit-scrollbar-thumb {
+    @apply hidden rounded-lg bg-[#dee2ff];
+  }
+
+  *:hover::-webkit-scrollbar-thumb {
+    @apply block;
+  }
+
+  /* .popup-people-all::-webkit-scrollbar,
+  .chat-section::-webkit-scrollbar,
+  .search-results::-webkit-scrollbar,
+  #notification-div::-webkit-scrollbar {
+    @apply w-1;
+  }
+
+  .popup-people-all::-webkit-scrollbar-track,
+  .chat-section::-webkit-scrollbar-track,
+  .search-results::-webkit-scrollbar-track,
+  #notification-div::-webkit-scrollbar-track {
+    @apply rounded-lg opacity-0;
+  }
+
+  .popup-people-all::-webkit-scrollbar-thumb,
+  .chat-section::-webkit-scrollbar-thumb,
+  .search-results::-webkit-scrollbar-thumb,
+  #notification-div::-webkit-scrollbar-thumb {
+    @apply hidden rounded-lg bg-[#dee2ff];
+  }
+
+  .popup-people-all:hover::-webkit-scrollbar-thumb,
+  .chat-section:hover::-webkit-scrollbar-thumb,
+  .search-results:hover::-webkit-scrollbar-thumb,
+  #notification-div:hover::-webkit-scrollbar-thumb {
+    @apply block;
+  } */
+
+  .people-child {
+    @apply my-2 flex h-20 cursor-pointer items-center rounded-2xl p-1;
+  }
+
+  .people-child.active {
+    /* background: #b2a4ff; */
+    /* @apply gradvioletrev; */
+    background: #dee2ff;
+    @apply shadow-md;
+  }
+
+  .people-child:hover:not(.active) {
+    background: #dee2ff;
+    @apply shadow-md;
+  }
+
+  .people_name_parent {
+    @apply ml-4;
+  }
+
+  .chats_img {
+    @apply ml-2 h-14 max-lg:hidden;
+  }
+
+  .chats_img img {
+    @apply h-full w-full rounded-full;
+  }
+
+  .people_name {
+    @apply text-lg font-semibold;
+  }
+
+  .last-msg {
+    @apply flex text-sm text-slate-600 max-sm:hidden;
+  }
+
+  .popup-people {
+    @apply m-1 flex h-12 cursor-pointer items-center justify-start rounded-lg hover:bg-[#dee2ff];
+  }
+
+  .popup-people img {
+    @apply ml-2 h-9 rounded-full p-1;
+  }
+
+  .popup-people h3 {
+    @apply pl-2 text-base font-semibold;
+  }
+
+  input:checked ~ .dot {
+    transform: translateX(100%);
+    background-color: #000000;
+  }
+
+  input:checked ~ .nm-toggle-bg {
+    background-color: #bcbaba;
+  }
+
+  #account {
+    background-image: url("../assets/png-transparent-computer-icons-google-account-scalable-graphics-computer-file-my-account-icon-rim-123rf-symbol-thumbnail.png");
+    background-size: contain;
+    background-position: center;
+  }
+
+  .account.active-scale {
+    transform: scale(1.2);
+  }
+
+  .top-nav-notification-button.notification-button-active {
+    @apply scale-110 bg-lightpurple;
+  }
+
+  .to-user-msg {
+    @apply relative my-3 ml-10 flex w-fit max-w-md flex-row items-center justify-center self-start rounded-md bg-[#9376e0] p-3 text-left shadow-md;
+    font-family: "Segoe UI Emoji", sans-serif;
+  }
+
+  .to-user-msg::after {
+    content: "";
+    position: absolute;
+    bottom: -0.625rem;
+    left: 0rem;
+    width: 1.25rem;
+    height: 1.25rem;
+    background: linear-gradient(
+      135deg,
+      #9376e0 0%,
+      #9376e0 50%,
+      transparent 50%
+    );
+  }
+
+  .to-user-msg p {
+    @apply text-wrap text-left text-base font-medium;
+  }
+  .to-user-msg span {
+    @apply self-end font-normal;
+    font-size: 0.8rem;
+  }
+
+  .to-user-msg:hover .delete-msg-btn {
+    @apply block;
+  }
+
+  .from-user-msg {
+    @apply relative my-3 mr-10 flex w-fit max-w-md flex-row items-center justify-center self-end rounded-md bg-[#dee2ff] p-3 text-left shadow-md;
+    font-family: "Segoe UI Emoji", sans-serif;
+  }
+
+  .from-user-msg::after {
+    content: "";
+    position: absolute;
+    bottom: -10px;
+    right: 0px;
+    width: 20px;
+    height: 20px;
+    background: linear-gradient(
+      225deg,
+      #dee2ff 0%,
+      #dee2ff 50%,
+      transparent 50%
+    );
+  }
+
+  .from-user-msg p {
+    @apply text-wrap text-right text-base font-medium;
+  }
+
+  .from-user-msg span {
+    @apply self-start font-normal;
+    font-size: 0.8rem;
+  }
+
+  .from-user-msg:hover .delete-msg-btn {
+    @apply block;
+  }
+
+  .all_chats_child {
+    @apply flex w-full flex-col rounded bg-[#071952];
+  }
+
+  .chat-section {
+    @apply gradvioletrev absolute flex h-full w-full flex-col overflow-y-scroll scroll-smooth;
+  }
+
+  .messages {
+    @apply absolute bottom-0 mt-7 flex h-[calc(100%-13rem)]  w-full flex-col;
+  }
+
+  .day {
+    @apply relative flex w-full flex-col justify-center;
+  }
+
+  .date {
+    @apply mb-10 flex items-center justify-center text-center text-sm font-semibold;
+  }
+
+  .message-container {
+    @apply flex h-full w-full flex-col items-start pb-3;
+  }
+
+  .to-user-profile-sec {
+    @apply absolute mt-6 flex h-40 w-full flex-col items-center justify-center py-2;
+  }
+
+  .to-user-profile-sec-img {
+    @apply flex h-20 w-20 items-center justify-center;
+  }
+
+  .to-user-profile-sec-img img {
+    @apply h-full w-full rounded-full;
+  }
+
+  .to-user-profile-sec-name {
+    @apply mt-2 flex flex-col items-center justify-center;
+  }
+
+  .to-user-profile-sec-name h1 {
+    @apply text-lg font-medium;
+  }
+
+  .to-user-profile-sec-name h3 {
+    @apply text-base font-normal;
+  }
+
+  /* #emoji-popup {
+    z-index: 40 !important;
+  } */
+
+  .emoji-popup-btn.active {
+    @apply scale-110;
+  }
+
+  emoji-picker {
+    @apply absolute h-64 w-[22.2rem];
+    --background: #f3f8ff;
+    --border-color: #f3f8ff;
+    --button-hover-background: #dee2ff;
+    --button-active-background: #dee2ff;
+  }
+
+  textarea {
+    font-family: "Segoe UI Emoji", sans-serif;
+  }
+
+  textarea::-webkit-scrollbar {
+    width: 0rem;
+  }
+
+  .right-sidebar-follow-button {
+    background-color: #dee2ff;
+    color: black;
+    border: 2px solid #dee2ff;
+  }
+  .right-sidebar-follow-button:hover {
+    background-color: #f8f9fa;
+    color: #dee2ff;
+    border: 2px solid #dee2ff;
+    transition: all 200ms;
+  }
+
+  .search-result {
+    @apply m-2 flex h-40 w-[30%] cursor-pointer items-center justify-center rounded-2xl bg-[#F3F8FF] p-1 shadow-md;
+    background-image: linear-gradient(
+      135deg,
+      hsl(233deg 100% 94%) 0%,
+      hsl(234deg 100% 98%) 39%,
+      hsl(234deg 100% 98%) 61%,
+      hsl(233deg 100% 94%) 100%
+    );
+  }
+
+  .search-result:hover {
+    @apply -translate-y-1 shadow-xl duration-200;
+  }
+
+  .search-result-info {
+    @apply ml-8 flex flex-col items-center justify-center space-y-1 max-3xl:w-[95%];
+  }
+
+  .search-result-img {
+    @apply mx-2 h-20 max-xl:hidden;
+  }
+
+  .search-result-img img {
+    @apply h-full w-full rounded-full;
+  }
+
+  .search-result-name {
+    @apply flex flex-col items-center justify-center space-y-1 max-3xl:w-[95%];
+  }
+
+  .search-result-name h4 {
+    @apply font-semibold;
+    font-size: 1.3rem;
+    line-height: 1.5rem;
+  }
+
+  .search-result-name h6 {
+    @apply text-slate-500;
+    font-size: 1rem;
+    @apply max-lg:hidden;
+  }
+
+  .search-result-followers {
+    @apply max-3xl:hidden;
+  }
+
+  .search-result-followers h6 {
+    @apply font-medium text-slate-500;
+    font-size: 0.95rem;
+  }
+}
