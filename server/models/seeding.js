@@ -1,5 +1,4 @@
 const { User, UserInfo, UserLinks } = require("./users.model");
-const Follower = require("./follower.model");
 const connectMongo = require("../db/connectMongo.db");
 const dotenv = require("dotenv");
 dotenv.config({ path: "../.env" });
@@ -83,26 +82,6 @@ function formatDate(date) {
 
 // connectMongo().then(() => {
 // 	userLinksSeeding().then(() => {
-// 		console.log("Seeding complete");
-// 	});
-// });
-
-// const followerSeeding = async () => {
-// 	const followers = [];
-// 	for (let i = 0; i < numUsers; i++) {
-// 		followers.push({
-// 			userId: idArray[i],
-// 			followers: idArray.filter((id) => id !== idArray[i]),
-// 			followerCount: idArray.filter((id) => id !== idArray[i]).length,
-// 			following: idArray.filter((id) => id !== idArray[i]),
-// 			followingCount: idArray.filter((id) => id !== idArray[i]).length,
-// 		});
-// 	}
-// 	await Follower.insertMany(followers);
-// };
-
-// connectMongo().then(() => {
-// 	followerSeeding().then(() => {
 // 		console.log("Seeding complete");
 // 	});
 // });
