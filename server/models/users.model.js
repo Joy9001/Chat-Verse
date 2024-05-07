@@ -1,175 +1,58 @@
-const mongoose = require("mongoose");
-const { Schema } = mongoose;
-const validator = require("validator");
+import { Schema, model } from "mongoose";
+import {
+	nameValidator,
+	usernameValidator,
+	emailValidator,
+	phoneValidator,
+	passwordValidator,
+} from "./validator.js";
 
 const userSchema = new Schema(
 	{
-		id: {
-			type: Schema.Types.ObjectId,
-			default: function () {
-				return this._id;
-			},
-		},
-		fullName: {
+		name: {
 			type: Schema.Types.String,
 			required: [true, "Please enter your full name"],
+			validate: nameValidator,
 		},
 		username: {
 			type: Schema.Types.String,
 			required: [true, "Please enter a username"],
 			unique: true,
+			validate: usernameValidator,
 		},
 		email: {
 			type: Schema.Types.String,
 			unique: true,
-			validator: [validator.isEmail, "Please enter a valid email"],
-			default: "",
+			validate: emailValidator,
 		},
 		phone: {
 			type: Schema.Types.String,
 			unique: true,
-			validator: [
-				validator.isMobilePhone,
-				"Please enter a valid phone number",
-			],
-			default: "",
+			validate: phoneValidator,
 		},
 		gender: {
 			type: Schema.Types.String,
-			default: "",
+			required: [true, "Please enter your gender"],
 		},
 		password: {
 			type: Schema.Types.String,
 			required: [true, "Please enter a password"],
-			validator: [
-				validator.isStrongPassword,
-				"Password is not strong enough",
-			],
+			validate: passwordValidator,
 		},
 		profilePic: {
 			type: Schema.Types.String,
 			default: function () {
-				return `https://avatar.iran.liara.run/username?username=${this.fullName}`;
+				return `https://avatar.iran.liara.run/username?username=${this.name}`;
 			},
-		},
-		coverPic: {
-			type: Schema.Types.String,
-			default: "",
 		},
 		role: {
 			type: Schema.Types.String,
-			default: "guest",
-		},
-		permissions: {
-			type: Schema.Types.Array,
-			default: ["read"],
+			default: "user",
 		},
 	},
 	{ timestamps: true }
 );
 
-const User = mongoose.model("User", userSchema);
+const User = model("User", userSchema);
 
-const userInfoSchema = new Schema(
-	{
-		userId: {
-			type: Schema.Types.ObjectId,
-			ref: "User",
-		},
-		bio: {
-			type: Schema.Types.String,
-			default: "",
-		},
-		profession: {
-			type: Schema.Types.String,
-			default: "",
-		},
-		birthday: {
-			type: Schema.Types.String,
-			default: "",
-		},
-		state: {
-			type: Schema.Types.String,
-			default: "",
-		},
-		country: {
-			type: Schema.Types.String,
-			default: "",
-		},
-		twitter: {
-			type: Schema.Types.String,
-			default: "",
-			unique: true,
-		},
-		facebook: {
-			type: Schema.Types.String,
-			default: "",
-			unique: true,
-		},
-		linkedin: {
-			type: Schema.Types.String,
-			default: "",
-			unique: true,
-		},
-		instagram: {
-			type: Schema.Types.String,
-			default: "",
-			unique: true,
-		},
-	},
-	{ timestamps: true }
-);
-
-const UserInfo = mongoose.model("UserInfo", userInfoSchema);
-
-const userPostsSchema = new Schema(
-	{
-		userId: {
-			type: Schema.Types.ObjectId,
-			ref: "User",
-		},
-		posts: [
-			{
-				type: Schema.Types.ObjectId,
-				ref: "Post",
-				default: "",
-			},
-		],
-		saves: [
-			{
-				type: Schema.Types.ObjectId,
-				ref: "Post",
-				default: "",
-			},
-		],
-		likes: [
-			{
-				type: Schema.Types.ObjectId,
-				ref: "Post",
-				default: "",
-			},
-		],
-		comments: [
-			{
-				type: {
-					commentText: {
-						type: String,
-						required: true,
-						default: "",
-					},
-					commentedAt: {
-						type: Date,
-						required: true,
-						default: "",
-						immutable: true,
-					},
-				},
-			},
-		],
-	},
-	{ timestamps: true }
-);
-
-const UserPosts = mongoose.model("UserPosts", userPostsSchema);
-
-module.exports = { User, UserInfo, UserPosts };
+export default User;

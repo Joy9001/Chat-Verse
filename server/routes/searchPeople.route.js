@@ -1,9 +1,7 @@
-const express = require("express");
-const router = express.Router();
-const {
-	searchPeopleController,
-} = require("../controllers/searchPeople.controller.js");
+import { Router } from "express";
+const router = Router();
+import searchPeopleController from "../controllers/searchPeople.controller.js";
 
 router.post("/search-people", searchPeopleController);
 
-module.exports = router;
+export default router;

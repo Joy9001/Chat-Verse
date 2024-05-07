@@ -1,4 +1,4 @@
-const Message = require("../models/message.model.js");
+import Message from "../models/message.model.js";
 
 const getConversation = async (messages) => {
 	// console.log("Messages inside getConversation: ", messages);
@@ -19,4 +19,4 @@ const getConversation = async (messages) => {
 	}
 };
 
-module.exports = getConversation;
+export default getConversation;

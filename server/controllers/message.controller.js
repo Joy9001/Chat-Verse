@@ -1,14 +1,12 @@
-const addPeople = require("../helpers/addPeople.helper.js");
-const { getPeopleToChat } = require("../helpers/addPeopleToChat.helper.js");
-const {
-	getCurrentChatPeople,
-} = require("../helpers/getCurrentChatPeople.helper.js");
-const Message = require("../models/message.model");
-const Conversation = require("../models/conversation.model");
-const AddedPeopleToChat = require("../models/addedPeopleToChat.model");
-const { addPeopleToChat } = require("../helpers/addPeopleToChat.helper");
-const { io, getReceiverSocketId } = require("../helpers/socket.helper");
-// const currentUserId = require("../helpers/currentUserId.helper.js");
+import addPeople from "../helpers/addPeople.helper.js";
+import { getPeopleToChat } from "../helpers/addPeopleToChat.helper.js";
+import getCurrentChatPeople from "../helpers/getCurrentChatPeople.helper.js";
+import Message from "../models/message.model.js";
+import Conversation from "../models/conversation.model.js";
+import AddedPeopleToChat from "../models/addedPeopleToChat.model.js";
+import { addPeopleToChat } from "../helpers/addPeopleToChat.helper.js";
+import { io, getReceiverSocketId } from "../helpers/socket.helper.js";
+// const currentUserId from "../helpers/currentUserId.helper.js");
 
 const messageController = async (req, res) => {
 	const currentUserId = req.params.id;
@@ -330,7 +328,7 @@ const unblockUserController = async (req, res) => {
 	}
 };
 
-module.exports = {
+export {
 	messageController,
 	sendMessageController,
 	deleteMessageController,

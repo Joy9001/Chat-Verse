@@ -1,14 +1,13 @@
-const express = require("express");
-const router = express.Router();
-const {
+import { Router } from "express";
+const router = Router();
+import {
 	sendMessageController,
 	deleteMessageController,
 	unreadMessageController,
 	deleteConversationController,
 	blockUserController,
 	unblockUserController,
-} = require("../controllers/message.controller");
-// const
+} from "../controllers/message.controller.js";
 
 router.post("/send-message", sendMessageController);
 
@@ -22,4 +21,4 @@ router.post("/block-user", blockUserController);
 
 router.post("/unblock-user", unblockUserController);
 
-module.exports = router;
+export default router;

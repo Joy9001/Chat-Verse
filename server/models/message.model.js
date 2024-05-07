@@ -1,6 +1,6 @@
-const mongoose = require("mongoose");
-const { Schema } = mongoose;
-const { User } = require("./users.model.js");
+import { Schema, model } from "mongoose";
+import User from "./users.model.js";
+import Conversation from "./conversation.model.js";
 
 const messageSchema = new Schema(
 	{
@@ -27,7 +27,6 @@ messageSchema.pre(
 	"deleteOne",
 	{ document: true, query: false },
 	async function (next) {
-		const Conversation = require("./conversation.model.js");
 		await Conversation.findOneAndUpdate(
 			{
 				participants: { $all: [this.senderId, this.receiverId] },
@@ -44,7 +43,6 @@ messageSchema.pre(
 
 // Post hooks
 messageSchema.post("save", async function (doc, next) {
-	const Conversation = require("./conversation.model.js");
 	try {
 		// Find or create a conversation
 		let conversation = await Conversation.findOne({
@@ -88,7 +86,6 @@ messageSchema.post("save", async function (doc, next) {
 
 messageSchema.post("save", async function (doc, next) {
 	// Add the sender to receiver's chat
-	const { addPeopleToChat } = require("../helpers/addPeopleToChat.helper.js");
 	try {
 		const addRes = await addPeopleToChat(doc.receiverId, doc.senderId);
 		// if (addRes === "Already exists in the chat") {
@@ -110,6 +107,6 @@ messageSchema.post("save", function (error, doc, next) {
 	}
 });
 
-const Message = mongoose.model("Message", messageSchema);
+const Message = model("Message", messageSchema);
 
-module.exports = Message;
+export default Message;

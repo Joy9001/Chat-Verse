@@ -1,17 +1,18 @@
-const { User } = require("../models/users.model");
+import User from "../models/users.model.js";
+
 const searchPeopleController = async (req, res) => {
 	const { queryText } = req.body;
 
 	const query = {
 		$or: [
-			{ fullName: { $regex: queryText, $options: "i" } },
+			{ name: { $regex: queryText, $options: "i" } },
 			{ username: { $regex: queryText, $options: "i" } },
 		],
 	};
 
 	const projection = {
 		_id: 1,
-		fullName: 1,
+		name: 1,
 		username: 1,
 	};
 
@@ -25,4 +26,4 @@ const searchPeopleController = async (req, res) => {
 	}
 };
 
-module.exports = { searchPeopleController };
+export default searchPeopleController;

@@ -1,4 +1,4 @@
-const { User } = require("../models/users.model");
+import User from "../models/users.model.js";
 
 const getCurrentChatPeople = async (Receivers) => {
 	try {
@@ -17,4 +17,4 @@ const getCurrentChatPeople = async (Receivers) => {
 	}
 };
 
-module.exports = { getCurrentChatPeople };
+export default getCurrentChatPeople;

@@ -1,5 +1,4 @@
-const { User } = require("../models/users.model");
-// const currentUserId = require("./currentUserId.helper.js");
+import User from "../models/users.model.js";
 
 const addPeople = async (currentUserId) => {
 	try {
@@ -16,4 +15,4 @@ const addPeople = async (currentUserId) => {
 	}
 };
 
-module.exports = addPeople;
+export default addPeople;

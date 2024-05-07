@@ -75,8 +75,8 @@ const createLeftsidePeopleR = (data) => {
 	let img = document.createElement("img");
 	img.src = data.profilePic
 		? data.profilePic
-		: `https://avatar.iran.liara.run/username?username=${data.fullName.replace(" ", "+")}`;
-	img.alt = data.fullName;
+		: `https://avatar.iran.liara.run/username?username=${data.name.replace(" ", "+")}`;
+	img.alt = data.name;
 
 	imgDiv.innerHTML = statusDiv;
 	imgDiv.appendChild(img);
@@ -87,7 +87,7 @@ const createLeftsidePeopleR = (data) => {
 
 	let name = document.createElement("h4");
 	name.classList.add("people_name");
-	name.innerText = data.fullName;
+	name.innerText = data.name;
 
 	nameDiv.appendChild(name);
 	parentDiv.appendChild(nameDiv);

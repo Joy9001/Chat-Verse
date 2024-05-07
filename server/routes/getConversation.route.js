@@ -1,7 +1,7 @@
-const express = require("express");
-const router = express.Router();
-const Conversation = require("../models/conversation.model.js");
-const getConversation = require("../helpers/getConversation.helper.js");
+import { Router } from "express";
+const router = Router();
+import Conversation from "../models/conversation.model.js";
+import getConversation from "../helpers/getConversation.helper.js";
 
 router.post("/get-conversation", async (req, res) => {
 	const { senderId, receiverId } = req.body;
@@ -51,4 +51,4 @@ router.post("/get-conversation", async (req, res) => {
 	}
 });
 
-module.exports = router;
+export default router;

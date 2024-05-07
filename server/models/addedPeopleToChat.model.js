@@ -1,6 +1,5 @@
-const mongoose = require("mongoose");
-const { Schema } = mongoose;
-const { User } = require("./users.model.js");
+import { Schema, model } from "mongoose";
+import User from "./users.model.js";
 
 const addedPeopleToChatSchema = new Schema({
 	senderId: {
@@ -18,9 +17,6 @@ const addedPeopleToChatSchema = new Schema({
 	],
 });
 
-const AddedPeopleToChat = mongoose.model(
-	"AddedPeopleToChat",
-	addedPeopleToChatSchema
-);
+const AddedPeopleToChat = model("AddedPeopleToChat", addedPeopleToChatSchema);
 
-module.exports = AddedPeopleToChat;
+export default AddedPeopleToChat;

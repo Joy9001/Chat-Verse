@@ -146,10 +146,10 @@
                                     <% if(element.profilePic) { %>
                                     <img src="<%=element.profilePic %>" alt="User" />
                                     <% } else { %>
-                                    <img src="https://avatar.iran.liara.run/username?username=<%= element.fullName.replace(' ', '+') %>" alt="User" />
+                                    <img src="https://avatar.iran.liara.run/username?username=<%= element.name.replace(' ', '+') %>" alt="User" />
                                     <% } %>
                                     <h3>
-                                        <%= element.fullName %>
+                                        <%= element.name %>
                                     </h3>
                                 </div>
                                 <% }) %>
@@ -175,15 +175,15 @@
                         <div class="chats_img indicator">
                             <span class="indicator-item badge badge-success h-2 p-[0.4rem] translate-x-[5%] translate-y-[10%] hidden status"></span>
                             <% if(element.profilePic){ %>
-                            <img src="<%= element.profilePic %>" alt="<%= element.fullName %>" />
+                            <img src="<%= element.profilePic %>" alt="<%= element.name %>" />
                             <% } else{ %>
-                            <img src="https://avatar.iran.liara.run/username?username=<%= element.fullName.replace(' ', '+') %>" alt="User" />
+                            <img src="https://avatar.iran.liara.run/username?username=<%= element.name.replace(' ', '+') %>" alt="User" />
                             <% } %>
                         </div>
 
                         <div class="people_name_parent">
                             <h4 class="people_name">
-                                <%= element.fullName %>
+                                <%= element.name %>
                             </h4>
                         </div>
 

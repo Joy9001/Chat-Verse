@@ -1,14 +1,14 @@
-const express = require("express");
-const mongoose = require("mongoose");
-const router = express.Router();
-const { addPeopleToChat } = require("../helpers/addPeopleToChat.helper.js");
-const { User } = require("../models/users.model");
+import { Router } from "express";
+import { Schema } from "mongoose";
+const router = Router();
+import { addPeopleToChat } from "../helpers/addPeopleToChat.helper.js";
+import User from "../models/users.model.js";
 
 router.post("/add-people-to-chat", async (req, res) => {
 	try {
 		// console.log(req.body);
 		const { senderId, receiverId } = req.body;
-		const receiverObjectid = new mongoose.Types.ObjectId(`${receiverId}`);
+		const receiverObjectid = new Schema.Types.ObjectId(`${receiverId}`);
 		const result = await addPeopleToChat(senderId, receiverId);
 		const findReceiver = await User.findOne({
 			_id: receiverObjectid,
@@ -30,4 +30,4 @@ router.post("/add-people-to-chat", async (req, res) => {
 	}
 });
 
-module.exports = router;
+export default router;

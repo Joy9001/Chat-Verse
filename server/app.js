@@ -1,29 +1,27 @@
-const express = require("express");
-const path = require("path");
-const dotenv = require("dotenv");
-const connectMongo = require("./db/connectMongo.db");
+import express from "express";
+import path from "path";
+import dotenv from "dotenv";
+dotenv.config();
+import connectMongo from "./db/connectMongo.db.js";
+const PORT = process.env.PORT || 3000;
 // const { instrument } = require("@socket.io/admin-ui");
 
-const { app, io, server } = require("./helpers/socket.helper");
+import { app, server } from "./helpers/socket.helper.js";
 
-const indexRouter = require("./routes/index.route");
-const addPeopleToChatRouter = require("./routes/addPeopleToChat.route");
-const getConversationRouter = require("./routes/getConversation.route");
-const messageRouter = require("./routes/messages.route");
-const searchPeopleRouter = require("./routes/searchPeople.route");
-const searchRouter = require("./routes/search.route");
+app.set("views", path.join("../client/views"));
+app.set("view engine", "ejs");
 
-dotenv.config();
-const PORT = process.env.PORT || 3000;
-
-app.use(express.static(path.join(__dirname, "../client/public")));
-app.use(express.static(path.join(__dirname, "../client/src")));
-app.use(express.static(path.join(__dirname, "../server/uploads/")));
+app.use(express.static(path.join("../client/public")));
+app.use(express.static(path.join("../client/src")));
+app.use(express.static(path.join("../server/uploads/")));
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
-app.set("views", path.join(__dirname, "../client/views"));
-app.set("view engine", "ejs");
+import indexRouter from "./routes/index.route.js";
+import addPeopleToChatRouter from "./routes/addPeopleToChat.route.js";
+import getConversationRouter from "./routes/getConversation.route.js";
+import messageRouter from "./routes/messages.route.js";
+import searchPeopleRouter from "./routes/searchPeople.route.js";
 
 // instrument(io, {
 // 	auth: false,
@@ -35,7 +33,6 @@ app.use(addPeopleToChatRouter);
 app.use(getConversationRouter);
 app.use(messageRouter);
 app.use(searchPeopleRouter);
-app.use(searchRouter);
 
 server.listen(PORT, async () => {
 	await connectMongo().then(() => {

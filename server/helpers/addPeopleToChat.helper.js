@@ -1,5 +1,4 @@
-const AddedPeopleToChat = require("../models/addedPeopleToChat.model");
-// const user = require("../models/users.model");
+import AddedPeopleToChat from "../models/addedPeopleToChat.model.js";
 
 const addPeopleToChat = async (senderId, receiverId, next) => {
 	try {
@@ -42,4 +41,4 @@ const getPeopleToChat = async (senderId) => {
 	}
 };
 
-module.exports = { addPeopleToChat, getPeopleToChat };
+export { addPeopleToChat, getPeopleToChat };

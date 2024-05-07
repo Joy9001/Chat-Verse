@@ -70,17 +70,17 @@ const handleChatHeadAndEnd = (parsedElement, isOnline) => {
 	chat_end.classList.remove("hidden");
 	chat_head.classList.remove("hidden");
 	chat_mid.classList.remove("hidden");
-	chat_head_name.innerText = parsedElement.fullName;
+	chat_head_name.innerText = parsedElement.name;
 	chat_head_img.src = parsedElement.profilePic
 		? parsedElement.profilePic
-		: `https://avatar.iran.liara.run/username?username=${parsedElement.fullName.replace(" ", "+")}`;
+		: `https://avatar.iran.liara.run/username?username=${parsedElement.name.replace(" ", "+")}`;
 	to_user_info_popup.children[0].children[1].children[0].innerText =
-		parsedElement.fullName;
+		parsedElement.name;
 	to_user_info_popup.children[0].children[1].children[1].innerText =
 		parsedElement.username;
 	to_user_info_popup.children[0].children[0].src = parsedElement.profilePic
 		? parsedElement.profilePic
-		: `https://avatar.iran.liara.run/username?username=${parsedElement.fullName.replace(" ", "+")}`;
+		: `https://avatar.iran.liara.run/username?username=${parsedElement.name.replace(" ", "+")}`;
 
 	if (isOnline) {
 		chat_head.children[0].children[0].children[0].classList.remove(
@@ -199,14 +199,14 @@ const handleChats = (parsedElement) => {
 	let toUserProfileSecImg = toUserProfileSecImgDiv.children[0];
 	toUserProfileSecImg.src = parsedElement.profilePic
 		? parsedElement.profilePic
-		: `https://avatar.iran.liara.run/username?username=${parsedElement.fullName.replace(" ", "+")}`;
+		: `https://avatar.iran.liara.run/username?username=${parsedElement.name.replace(" ", "+")}`;
 
 	let toUserProfileSecNameDiv = document.querySelector(
 		".to-user-profile-sec-name"
 	);
 	let toUserProfileSecName = toUserProfileSecNameDiv.children[0];
 	let toUserProfileSecUsername = toUserProfileSecNameDiv.children[1];
-	toUserProfileSecName.innerText = parsedElement.fullName;
+	toUserProfileSecName.innerText = parsedElement.name;
 	toUserProfileSecUsername.innerText = parsedElement.username;
 
 	let receiverId = parsedElement._id;
@@ -223,7 +223,7 @@ const chatClicked = (htmlElement) => {
 
 	const element = htmlElement.dataset.element;
 	const parsedElement = JSON.parse(atob(element));
-	// console.log(parsedElement.fullName);
+	// console.log(parsedElement.name);
 
 	for (let i = 0; i < all_people_children.length; i++) {
 		if (all_people_children[i].classList.contains("active")) {
@@ -293,8 +293,8 @@ const createLeftsidePeople = (data) => {
 	let img = document.createElement("img");
 	img.src = data.profilePic
 		? data.profilePic
-		: `https://avatar.iran.liara.run/username?username=${data.fullName.replace(" ", "+")}`;
-	img.alt = data.fullName;
+		: `https://avatar.iran.liara.run/username?username=${data.name.replace(" ", "+")}`;
+	img.alt = data.name;
 
 	imgDiv.innerHTML = statusDiv;
 	imgDiv.appendChild(img);
@@ -305,7 +305,7 @@ const createLeftsidePeople = (data) => {
 
 	let name = document.createElement("h4");
 	name.classList.add("people_name");
-	name.innerText = data.fullName;
+	name.innerText = data.name;
 
 	nameDiv.appendChild(name);
 	parentDiv.appendChild(nameDiv);

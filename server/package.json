@@ -1,7 +1,11 @@
 {
 	"name": "server",
 	"version": "1.0.0",
-	"main": "app.js",
+	"exports": "./app.js",
+	"type": "module",
+	"engines": {
+		"node": ">=16"
+	},
 	"scripts": {
 		"dev": "nodemon app.js",
 		"start": "node app.js"
@@ -21,6 +25,7 @@
 		"validator": "^13.11.0"
 	},
 	"devDependencies": {
+		"@faker-js/faker": "^8.4.1",
 		"nodemon": "^3.1.0"
 	}
 }

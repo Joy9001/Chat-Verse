@@ -1,7 +1,5 @@
-const mongoose = require("mongoose");
-const { Schema } = mongoose;
-const { User } = require("./users.model.js");
-const Message = require("./message.model.js");
+import { Schema, model } from "mongoose";
+import Message from "./message.model.js";
 
 const unreadMsgCountSchema = new Schema({
 	senderId: {
@@ -21,7 +19,7 @@ const unreadMsgCountSchema = new Schema({
 	},
 });
 
-const conversationSchema = new mongoose.Schema(
+const conversationSchema = new Schema(
 	{
 		participants: [
 			{
@@ -33,7 +31,7 @@ const conversationSchema = new mongoose.Schema(
 		messages: [
 			{
 				type: Schema.Types.ObjectId,
-				ref: Message,
+				ref: "Message",
 				default: [],
 			},
 		],
@@ -56,7 +54,6 @@ conversationSchema.pre(
 	"deleteOne",
 	{ document: true, query: false },
 	async function (next) {
-		const Message = require("./message.model.js");
 		await Message.deleteMany({ _id: { $in: this.messages } })
 			.then(() => next())
 			.catch((error) => {
@@ -66,6 +63,6 @@ conversationSchema.pre(
 	}
 );
 
-const Conversation = mongoose.model("Conversation", conversationSchema);
+const Conversation = model("Conversation", conversationSchema);
 
-module.exports = Conversation;
+export default Conversation;
