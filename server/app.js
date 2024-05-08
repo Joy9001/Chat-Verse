@@ -4,7 +4,6 @@ import dotenv from "dotenv";
 dotenv.config();
 import connectMongo from "./db/connectMongo.db.js";
 const PORT = process.env.PORT || 3000;
-// const { instrument } = require("@socket.io/admin-ui");
 
 import { app, server } from "./helpers/socket.helper.js";
 
@@ -23,6 +22,8 @@ import getConversationRouter from "./routes/getConversation.route.js";
 import messageRouter from "./routes/messages.route.js";
 import searchPeopleRouter from "./routes/searchPeople.route.js";
 
+import { createAdminData } from "./helpers/fakeData.js";
+
 // instrument(io, {
 // 	auth: false,
 // 	mode: "development",
@@ -39,4 +40,13 @@ server.listen(PORT, async () => {
 		console.log("MongoDB connected");
 		console.log(`Server running on http://localhost:${PORT}`);
 	});
+	// .then(async () => {
+	// 	try {
+	// 		await createAdminData().then(() => {
+	// 			console.log("Admin data created");
+	// 		});
+	// 	} catch (error) {
+	// 		console.log("Error creating admin data: ", error.message);
+	// 	}
+	// });
 });

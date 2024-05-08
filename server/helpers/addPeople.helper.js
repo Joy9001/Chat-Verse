@@ -2,7 +2,7 @@ import User from "../models/users.model.js";
 
 const addPeople = async (currentUserId) => {
 	try {
-		const people = (await User.find()).filter(
+		let people = (await User.find()).filter(
 			(person) => person._id.toString() !== currentUserId
 		);
 		// console.log("People: ", people);

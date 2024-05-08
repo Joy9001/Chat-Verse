@@ -3,9 +3,9 @@ import {
 	nameValidator,
 	usernameValidator,
 	emailValidator,
-	phoneValidator,
 	passwordValidator,
 } from "./validator.js";
+import { generateAvatar } from "../helpers/generateAvatar.helper.js";
 
 const userSchema = new Schema(
 	{
@@ -22,13 +22,9 @@ const userSchema = new Schema(
 		},
 		email: {
 			type: Schema.Types.String,
+			reuired: [true, "Please enter an email"],
 			unique: true,
 			validate: emailValidator,
-		},
-		phone: {
-			type: Schema.Types.String,
-			unique: true,
-			validate: phoneValidator,
 		},
 		gender: {
 			type: Schema.Types.String,
@@ -41,9 +37,7 @@ const userSchema = new Schema(
 		},
 		profilePic: {
 			type: Schema.Types.String,
-			default: function () {
-				return `https://avatar.iran.liara.run/username?username=${this.name}`;
-			},
+			default: "",
 		},
 		role: {
 			type: Schema.Types.String,
@@ -52,6 +46,18 @@ const userSchema = new Schema(
 	},
 	{ timestamps: true }
 );
+
+userSchema.pre("save", function (next) {
+	if (!this.profilePic) {
+		try {
+			this.profilePic = generateAvatar(this.name);
+			// console.log("Avatar generated successfully", this.profilePic);
+		} catch (error) {
+			console.error("Error generating avatar", error);
+		}
+	}
+	next();
+});
 
 const User = model("User", userSchema);
 

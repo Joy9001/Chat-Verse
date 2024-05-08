@@ -1,10 +1,10 @@
-// const currentUserId = document.body.dataset.currentUserId;
 const handleHtmlGet = (message) => {
 	let date = utcToLocal(message.createdAt);
 	let msgDate = date.slice(6);
 	let msgTime = date.slice(0, 5);
 
 	let dates = document.querySelectorAll(".date");
+	let msgContainerDiv = document.querySelector(".message-container");
 
 	if (dates.length === 0 || dates[dates.length - 1].innerText !== msgDate) {
 		const dayDiv = document.createElement("div");
@@ -35,6 +35,8 @@ const handleHtmlGet = (message) => {
         </div>
     `;
 	msgContainerDiv.appendChild(msg_div);
+
+	let chatSection = document.querySelector(".chat-section");
 	chatSection.scrollTop = chatSection.scrollHeight;
 };
 
@@ -99,6 +101,7 @@ const createLeftsidePeopleR = (data) => {
 
 	parentDiv.innerHTML += badgeDiv;
 
+	let all_people = document.getElementById("people-parent");
 	all_people.appendChild(parentDiv);
 	return parentDiv;
 };
@@ -206,6 +209,9 @@ socket.on("deleteMessage", (dltMsgId) => {
 
 socket.on("deleteConversation", (senderId) => {
 	let receiver = document.querySelector(".people-child.active");
+	let chat_head = document.getElementById("chats-head");
+	let chat_mid = document.getElementById("all-chats");
+	let chat_end = document.getElementById("chats-end");
 	receiver.classList.remove("active");
 	receiver.classList.add("hidden");
 	chat_head.classList.add("hidden");
@@ -215,6 +221,7 @@ socket.on("deleteConversation", (senderId) => {
 
 socket.on("blockUser", (senderId) => {
 	console.log("Blocked user", senderId);
+	let chat_end = document.getElementById("chats-end");
 	chat_end.classList.add("hidden");
 
 	let blockDiv = document.querySelector("#chats-end-block");
@@ -232,6 +239,7 @@ socket.on("unblockUser", (senderId) => {
 	let blockBtn = document.querySelector("#block-to-user");
 	blockBtn.classList.remove("hidden");
 
+	let chat_end = document.getElementById("chats-end");
 	chat_end.classList.remove("hidden");
 });
 

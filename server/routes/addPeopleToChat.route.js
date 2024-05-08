@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { Schema } from "mongoose";
+import { Types } from "mongoose";
 const router = Router();
 import { addPeopleToChat } from "../helpers/addPeopleToChat.helper.js";
 import User from "../models/users.model.js";
@@ -8,7 +8,7 @@ router.post("/add-people-to-chat", async (req, res) => {
 	try {
 		// console.log(req.body);
 		const { senderId, receiverId } = req.body;
-		const receiverObjectid = new Schema.Types.ObjectId(`${receiverId}`);
+		const receiverObjectid = new Types.ObjectId(`${receiverId}`);
 		const result = await addPeopleToChat(senderId, receiverId);
 		const findReceiver = await User.findOne({
 			_id: receiverObjectid,
@@ -25,7 +25,10 @@ router.post("/add-people-to-chat", async (req, res) => {
 		}
 		res.json({ message: "Added people to chat", newPeople: findReceiver });
 	} catch (error) {
-		console.log("Error adding people to chat: ", error.message);
+		console.log(
+			"Error adding people to chat inside addedPeopleToChat.route: ",
+			error.message
+		);
 		return res.status(500).json({ message: "Internal server error" });
 	}
 });

@@ -24,7 +24,10 @@ const addPeopleToChat = async (senderId, receiverId, next) => {
 		}
 		return "Added people to chat";
 	} catch (err) {
-		console.log("Error adding people to chat: ", err.message);
+		console.error(
+			"Error adding people to chat inside addedPeopleToChat.helper: ",
+			err.message
+		);
 		next(err);
 	}
 };

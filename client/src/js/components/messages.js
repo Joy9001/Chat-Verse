@@ -1,31 +1,3 @@
-// const currentUserId = atob(document.body.dataset.currentUserId);
-let add_people_popup = document.getElementById("add-people-popup");
-let add_people_btn = document.getElementById("add-people-btn");
-// let add_people = document.querySelectorAll(".popup-people");
-let add_people_list = document.querySelector(".popup-people-all");
-let popup_search = document.getElementById("popup-search");
-let overlay = document.querySelector("#transparent-overlay");
-let msgInput = document.getElementById("msg-input");
-let all_people = document.getElementById("people-parent");
-let all_people_children = all_people.children;
-let all_people_names = document.querySelectorAll(".people_name");
-let chat_mid = document.getElementById("all-chats");
-let chatSection = document.querySelector(".chat-section");
-// let all_chats_children = all_chats.children;
-let chat_end = document.getElementById("chats-end");
-let chat_head = document.getElementById("chats-head");
-let chat_head_name = document.getElementById("chat-head-name");
-let chat_head_img = document.getElementById("chat-head-img");
-let to_user_info_popup = document.getElementById("to-user-info-popup");
-let to_user_info_btn = document.getElementById("to-user-info-btn");
-let msgContainerDiv = document.querySelector(".message-container");
-// let idx = 0;
-let send_btn = document.getElementById("send-btn");
-let head_3_children = document.querySelectorAll(".head-3-child");
-let emoji_popup = document.getElementById("emoji-popup");
-let delete_msg_btn = document.querySelectorAll(".delete-msg-btn");
-let addPeopleSearchBtn = document.querySelector(".add-people-search-btn");
-
 function getTime() {
 	let date = new Date();
 	let hours = date.getHours();
@@ -64,9 +36,14 @@ const utcToLocal = (utcDate) => {
 	return `${hours}:${minutes} ${day} ${month}, ${year}`;
 };
 
-// console.log(utcToLocal("2024-04-08T15:31:44.831Z"));
-
 const handleChatHeadAndEnd = (parsedElement, isOnline) => {
+	let chat_mid = document.getElementById("all-chats");
+	let chat_end = document.getElementById("chats-end");
+	let chat_head = document.getElementById("chats-head");
+	let chat_head_name = document.getElementById("chat-head-name");
+	let chat_head_img = document.getElementById("chat-head-img");
+	let to_user_info_popup = document.getElementById("to-user-info-popup");
+
 	chat_end.classList.remove("hidden");
 	chat_head.classList.remove("hidden");
 	chat_mid.classList.remove("hidden");
@@ -92,6 +69,9 @@ const handleChatHeadAndEnd = (parsedElement, isOnline) => {
 };
 
 const handleHtmlConversation = (data) => {
+	let chatSection = document.querySelector(".chat-section");
+	let msgContainerDiv = document.querySelector(".message-container");
+
 	const currentUserId = atob(document.body.dataset.currentUserId);
 	// console.log("Data: ", data);
 
@@ -161,6 +141,8 @@ const handleHtmlConversation = (data) => {
 };
 
 const handleConversation = (receiverId) => {
+	let chat_end = document.getElementById("chats-end");
+
 	const currentUserId = atob(document.body.dataset.currentUserId);
 	fetch("/get-conversation", {
 		method: "POST",
@@ -215,6 +197,9 @@ const handleChats = (parsedElement) => {
 };
 
 const chatClicked = (htmlElement) => {
+	let all_people_children = document.getElementById("people-parent").children;
+	let chatSection = document.querySelector(".chat-section");
+
 	let unreadElement = htmlElement.children[2];
 	unreadElement.children[0].innerText = 0;
 	unreadElement.classList.contains("hidden")
@@ -249,7 +234,14 @@ function addActive(ele) {
 	ele.classList.add("active");
 }
 
-overlay.addEventListener("click", () => {
+document.querySelector("#transparent-modal").addEventListener("click", () => {
+	let add_people_btn = document.getElementById("add-people-btn");
+	let add_people_popup = document.getElementById("add-people-popup");
+	let overlay = document.querySelector("#transparent-modal");
+	let to_user_info_popup = document.getElementById("to-user-info-popup");
+	let to_user_info_btn = document.getElementById("to-user-info-btn");
+	let emoji_popup = document.getElementById("emoji-popup");
+
 	overlay.classList.add("hidden");
 	add_people_btn.classList.remove("active");
 	to_user_info_btn.classList.remove("active");
@@ -261,8 +253,15 @@ overlay.addEventListener("click", () => {
 	}
 });
 
-add_people_btn.addEventListener("click", (event) => {
+document.getElementById("add-people-btn").addEventListener("click", (event) => {
 	event.stopPropagation();
+
+	let add_people_btn = document.getElementById("add-people-btn");
+	let add_people_popup = document.getElementById("add-people-popup");
+	let add_people_list = document.querySelector(".popup-people-all");
+	let popup_search = document.getElementById("popup-search");
+	let overlay = document.querySelector("#transparent-modal");
+
 	// document.body.style.overflow = "hidden";
 	add_people_btn.classList.toggle("active");
 	add_people_btn.classList.toggle("z-30");
@@ -317,6 +316,7 @@ const createLeftsidePeople = (data) => {
 
 	parentDiv.innerHTML += badgeDiv;
 
+	let all_people = document.getElementById("people-parent");
 	all_people.appendChild(parentDiv);
 
 	chatClicked(parentDiv);
@@ -363,10 +363,13 @@ const addPeopleToChat = (event) => {
 		// console.log("Online users here", atob(onlineUsers));
 	}
 
-	overlay.click();
+	document.querySelector("#transparent-modal").click();
 };
 
-to_user_info_btn.addEventListener("click", () => {
+document.getElementById("to-user-info-btn").addEventListener("click", () => {
+	let overlay = document.querySelector("#transparent-modal");
+	let to_user_info_popup = document.getElementById("to-user-info-popup");
+
 	if (to_user_info_popup.classList.contains("hidden")) {
 		to_user_info_popup.classList.remove("hidden");
 		overlay.classList.remove("hidden");
@@ -379,6 +382,9 @@ to_user_info_btn.addEventListener("click", () => {
 });
 
 const handleHtmlSend = (msgRes) => {
+	let chatSection = document.querySelector(".chat-section");
+	let msgContainerDiv = document.querySelector(".message-container");
+
 	let date = utcToLocal(msgRes.createdAt);
 	let msgDate = date.slice(6);
 	let msgTime = date.slice(0, 5);
@@ -438,8 +444,9 @@ const handleSendRequest = (receiverId, msg) => {
 		});
 };
 
-send_btn.addEventListener("click", (e) => {
+document.getElementById("send-btn").addEventListener("click", (e) => {
 	e.preventDefault();
+	let msgInput = document.getElementById("msg-input");
 
 	let raw_msg = msgInput.value;
 	let msg = raw_msg.replace(/\n/g, "<br>");
@@ -455,7 +462,9 @@ send_btn.addEventListener("click", (e) => {
 	}
 });
 
-msgInput.addEventListener("keydown", (event) => {
+document.getElementById("msg-input").addEventListener("keydown", (event) => {
+	let msgInput = document.getElementById("msg-input");
+
 	if (event.key === "Enter" && !event.shiftKey) {
 		event.preventDefault();
 
@@ -537,6 +546,10 @@ const deleteMessege = (btn) => {
 };
 
 const deleteConversation = () => {
+	let chat_mid = document.getElementById("all-chats");
+	let chat_end = document.getElementById("chats-end");
+	let chat_head = document.getElementById("chats-head");
+
 	let receiver = document.querySelector(".people-child.active");
 	let receiverData = JSON.parse(atob(receiver.dataset.element));
 	let receiverId = receiverData._id;
@@ -565,6 +578,9 @@ const deleteConversation = () => {
 };
 
 const handleBlockUser = (currentUserId, receiverId, htmlElement) => {
+	let chat_end = document.getElementById("chats-end");
+	let blockDiv = document.querySelector("#chats-end-block");
+
 	fetch("/block-user", {
 		method: "POST",
 		headers: {
@@ -582,13 +598,15 @@ const handleBlockUser = (currentUserId, receiverId, htmlElement) => {
 				htmlElement.children[0].innerText = "Unblock";
 				chat_end.classList.add("hidden");
 
-				let blockDiv = document.querySelector("#chats-end-block");
 				blockDiv.classList.remove("hidden");
 			}
 		});
 };
 
 const handleUnblockUser = (currentUserId, receiverId, htmlElement) => {
+	let chat_end = document.getElementById("chats-end");
+	let blockDiv = document.querySelector("#chats-end-block");
+
 	fetch("/unblock-user", {
 		method: "POST",
 		headers: {
@@ -604,10 +622,7 @@ const handleUnblockUser = (currentUserId, receiverId, htmlElement) => {
 			console.log(data.message);
 			if (data.message === "User unblocked") {
 				htmlElement.children[0].innerText = "Block";
-
-				let blockDiv = document.querySelector("#chats-end-block");
 				blockDiv.classList.add("hidden");
-
 				chat_end.classList.remove("hidden");
 			}
 		});
@@ -663,7 +678,14 @@ const searchPeople = (event) => {
 	}
 };
 
-popup_search.addEventListener("keyup", (event) => searchPeople(event));
-addPeopleSearchBtn.addEventListener("click", () => {
-	searchPeople({ target: { value: popup_search.value } });
-});
+document
+	.getElementById("popup-search")
+	.addEventListener("keyup", (event) => searchPeople(event));
+
+document
+	.querySelector(".add-people-search-btn")
+	.addEventListener("click", () => {
+		searchPeople({
+			target: { value: document.getElementById("popup-search").value },
+		});
+	});

@@ -1,6 +1,7 @@
 import { Schema, model } from "mongoose";
 import User from "./users.model.js";
 import Conversation from "./conversation.model.js";
+import { addPeopleToChat } from "../helpers/addPeopleToChat.helper.js";
 
 const messageSchema = new Schema(
 	{
@@ -88,12 +89,17 @@ messageSchema.post("save", async function (doc, next) {
 	// Add the sender to receiver's chat
 	try {
 		const addRes = await addPeopleToChat(doc.receiverId, doc.senderId);
-		// if (addRes === "Already exists in the chat") {
-		// 	console.log("Already exists in the chat");
-		// }
+		if (addRes === "Already exists in the chat") {
+			console.log("Already exists in the chat");
+		} else {
+			console.log("Added people to chat");
+		}
 		next();
 	} catch (error) {
-		console.log("Error adding people to chat: ", error.message);
+		console.log(
+			"Error adding people to chat inside message.model: ",
+			error.message
+		);
 		next(error);
 	}
 });
