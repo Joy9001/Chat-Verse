@@ -48,7 +48,7 @@ const userSchema = new Schema(
 );
 
 userSchema.pre("save", function (next) {
-	if (!this.profilePic) {
+	if (this.profilePic === "") {
 		try {
 			this.profilePic = generateAvatar(this.name);
 			// console.log("Avatar generated successfully", this.profilePic);

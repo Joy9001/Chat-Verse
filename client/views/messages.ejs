@@ -149,7 +149,7 @@
                         </div>
 
                         <!-- to user info popup -->
-                        <div id="to-user-info-popup" class="absolute right-4 top-14 z-30 hidden h-58 w-64 flex-col rounded-lg popup border-2 border-black">
+                        <div id="to-user-info-popup" class="absolute right-4 top-14 z-30 hidden h-fit w-64 flex-col rounded-lg popup border-2 border-black">
                             <!-- name & username -->
                             <div class="mt-1 flex h-18 cursor-pointer border-b-2 border-black pl-2">
                                 <img src="/assets/logo.jpeg" alt="User" class="ml-2 mt-2 h-14 w-14 rounded-full p-1" />
@@ -159,7 +159,7 @@
                                 </div>
                             </div>
 
-                            <div class="mt-3 flex flex-col items-center justify-center space-y-1 *:p-1 *:*:font-semibold">
+                            <div class="to-user-info-popup-options my-3 flex flex-col items-center justify-center space-y-1 *:p-1 *:*:font-semibold">
                                 <!-- Block -->
                                 <!-- <a href="#" class="mx-2 flex h-10 w-60 items-center justify-center rounded-md hover:bg-[#FADCD5]">
                     
@@ -176,11 +176,9 @@
                 </a> -->
 
                                 <!-- Delete Conversation -->
-                                <a href="#" class="mx-2 flex h-10 w-60 items-center justify-center rounded-md hover:bg-[#6D3C52] hover:cursor-pointer hover:text-[#FADCD5]">
-                                    <div id="delete-chat-to-user" onclick="deleteConversation()">
-                                        <h3>Delete Conversation</h3>
-                                    </div>
-                                </a>
+                                <div id="delete-chat-to-user" class="mx-2 flex h-10 w-60 items-center justify-center rounded-md hover:bg-[#6D3C52] hover:cursor-pointer hover:text-[#FADCD5]" onclick="deleteConversation()">
+                                    <h3>Delete Conversation</h3>
+                                </div>
                             </div>
                         </div>
                     </div>

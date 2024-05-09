@@ -106,8 +106,8 @@ const handleHtmlConversation = (data) => {
 				msgDiv.dataset.id = msg._id;
 				msgDiv.innerHTML = `
 						<div class="pr-2 delete-msg-btn hidden" onclick="deleteMessege(this)">
-							<button class="btn btn-circle btn-outline btn-accent h-6 w-6 min-h-4 group">
-								<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 group-hover:stroke-[#dee2ff]" fill="none" viewBox="0 0 24 24" stroke="#9376E0"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
+							<button class="btn btn-circle btn-outline bg-[#E9E9E9] hover:bg-[#4B2138] h-6 w-6 min-h-4 group">
+								<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 group-hover:stroke-[#E9E9E9]" fill="none" viewBox="0 0 24 24" stroke="#4B2138"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
 							</button>
 						</div>
 						<div class="msg-container">
@@ -127,8 +127,8 @@ const handleHtmlConversation = (data) => {
 						<span>${msgDate.slice(0, 5)}</span>
 					</div>
 					<div class="pl-2 delete-msg-btn hidden" onclick="deleteMessege(this)">
-						<button class="btn btn-circle btn-outline btn-secondary h-6 w-6 min-h-4 group">
-							<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 group-hover:stroke-[#9376E0]" fill="none" viewBox="0 0 24 24" stroke="#dee2ff"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
+						<button class="btn btn-circle btn-outline bg-[#4B2138] hover:bg-[#e9e9e9] h-6 w-6 min-h-4 group">
+							<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 group-hover:stroke-[#4B2138]" fill="none" viewBox="0 0 24 24" stroke="#e9e9e9"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
 						</button>
 					</div>
 				`;
@@ -169,6 +169,22 @@ const handleConversation = (receiverId) => {
 			} else if (blockedBy !== null) {
 				let blockBtn = document.querySelector("#block-to-user");
 				blockBtn.classList.add("hidden");
+
+				let deleteChatBtn = document.querySelector(
+					"#delete-chat-to-user"
+				);
+				deleteChatBtn.classList.add("hidden");
+
+				let blockInfoDiv = document.createElement("div");
+				blockInfoDiv.classList.add("block-info");
+				blockInfoDiv.innerHTML = `
+					<h3>You have been blocked</h3>
+				`;
+
+				let toUserInfoPopupOptions = document.querySelector(
+					".to-user-info-popup-options"
+				);
+				toUserInfoPopupOptions.appendChild(blockInfoDiv);
 			}
 			handleHtmlConversation(data);
 		});
@@ -409,15 +425,15 @@ const handleHtmlSend = (msgRes) => {
 	msg_div.classList.add("from-user-msg");
 	msg_div.dataset.id = msgRes._id;
 	msg_div.innerHTML = `
-    <div class="pr-2 delete-msg-btn hidden" onclick="deleteMessege(this)">
-    	<button class="btn btn-circle btn-outline btn-accent h-6 w-6 min-h-4 group">
-        	<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 group-hover:stroke-  [#dee2ff]" fill="none" viewBox="0 0 24 24" stroke="#9376E0"><path   stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
-    	</button>
-    </div>
-    <div class="msg-container">
-		<p>${msgRes.message}</p>
-    	<span>${msgTime}</span>
-    </div>
+		<div class="pr-2 delete-msg-btn hidden" onclick="deleteMessege(this)">
+			<button class="btn btn-circle btn-outline bg-[#E9E9E9] hover:bg-[#4B2138] h-6 w-6 min-h-4 group">
+				<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 group-hover:stroke-[#E9E9E9]" fill="none" viewBox="0 0 24 24" stroke="#4B2138"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
+			</button>
+		</div>
+		<div class="msg-container">
+			<p>${msgRes.message}</p>
+			<span>${msgTime}</span>
+		</div>
 	`;
 	msgContainerDiv.appendChild(msg_div);
 	msgContainerDiv.scrollTop = msgContainerDiv.scrollHeight;
