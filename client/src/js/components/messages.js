@@ -69,7 +69,7 @@ const handleChatHeadAndEnd = (parsedElement, isOnline) => {
 };
 
 const handleHtmlConversation = (data) => {
-	let chatSection = document.querySelector(".chat-section");
+	// let chatSection = document.querySelector(".message-container");
 	let msgContainerDiv = document.querySelector(".message-container");
 
 	const currentUserId = atob(document.body.dataset.currentUserId);
@@ -136,7 +136,7 @@ const handleHtmlConversation = (data) => {
 				msgContainerDiv.appendChild(msgDiv);
 			}
 		});
-		chatSection.scrollTop = chatSection.scrollHeight;
+		msgContainerDiv.scrollTop = msgContainerDiv.scrollHeight;
 	}
 };
 
@@ -369,6 +369,7 @@ const addPeopleToChat = (event) => {
 document.getElementById("to-user-info-btn").addEventListener("click", () => {
 	let overlay = document.querySelector("#transparent-modal");
 	let to_user_info_popup = document.getElementById("to-user-info-popup");
+	let to_user_info_btn = document.getElementById("to-user-info-btn");
 
 	if (to_user_info_popup.classList.contains("hidden")) {
 		to_user_info_popup.classList.remove("hidden");
@@ -382,7 +383,7 @@ document.getElementById("to-user-info-btn").addEventListener("click", () => {
 });
 
 const handleHtmlSend = (msgRes) => {
-	let chatSection = document.querySelector(".chat-section");
+	// let chatSection = document.querySelector(".message-container");
 	let msgContainerDiv = document.querySelector(".message-container");
 
 	let date = utcToLocal(msgRes.createdAt);
@@ -419,7 +420,7 @@ const handleHtmlSend = (msgRes) => {
     </div>
 	`;
 	msgContainerDiv.appendChild(msg_div);
-	chatSection.scrollTop = chatSection.scrollHeight;
+	msgContainerDiv.scrollTop = msgContainerDiv.scrollHeight;
 };
 
 const handleSendRequest = (receiverId, msg) => {
@@ -549,6 +550,7 @@ const deleteConversation = () => {
 	let chat_mid = document.getElementById("all-chats");
 	let chat_end = document.getElementById("chats-end");
 	let chat_head = document.getElementById("chats-head");
+	let blockDiv = document.querySelector("#chats-end-block");
 
 	let receiver = document.querySelector(".people-child.active");
 	let receiverData = JSON.parse(atob(receiver.dataset.element));
@@ -573,6 +575,7 @@ const deleteConversation = () => {
 				chat_head.classList.add("hidden");
 				chat_mid.classList.add("hidden");
 				chat_end.classList.add("hidden");
+				blockDiv.classList.add("hidden");
 			}
 		});
 };
@@ -597,7 +600,6 @@ const handleBlockUser = (currentUserId, receiverId, htmlElement) => {
 			if (data.message === "User blocked") {
 				htmlElement.children[0].innerText = "Unblock";
 				chat_end.classList.add("hidden");
-
 				blockDiv.classList.remove("hidden");
 			}
 		});
@@ -681,11 +683,3 @@ const searchPeople = (event) => {
 document
 	.getElementById("popup-search")
 	.addEventListener("keyup", (event) => searchPeople(event));
-
-document
-	.querySelector(".add-people-search-btn")
-	.addEventListener("click", () => {
-		searchPeople({
-			target: { value: document.getElementById("popup-search").value },
-		});
-	});

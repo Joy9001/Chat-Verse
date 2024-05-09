@@ -18,15 +18,17 @@
 <body class="font-mont font-emoji" data-current-user-id="<%= btoa(currentUserId) %>">
 
     <!-- body -->
-    <div class="people_body absolute h-full w-full flex justify-center items-center">
+    <div class="people_body absolute h-full w-full">
+        <!-- Modal -->
+        <div id="transparent-modal" class="hidden z-10 h-screen w-screen fixed top-0 left-0"></div>
+
         <!-- people main -->
-        <div class="people_main absolute flex h-4/5 w-3/4 flex-row backdrop-blur-xl">
-            <!-- Modal -->
-            <div id="transparent-modal" class="hidden z-10 h-full w-full fixed top-0 left-0"></div>
+        <div class="people_main absolute flex h-full w-full flex-row bg-transparent">
+
             <!-- left bar - all people -->
-            <div class="all_people absolute flex h-full w-[30%] rounded-l-xl flex-col border-r-[1px] border-[#071952] ">
+            <div class="all_people absolute flex h-full w-1/4 flex-col border-r-[1px] border-[#071952] gradviolet">
                 <!-- heading -->
-                <div class="heading w-[100% - 2rem] m-4 flex h-16 items-center justify-between rounded-lg border-2 border-solid border-[#FADCD5] bg-[#FADCD5] shadow-md">
+                <div class="heading w-[100% - 2rem] m-4 flex h-16 items-center justify-between rounded-lg border-2 border-[#dee2ff] bg-[#dee2ff] shadow-md">
                     <!-- title -->
                     <div class="ml-4 text-xl font-bold max-lg:text-lg max-md:text-base max-sm:text-sm">
                         <h1>ChatVerse</h1>
@@ -34,17 +36,25 @@
 
                     <div>
                         <!-- add user btn -->
-                        <div class="add-people-btn mr-2 flex cursor-pointer items-center justify-center rounded-lg max-md:hidden" id="add-people-btn">
+                        <div class="add-people-btn mr-2 flex cursor-pointer items-center justify-center rounded-lg pt-1 max-md:hidden" id="add-people-btn">
                             <div>
-                                <img src="/assets/add-user-7-svgrepo-com.svg" alt="">
+                                <svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 32 32" xml:space="preserve" width="35px" height="35px" fill="#000000" class="icon">
+                                    <use xlink:href="#icon-add-people"></use>
+                                </svg>
                             </div>
                         </div>
 
                         <!-- add user popup -->
-                        <div id="add-people-popup" class="popup top-19 absolute z-30 hidden flex-col flex h-96 w-64 rounded-lg border-2 border-[#1B0C1A] p-4 shadow-lg max-md:hidden">
-                            <h1 class="pl-2 text-xl text-[#1B0C1A] font-bold">New Chat</h1>
+                        <div id="add-people-popup" class="popup top-19 absolute z-30 hidden h-96 w-64 rounded-lg border-2 border-black p-4 shadow-lg max-md:hidden">
+                            <h1 class="pl-2 text-xl font-bold">New Chat</h1>
 
-                            <input type="search" name="popup-search" id="popup-search" placeholder="Search People" class="rounded-md mt-3 pl-2 ml-1 w-[13.25rem] h-9 border-2 border-solid border-[#1B0C1A] outline-none" />
+                            <div class="popup-search mt-3 flex h-10 rounded-lg border-2 border-slate-600" title="Search People">
+
+                                <input type="search" name="popup-search" id="popup-search" placeholder="Search People" class=" ml-1 w-full bg-[#F3F8FF] pl-1 outline-none" />
+                                <button class="w-[2.8rem] mr-[0.2rem] add-people-search-btn">
+                                    <img class="h-full w-full hover:scale-105 hover:duration-300" src="/assets/3844432_magnifier_search_zoom_icon.png" alt="Search">
+                                </button>
+                            </div>
 
                             <!-- all users -->
                             <div class="popup-people-all mt-2 flex h-[calc(100%-6rem)] grow flex-col overflow-y-auto">
@@ -70,12 +80,12 @@
                 </div>
 
                 <!-- all messages title -->
-                <div class="ml-6 text-2xl font-bold max-lg:text-lg max-md:text-base max-sm:text-sm text-[#1B0C1A]">
+                <div class="ml-6 text-2xl font-bold max-lg:text-lg max-md:text-base max-sm:text-sm">
                     <h1>All Chats</h1>
                 </div>
 
                 <!-- peoples -->
-                <div id="people-parent" class="people-parent ml-6 mr-2 my-2 overflow-y-auto">
+                <div id="people-parent" class="people-parent ml-6 mr-2 mt-2 overflow-y-auto *:bg-transparent">
                     <% if (currentChatPeople) { %>
                     <% currentChatPeople.forEach((element)=> { %>
                     <div class="people-child" data-element="<%= btoa(JSON.stringify(element)) %>" onclick="chatClicked(this)">
@@ -97,13 +107,13 @@
                         <% const unreadMsg=unreadMesseges.find((msg)=> msg.senderId.toString() === element._id.toString()); %>
                         <% if (unreadMsg && unreadMsg.unreadCount !=0) { %>
                         <div class="unread-badge absolute right-8">
-                            <div class="badge bg-[#6D3C52] text-white">
+                            <div class="badge badge-accent">
                                 <%= unreadMsg.unreadCount %>
                             </div>
                         </div>
                         <% } else { %>
                         <div class="unread-badge absolute right-8 hidden">
-                            <div class="badge bg-[#6D3C52] text-white">0</div>
+                            <div class="badge badge-accent">0</div>
                         </div>
                         <% } %>
                     </div>
@@ -113,9 +123,9 @@
             </div>
 
             <!-- right bar - all chats -->
-            <div class="all_chats_container absolute right-0 flex h-full w-[70%] rounded-r-xl flex-col ">
+            <div class="all_chats_container absolute right-0 flex h-full w-3/4 flex-col gradvioletrev">
                 <!-- chats head -->
-                <div id="chats-head" class="chats-head absolute top-0 flex hidden h-16 w-[calc(100%-2rem)] flex-row items-center justify-between border-2 border-solid border-[#FADCD5] bg-[#fadcd5] mt-4 ml-4 rounded-md">
+                <div id="chats-head" class="chats-head absolute top-0 flex hidden h-16 w-full flex-row items-center justify-between shadow-2xl bg-[#b2aef4]">
                     <!-- to user profile -->
                     <div class="to-user-profile ml-4 flex flex-row items-center justify-center space-x-3">
                         <div class="chats_img flex h-10 w-10 items-center justify-center rounded-full indicator">
@@ -124,16 +134,16 @@
                                 <img id="chat-head-img" src="/assets/logo.jpeg" alt="User" />
                             </a>
                         </div>
-                        <div class="text-lg font-semibold text-[#1B0C1A]">
+                        <div class="text-lg font-semibold">
                             <a href="#">
-                                <h1 id="chat-head-name"></h1>
+                                <h1 id="chat-head-name">Emma</h1>
                             </a>
                         </div>
                     </div>
 
                     <!-- alert -->
-                    <div role="alert" class="alert absolute right-18  h-12 w-80 p-[0.7rem] hidden justify-center items-center font-semibold border-2 border-solid border-[#6D3C52] text-[#6D3C52]">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class=" shrink-0 w-6 h-6" stroke="#6D3C52">
+                    <div role="alert" class="alert absolute right-18 hidden h-12 w-80 p-[0.7rem] justify-center items-center font-medium border-2 border-solid border-[#9376E0] text-[#3c096c]">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class=" shrink-0 w-6 h-6" stroke="#9376e0">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                         </svg>
                         <span>Deleted Message For Both</span>
@@ -149,7 +159,7 @@
                         </div>
 
                         <!-- to user info popup -->
-                        <div id="to-user-info-popup" class="absolute right-4 top-14 z-30 hidden h-58 w-64 flex-col rounded-lg popup border-2 border-black">
+                        <div id="to-user-info-popup" class="absolute right-4 top-14 z-30 hidden h-58 w-64 flex-col rounded-lg bg-bodybg border-2 border-black">
                             <!-- name & username -->
                             <div class="mt-1 flex h-18 cursor-pointer border-b-2 border-black pl-2">
                                 <img src="/assets/logo.jpeg" alt="User" class="ml-2 mt-2 h-14 w-14 rounded-full p-1" />
@@ -161,22 +171,22 @@
 
                             <div class="mt-3 flex flex-col items-center justify-center space-y-1 *:p-1 *:*:font-semibold">
                                 <!-- Block -->
-                                <!-- <a href="#" class="mx-2 flex h-10 w-60 items-center justify-center rounded-md hover:bg-[#FADCD5]">
+                                <!-- <a href="#" class="mx-2 flex h-10 w-60 items-center justify-center rounded-md hover:bg-[#dee2ff]">
                     
                   </a> -->
-                                <div id="block-to-user" class="mx-2 flex h-10 w-60 items-center justify-center rounded-md hover:cursor-pointer hover:bg-[#6D3C52] hover:text-[#FADCD5]" onclick="blockUnblockUser(this)">
+                                <div id="block-to-user" class="mx-2 flex h-10 w-60 items-center justify-center rounded-md hover:bg-[#dee2ff] hover:cursor-pointer" onclick="blockUnblockUser(this)">
                                     <h3>Block</h3>
                                 </div>
 
                                 <!-- Report -->
-                                <!-- <a href="#" class="mx-2 flex h-10 w-60 items-center justify-center rounded-md hover:bg-[#FADCD5]">
+                                <!-- <a href="#" class="mx-2 flex h-10 w-60 items-center justify-center rounded-md hover:bg-[#dee2ff]">
                   <div id="report-to-user">
                     <h3>Report</h3>
                   </div>
                 </a> -->
 
                                 <!-- Delete Conversation -->
-                                <a href="#" class="mx-2 flex h-10 w-60 items-center justify-center rounded-md hover:bg-[#6D3C52] hover:cursor-pointer hover:text-[#FADCD5]">
+                                <a href="#" class="mx-2 flex h-10 w-60 items-center justify-center rounded-md hover:bg-[#dee2ff]">
                                     <div id="delete-chat-to-user" onclick="deleteConversation()">
                                         <h3>Delete Conversation</h3>
                                     </div>
@@ -187,20 +197,20 @@
                 </div>
 
                 <!-- all chats -->
-                <div id="all-chats" class="absolute top-16 h-[calc(100%-9.5rem)] w-[calc(100%-2rem)] m-4">
-                    <div id="chat-section" class="chat-section absolute flex h-full w-full flex-col hidden">
+                <div id="all-chats" class="absolute top-16 h-[calc(100%-8rem)] w-full *:bg-transparent">
+                    <div id="chat-section" class="chat-section hidden">
                         <!-- profile info of to-user -->
-                        <div class="to-user-profile-sec absolute mt-6 flex h-40 w-full flex-col items-center justify-center py-2">
+                        <div class="to-user-profile-sec">
                             <!-- to-user-profile-sec-img -->
                             <a href="#">
-                                <div class="to-user-profile-sec-img flex h-20 w-20 items-center justify-center">
+                                <div class="to-user-profile-sec-img">
                                     <img src="/assets/logo.jpeg" alt="To User" />
                                 </div>
                             </a>
 
                             <!-- to-user-profile-sec-name -->
                             <a href="#">
-                                <div class="to-user-profile-sec-name mt-2 flex flex-col items-center justify-center">
+                                <div class="to-user-profile-sec-name">
                                     <h1>Emma</h1>
                                     <h3>@emma123</h3>
                                 </div>
@@ -208,7 +218,7 @@
                         </div>
                         <!-- messages -->
                         <div id="messages" class="messages">
-                            <div class="message-container overflow-y-scroll flex h-full w-full flex-col items-start pb-1">
+                            <div class="message-container">
                                 <!-- <div class="day">
                   <div class="date">
                     <h1>23 Feb, 2024</h1>
@@ -221,7 +231,7 @@
                   </div>
                   <div class="pl-2 delete-msg-btn hidden">
                     <button class="btn btn-circle btn-outline btn-secondary h-6 w-6 min-h-4 group">
-                      <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 group-hover:stroke-[#9376E0]" fill="none" viewBox="0 0 24 24" stroke="#FADCD5">
+                      <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 group-hover:stroke-[#9376E0]" fill="none" viewBox="0 0 24 24" stroke="#dee2ff">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
                       </svg>
                     </button>
@@ -231,7 +241,7 @@
                                 <!-- <div class="from-user-msg">
                   <div class="pr-2 delete-msg-btn hidden">
                     <button class="btn btn-circle btn-outline btn-accent h-6 w-6 min-h-4 group">
-                      <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 group-hover:stroke-[#FADCD5]" fill="none" viewBox="0 0 24 24" stroke="#9376E0">
+                      <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 group-hover:stroke-[#dee2ff]" fill="none" viewBox="0 0 24 24" stroke="#9376E0">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
                       </svg>
                     </button>
@@ -247,14 +257,14 @@
                 </div>
 
                 <!-- chats end -->
-                <div id="chats-end" class="absolute bottom-0 flex hidden h-16 w-[calc(100%-2rem)] flex-row items-center justify-between shadow-2xl border-2 border-solid border-[#FADCD5] bg-[#fadcd5] my-2 ml-4 rounded-md p-2 *:mx-1">
+                <div id="chats-end" class="absolute bottom-0 flex hidden h-16 w-full flex-row items-center justify-between shadow-2xl bg-[#b2aef4] p-2 *:mx-1">
                     <!-- emoji -->
                     <div id="emoji-btn" class="cursor-pointer max-sm:hidden">
                         <div id="emoji-popup-btn" class="emoji-popup-btn flex h-8 w-8 items-center justify-center hover:scale-110 hover:duration-200">
                             <img src="/assets/smile.png" alt="Emoji" />
                         </div>
 
-                        <div id="emoji-popup" class="popup absolute bottom-16 left-0 hidden h-80 w-[24rem] rounded-lg border-1 ml-1 mb-1 border-[#FADCD5] p-3 shadow-lg z-50">
+                        <div id="emoji-popup" class="popup absolute bottom-16 left-0 hidden h-80 w-[24rem] rounded-lg border-1 ml-1 mb-1 border-black p-3 shadow-lg z-50">
                             <div class="p-2 text-xl font-bold">
                                 <h1>Emoji</h1>
                             </div>
@@ -278,16 +288,17 @@
                     </div>
                 </div>
 
-                <div id="chats-end-block" class="absolute bottom-0 flex hidden h-16 w-full flex-row items-center justify-center shadow-2xl bg-[#fadcd5] p-2 *:mx-1">
-                    <div class="block-status flex items-center justify-center font-semibold text-[#1B0C1A]">
+                <div id="chats-end-block" class="absolute bottom-0 flex hidden h-16 w-full flex-row items-center justify-center shadow-2xl bg-[#b2aef4] p-2 *:mx-1">
+                    <div class="block-status flex items-center justify-center font-semibold">
                         <span>You conversation is blocked</span>
                     </div>
                 </div>
 
             </div>
         </div>
-    </div>
 
+    </div>
+    </div>
 </body>
 
 <script src="/js/components/messages.js"></script>

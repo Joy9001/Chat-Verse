@@ -212,35 +212,43 @@ socket.on("deleteConversation", (senderId) => {
 	let chat_head = document.getElementById("chats-head");
 	let chat_mid = document.getElementById("all-chats");
 	let chat_end = document.getElementById("chats-end");
+	let blockDiv = document.querySelector("#chats-end-block");
+
 	receiver.classList.remove("active");
 	receiver.classList.add("hidden");
 	chat_head.classList.add("hidden");
 	chat_mid.classList.add("hidden");
 	chat_end.classList.add("hidden");
+	blockDiv.classList.add("hidden");
 });
 
 socket.on("blockUser", (senderId) => {
 	console.log("Blocked user", senderId);
-	let chat_end = document.getElementById("chats-end");
-	chat_end.classList.add("hidden");
 
-	let blockDiv = document.querySelector("#chats-end-block");
-	blockDiv.classList.remove("hidden");
+	if (document.querySelector(".people-child.active")) {
+		let chat_end = document.getElementById("chats-end");
+		chat_end.classList.add("hidden");
 
-	let blockBtn = document.querySelector("#block-to-user");
-	blockBtn.classList.add("hidden");
+		let blockDiv = document.querySelector("#chats-end-block");
+		blockDiv.classList.remove("hidden");
+
+		let blockBtn = document.querySelector("#block-to-user");
+		blockBtn.classList.add("hidden");
+	}
 });
 
 socket.on("unblockUser", (senderId) => {
 	console.log("Unblocked user", senderId);
-	let blockDiv = document.querySelector("#chats-end-block");
-	blockDiv.classList.add("hidden");
+	if (document.querySelector(".people-child.active")) {
+		let blockDiv = document.querySelector("#chats-end-block");
+		blockDiv.classList.add("hidden");
 
-	let blockBtn = document.querySelector("#block-to-user");
-	blockBtn.classList.remove("hidden");
+		let blockBtn = document.querySelector("#block-to-user");
+		blockBtn.classList.remove("hidden");
 
-	let chat_end = document.getElementById("chats-end");
-	chat_end.classList.remove("hidden");
+		let chat_end = document.getElementById("chats-end");
+		chat_end.classList.remove("hidden");
+	}
 });
 
 socket.on("connection", () => {

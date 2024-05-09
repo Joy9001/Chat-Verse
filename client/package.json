@@ -9,7 +9,7 @@
 	},
 	"scripts": {
 		"build:css": "npm-run-all --parallel build:css:*",
-		"build:css:PeopleAndSearch": "tailwindcss -i ./src/css/style.css -o ./src/css/output.css"
+		"build:css:chatVerse": "tailwindcss -i ./src/css/style.css -o ./src/css/output.css --watch"
 	},
 	"keywords": [],
 	"author": "",
