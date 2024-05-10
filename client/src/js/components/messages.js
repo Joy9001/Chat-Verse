@@ -441,7 +441,7 @@ const handleHtmlSend = (msgRes) => {
 
 const handleSendRequest = (receiverId, msg) => {
 	const currentUserId = atob(document.body.dataset.currentUserId);
-	fetch("/send-message", {
+	fetch("/message/send-message", {
 		method: "POST",
 		headers: {
 			"Content-Type": "application/json",
@@ -531,7 +531,7 @@ const deleteMessege = (btn) => {
 	);
 	let receiverId = receiverData._id;
 
-	fetch("/delete-message", {
+	fetch("/message/delete-message", {
 		method: "POST",
 		headers: {
 			"Content-Type": "application/json",
@@ -572,7 +572,7 @@ const deleteConversation = () => {
 	let receiverData = JSON.parse(atob(receiver.dataset.element));
 	let receiverId = receiverData._id;
 
-	fetch("/delete-conversation", {
+	fetch("/message/delete-conversation", {
 		method: "POST",
 		headers: {
 			"Content-Type": "application/json",
@@ -600,7 +600,7 @@ const handleBlockUser = (currentUserId, receiverId, htmlElement) => {
 	let chat_end = document.getElementById("chats-end");
 	let blockDiv = document.querySelector("#chats-end-block");
 
-	fetch("/block-user", {
+	fetch("/message/block-user", {
 		method: "POST",
 		headers: {
 			"Content-Type": "application/json",
@@ -625,7 +625,7 @@ const handleUnblockUser = (currentUserId, receiverId, htmlElement) => {
 	let chat_end = document.getElementById("chats-end");
 	let blockDiv = document.querySelector("#chats-end-block");
 
-	fetch("/unblock-user", {
+	fetch("/message/unblock-user", {
 		method: "POST",
 		headers: {
 			"Content-Type": "application/json",

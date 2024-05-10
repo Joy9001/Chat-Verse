@@ -43,7 +43,7 @@
                             <input type="search" name="popup-search" id="popup-search" placeholder="Search People" class="rounded-md mt-3 pl-2 ml-1 w-[13.25rem] h-9 border-2 border-solid border-[#1B0C1A] outline-none" />
 
                             <!-- all users -->
-                            <div class="popup-people-all mt-2 flex h-[calc(100%-6rem)] grow flex-col overflow-y-auto">
+                            <div class="popup-people-all mt-2 flex h-[calc(100%-6rem)] grow flex-col no-scrollbar overflow-y-scroll">
                                 <% peopleToAdd.forEach((element) => { %>
                                 <div class="popup-people" data-id="<%= btoa(element._id) %>" data-element="<%= btoa(JSON.stringify(element)) %>" onclick="addPeopleToChat(this)">
                                     <% if(element.profilePic) { %>
@@ -71,7 +71,7 @@
                 </div>
 
                 <!-- peoples -->
-                <div id="people-parent" class="people-parent ml-6 mr-2 my-2 overflow-y-auto">
+                <div id="people-parent" class="people-parent ml-6 mr-2 my-2 overflow-y-scroll no-scrollbar">
                     <% if (currentChatPeople) { %>
                     <% currentChatPeople.forEach((element)=> { %>
                     <div class="people-child" data-element="<%= btoa(JSON.stringify(element)) %>" onclick="chatClicked(this)">
@@ -202,7 +202,7 @@
                         </div>
                         <!-- messages -->
                         <div id="messages" class="messages">
-                            <div class="message-container overflow-y-scroll flex h-full w-full flex-col items-start pb-1">
+                            <div class="message-container no-scrollbar overflow-y-scroll flex h-full w-full flex-col items-start pb-1">
                                 <!-- <div class="day">
                   <div class="date">
                     <h1>23 Feb, 2024</h1>

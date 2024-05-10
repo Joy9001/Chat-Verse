@@ -29,11 +29,11 @@ import { createAdminData } from "./helpers/fakeData.js";
 // 	mode: "development",
 // });
 
-app.use(indexRouter);
-app.use(addPeopleToChatRouter);
-app.use(getConversationRouter);
-app.use(messageRouter);
-app.use(searchPeopleRouter);
+app.use("/", indexRouter);
+app.use("/add-people-to-chat", addPeopleToChatRouter);
+app.use("/get-conversation", getConversationRouter);
+app.use("/message", messageRouter);
+app.use("/search-people", searchPeopleRouter);
 
 server.listen(PORT, async () => {
 	await connectMongo().then(() => {

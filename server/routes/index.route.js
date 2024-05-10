@@ -2,8 +2,10 @@ import { Router } from "express";
 const router = Router();
 import { messageController } from "../controllers/message.controller.js";
 
-// const people = ['Sekiro', 'Emma', 'Isshin', 'Genichiro', 'Lord Kuro', 'Owl'];
+router.get("/login", (req, res) => {
+	res.render("login");
+});
 
-router.get("/:id", messageController);
+router.get("/messages/:id", messageController);
 
 export default router;

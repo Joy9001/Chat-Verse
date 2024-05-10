@@ -161,7 +161,7 @@ socket.on("newMessage", (message, senderId) => {
 		unreadMsg.children[0].innerText = unreadMsgCount;
 		unreadMsg.classList.remove("hidden");
 
-		fetch("/unread-message", {
+		fetch("/message/unread-message", {
 			method: "POST",
 			headers: {
 				"Content-Type": "application/json",

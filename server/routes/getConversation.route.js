@@ -3,7 +3,7 @@ const router = Router();
 import Conversation from "../models/conversation.model.js";
 import getConversation from "../helpers/getConversation.helper.js";
 
-router.post("/get-conversation", async (req, res) => {
+router.post("/", async (req, res) => {
 	const { senderId, receiverId } = req.body;
 	// console.log(senderId, receiverId);
 

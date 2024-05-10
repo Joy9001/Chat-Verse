@@ -4,7 +4,7 @@ const router = Router();
 import { addPeopleToChat } from "../helpers/addPeopleToChat.helper.js";
 import User from "../models/users.model.js";
 
-router.post("/add-people-to-chat", async (req, res) => {
+router.post("/", async (req, res) => {
 	try {
 		// console.log(req.body);
 		const { senderId, receiverId } = req.body;

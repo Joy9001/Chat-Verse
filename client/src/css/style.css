@@ -11,7 +11,9 @@
 	body {
 		font-family: Operator Mono;
 	}
-	.people_body {
+
+	.people_body,
+	.login_body {
 		background-image: url("../assets/bg-img.png");
 		background-size: cover;
 		background-position: center;
@@ -43,22 +45,6 @@
 
 	.popup-search-icon {
 		transform: translate(-5px, -5px) scaleX(-1);
-	}
-
-	*::-webkit-scrollbar {
-		@apply w-1;
-	}
-
-	*::-webkit-scrollbar-track {
-		@apply rounded-lg opacity-0;
-	}
-
-	*::-webkit-scrollbar-thumb {
-		@apply hidden rounded-lg bg-[#FADFD9];
-	}
-
-	*:hover::-webkit-scrollbar-thumb {
-		@apply block;
 	}
 
 	.people-child {
@@ -107,29 +93,6 @@
 
 	.popup-people h3 {
 		@apply pl-2 text-base font-semibold;
-	}
-
-	input:checked ~ .dot {
-		transform: translateX(100%);
-		background-color: #000000;
-	}
-
-	input:checked ~ .nm-toggle-bg {
-		background-color: #bcbaba;
-	}
-
-	#account {
-		background-image: url("../assets/png-transparent-computer-icons-google-account-scalable-graphics-computer-file-my-account-icon-rim-123rf-symbol-thumbnail.png");
-		background-size: contain;
-		background-position: center;
-	}
-
-	.account.active-scale {
-		transform: scale(1.2);
-	}
-
-	.top-nav-notification-button.notification-button-active {
-		@apply scale-110 bg-lightpurple;
 	}
 
 	.to-user-msg {
@@ -237,5 +200,15 @@
 
 	textarea::-webkit-scrollbar {
 		width: 0rem;
+	}
+}
+
+@layer utilities {
+	.no-scrollbar::-webkit-scrollbar {
+		display: none; /* Safari and Chrome */
+	}
+	.no-scrollbar {
+		-ms-overflow-style: none; /* IE and Edge */
+		scrollbar-width: none; /* Firefox */
 	}
 }
