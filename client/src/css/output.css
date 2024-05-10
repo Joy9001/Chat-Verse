@@ -8492,7 +8492,8 @@ body {
 }
 
 .people_body,
-	.login_body {
+	.login_body,
+	.register_body {
   background-image: url("../assets/bg-img.png");
   background-size: cover;
   background-position: center;
@@ -8914,6 +8915,10 @@ textarea::-webkit-scrollbar {
   top: 0px;
 }
 
+.top-11 {
+  top: 2.75rem;
+}
+
 .top-14 {
   top: 3.5rem;
 }
@@ -8924,10 +8929,6 @@ textarea::-webkit-scrollbar {
 
 .top-19 {
   top: 4.75rem;
-}
-
-.top-11 {
-  top: 2.75rem;
 }
 
 .isolate {
@@ -9021,6 +9022,10 @@ textarea::-webkit-scrollbar {
   margin-bottom: 0.25rem;
 }
 
+.mb-7 {
+  margin-bottom: 1.75rem;
+}
+
 .mb-\[-4px\] {
   margin-bottom: -4px;
 }
@@ -9081,12 +9086,8 @@ textarea::-webkit-scrollbar {
   margin-top: 1.5rem;
 }
 
-.mb-20 {
-  margin-bottom: 5rem;
-}
-
-.mb-7 {
-  margin-bottom: 1.75rem;
+.mb-4 {
+  margin-bottom: 1rem;
 }
 
 .box-border {
@@ -9311,6 +9312,10 @@ textarea::-webkit-scrollbar {
 
 .w-4 {
   width: 1rem;
+}
+
+.w-40 {
+  width: 10rem;
 }
 
 .w-6 {
@@ -9945,6 +9950,18 @@ textarea::-webkit-scrollbar {
   --tw-space-y-reverse: 0;
   margin-top: calc(1rem * calc(1 - var(--tw-space-y-reverse)));
   margin-bottom: calc(1rem * var(--tw-space-y-reverse));
+}
+
+.space-y-5 > :not([hidden]) ~ :not([hidden]) {
+  --tw-space-y-reverse: 0;
+  margin-top: calc(1.25rem * calc(1 - var(--tw-space-y-reverse)));
+  margin-bottom: calc(1.25rem * var(--tw-space-y-reverse));
+}
+
+.space-y-6 > :not([hidden]) ~ :not([hidden]) {
+  --tw-space-y-reverse: 0;
+  margin-top: calc(1.5rem * calc(1 - var(--tw-space-y-reverse)));
+  margin-bottom: calc(1.5rem * var(--tw-space-y-reverse));
 }
 
 .space-y-reverse > :not([hidden]) ~ :not([hidden]) {
@@ -10709,6 +10726,11 @@ textarea::-webkit-scrollbar {
   line-height: 2.5rem;
 }
 
+.text-5xl {
+  font-size: 3rem;
+  line-height: 1;
+}
+
 .text-base {
   font-size: 1rem;
   line-height: 1.5rem;
@@ -10727,21 +10749,6 @@ textarea::-webkit-scrollbar {
 .text-xl {
   font-size: 1.25rem;
   line-height: 1.75rem;
-}
-
-.text-7xl {
-  font-size: 4.5rem;
-  line-height: 1;
-}
-
-.text-6xl {
-  font-size: 3.75rem;
-  line-height: 1;
-}
-
-.text-5xl {
-  font-size: 3rem;
-  line-height: 1;
 }
 
 .font-bold {
@@ -11495,14 +11502,6 @@ textarea::-webkit-scrollbar {
 }
 
 @media not all and (min-width: 1024px) {
-  .max-lg\:hidden {
-    display: none;
-  }
-
-  .max-lg\:w-full {
-    width: 100%;
-  }
-
   .max-lg\:text-lg {
     font-size: 1.125rem;
     line-height: 1.75rem;
@@ -11512,10 +11511,6 @@ textarea::-webkit-scrollbar {
 @media not all and (min-width: 768px) {
   .max-md\:hidden {
     display: none;
-  }
-
-  .max-md\:w-full {
-    width: 100%;
   }
 
   .max-md\:text-base {

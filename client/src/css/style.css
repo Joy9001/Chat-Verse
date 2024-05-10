@@ -13,7 +13,8 @@
 	}
 
 	.people_body,
-	.login_body {
+	.login_body,
+	.register_body {
 		background-image: url("../assets/bg-img.png");
 		background-size: cover;
 		background-position: center;
