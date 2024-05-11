@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang=en>
+<html lang="en" data-theme="cupcake">
 
 <head>
     <meta charset="UTF-8">
@@ -24,45 +24,6 @@
                         <label for="password" class="text-lg font-semibold text-[#E9E9E9]">Password</label>
                         <input type="password" name="password" id="password" class="p-2 rounded-md bg-[#E9E9E9] border-2 border-solid border-[#4B2138] text-[#4B2138] outline-none w-60" />
                     </div>
-                    <!-- Open the modal using ID.showModal() method -->
-                    <button class="btn border-[#E9E9E9] hover:bg-[#E9E9E9] hover:text-[#4B2138] bg-[#4B2138] text-[#E9E9E9]" onclick="my_modal_1.showModal()">Change Details</button>
-                    <dialog id="my_modal_1" class="modal">
-                        <div class="modal-box bg-[#E9E9E9]">
-                            <div class="change-details space-y-4 flex flex-col justify-center items-center">
-                                <div class="flex flex-col space-y-2">
-                                    <label for="name" class="text-lg font-semibold text-[#4B2138]">Name</label>
-                                    <input type="name" name="name" id="name" class="p-2 rounded-md bg-[#E9E9E9] border-2 border-solid border-[#4B2138] text-[#4B2138] outline-none w-60" value="Emma" />
-                                </div>
-                                <div class="flex flex-col space-y-2">
-                                    <label for="username" class="text-lg font-semibold text-[#4B2138]">Username</label>
-                                    <input type="username" name="username" id="username" class="p-2 rounded-md bg-[#E9E9E9] border-2 border-solid border-[#4B2138] text-[#4B2138] outline-none w-60" value="emma" />
-                                </div>
-                                <div class="flex flex-col space-y-2">
-                                    <label for="gender" class="text-lg font-semibold text-[#4B2138]">Gender</label>
-                                    <select name="gender" id="gender" class="p-2 rounded-md bg-[#E9E9E9] border-2 border-solid border-[#4B2138] text-[#4B2138] outline-none w-60">
-                                        <option value="">Select</option>
-                                        <option value="male">Male</option>
-                                        <option value="female">Female</option>
-                                    </select>
-                                </div>
-                                <div class="flex flex-col space-y-2 justify-center items-center">
-                                    <label for="profilePic" class="text-lg font-semibold text-[#4B2138]">Profile Picture</label>
-                                    <div class="avatar">
-                                        <div class="w-24 rounded-full">
-                                            <img src="https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.jpg" />
-                                        </div>
-                                    </div>
-                                    <button class="btn w-24 text-[#E9E9E9] bg-[#4B2138]">Change</button>
-                                </div>
-                            </div>
-                            <div class="modal-action">
-                                <form method="dialog">
-                                    <!-- if there is a button in form, it will close the modal -->
-                                    <button class="btn btn-outline hover:bg-[#4B2138] hover:text-[#E9E9E9] text-[#4B2138]">Done</button>
-                                </form>
-                            </div>
-                        </div>
-                    </dialog>
                     <button type="submit" class="btn border-[#E9E9E9] hover:bg-[#E9E9E9] hover:text-[#4B2138] bg-[#4B2138] text-[#E9E9E9] p-2 rounded-md w-40">Login</button>
                     <p class="text-[#E9E9E9]">Don't have an account? <a href="/register" class="text-[#E9E9E9] underline">Register</a></p>
                 </div>

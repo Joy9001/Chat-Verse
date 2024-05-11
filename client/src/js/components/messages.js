@@ -106,7 +106,7 @@ const handleHtmlConversation = (data) => {
 				msgDiv.dataset.id = msg._id;
 				msgDiv.innerHTML = `
 						<div class="pr-2 delete-msg-btn hidden" onclick="deleteMessege(this)">
-							<button class="btn btn-circle btn-outline bg-[#E9E9E9] hover:bg-[#4B2138] h-6 w-6 min-h-4 group">
+							<button class="btn btn-circle btn-outline border-[#4b2138] bg-[#E9E9E9] hover:bg-[#4B2138] hover:border-[#e9e9e9] h-6 w-6 min-h-4 group">
 								<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 group-hover:stroke-[#E9E9E9]" fill="none" viewBox="0 0 24 24" stroke="#4B2138"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
 							</button>
 						</div>
@@ -127,7 +127,7 @@ const handleHtmlConversation = (data) => {
 						<span>${msgDate.slice(0, 5)}</span>
 					</div>
 					<div class="pl-2 delete-msg-btn hidden" onclick="deleteMessege(this)">
-						<button class="btn btn-circle btn-outline bg-[#4B2138] hover:bg-[#e9e9e9] h-6 w-6 min-h-4 group">
+						<button class="btn btn-circle btn-outline border-[#e9e9e9] bg-[#4B2138] hover:bg-[#e9e9e9] hover:border-[#4b2138] h-6 w-6 min-h-4 group">
 							<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 group-hover:stroke-[#4B2138]" fill="none" viewBox="0 0 24 24" stroke="#e9e9e9"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
 						</button>
 					</div>
@@ -426,7 +426,7 @@ const handleHtmlSend = (msgRes) => {
 	msg_div.dataset.id = msgRes._id;
 	msg_div.innerHTML = `
 		<div class="pr-2 delete-msg-btn hidden" onclick="deleteMessege(this)">
-			<button class="btn btn-circle btn-outline bg-[#E9E9E9] hover:bg-[#4B2138] h-6 w-6 min-h-4 group">
+			<button class="btn btn-circle btn-outline border-[#4b2138] bg-[#E9E9E9] hover:bg-[#4B2138] hover:border-[#e9e9e9] h-6 w-6 min-h-4 group">
 				<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 group-hover:stroke-[#E9E9E9]" fill="none" viewBox="0 0 24 24" stroke="#4B2138"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
 			</button>
 		</div>

@@ -65,14 +65,16 @@
 	}
 
 	.people_name_parent {
-		@apply ml-4;
+		@apply ml-4 text-[#FADCD5] group-hover:text-[#1B0C1A] group-[.active]:text-[#1B0C1A];
 	}
 
-	.chats_img {
+	.chats_img,
+	.from-user-img {
 		@apply ml-2 h-14 max-lg:hidden;
 	}
 
-	.chats_img img {
+	.chats_img img,
+	.from-user-img img {
 		@apply h-full w-full rounded-full;
 	}
 

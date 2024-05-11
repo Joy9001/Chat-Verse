@@ -5,11 +5,15 @@ import Message from "../models/message.model.js";
 import Conversation from "../models/conversation.model.js";
 import AddedPeopleToChat from "../models/addedPeopleToChat.model.js";
 import { addPeopleToChat } from "../helpers/addPeopleToChat.helper.js";
+import User from "../models/users.model.js";
 import { io, getReceiverSocketId } from "../helpers/socket.helper.js";
 // const currentUserId from "../helpers/currentUserId.helper.js");
 
 const messageController = async (req, res) => {
 	const currentUserId = req.params.id;
+
+	const currentUser = await User.findById(currentUserId);
+	// console.log(currentUser);
 	let unreadMesseges = [];
 
 	try {
@@ -59,9 +63,9 @@ const messageController = async (req, res) => {
 
 		return res.render("messages", {
 			peopleToAdd,
-			currentUserId,
 			currentChatPeople,
 			unreadMesseges,
+			currentUser,
 		});
 	} catch (error) {
 		console.log("Error getting people: ", error);

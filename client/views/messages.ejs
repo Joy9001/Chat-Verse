@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" data-theme="cupcake">
+<html lang="en" data-theme="cupcake" class="no-scrollbar">
 
 <head>
     <meta charset="UTF-8" />
@@ -11,7 +11,7 @@
 
 <%- include('../public/svgs/icons.svg') %>
 
-<body data-current-user-id="<%= btoa(currentUserId) %>">
+<body data-current-user-id="<%= btoa(currentUser._id) %>" class="no-scrollbar">
 
     <!-- body -->
     <div class="people_body absolute h-full w-full flex justify-center items-center">
@@ -66,15 +66,56 @@
                 </div>
 
                 <!-- all messages title -->
-                <div class="ml-6 text-2xl font-bold max-lg:text-lg max-md:text-base max-sm:text-sm text-[#1B0C1A]">
+                <div class="ml-6 flex items-center text-2xl font-bold max-lg:text-lg max-md:text-base max-sm:text-sm text-[#FADCD5]">
                     <h1>All Chats</h1>
+                    <div class="from-user-img flex h-14 w-14 items-center justify-center rounded-full indicator ml-56">
+                        <span class="indicator-item badge badge-success h-2 p-1 translate-x-[5%] translate-y-[10%] hidden status"></span>
+                        <!-- Open the modal using ID.showModal() method -->
+                        <img onclick="my_modal_1.showModal()" class="cursor-pointer" src="<%= currentUser.profilePic %>" alt="User" />
+                        <dialog id="my_modal_1" class="modal no-scrollbar">
+                            <div class="modal-box bg-[#E9E9E9] no-scrollbar">
+                                <div class="change-details space-y-4 flex flex-col justify-center items-center">
+                                    <div class="flex flex-col space-y-2">
+                                        <label for="name" class="text-lg font-semibold text-[#4B2138]">Name</label>
+                                        <input type="name" name="name" id="change-details-name" class="p-2 rounded-md bg-[#E9E9E9] border-2 border-solid border-[#4B2138] text-[#4B2138] outline-none w-60 text-base" value="<%= currentUser.name %>" />
+                                    </div>
+                                    <div class="flex flex-col space-y-2">
+                                        <label for="username" class="text-lg font-semibold text-[#4B2138]">Username</label>
+                                        <input type="username" name="username" id="change-details-username" class="p-2 rounded-md bg-[#E9E9E9] border-2 border-solid border-[#4B2138] text-[#4B2138] outline-none w-60 text-base" value="<%= currentUser.username %>" />
+                                    </div>
+                                    <div class="flex flex-col space-y-2">
+                                        <label for="gender" class="text-lg font-semibold text-[#4B2138]">Gender</label>
+                                        <select name="gender" id="change-details-gender" class="p-2 rounded-md bg-[#E9E9E9] border-2 border-solid border-[#4B2138] text-[#4B2138] outline-none w-60 text-base">
+                                            <option <% if (currentUser.gender === "male") { %> selected <% } %> value="male">Male</option>
+                                            <option <% if (currentUser.gender === "female") { %> selected <% } %>value="female">Female</option>
+                                        </select>
+                                    </div>
+                                    <div class="flex flex-col space-y-2 justify-center items-center">
+                                        <label for="profilePic" class="text-lg font-semibold text-[#4B2138]">Profile Picture</label>
+                                        <div class="avatar">
+                                            <div class="w-24 rounded-full">
+                                                <img id="change-details-profilePic" src="<%= currentUser.profilePic %>" />
+                                            </div>
+                                        </div>
+                                        <button class="btn w-24 text-[#E9E9E9] bg-[#4B2138] hover:bg-[#E9E9E9] hover:text-[#4B2138] hover:border-1 hover:border-[#4B2138]" id="change-profilePic-btn">Change</button>
+                                    </div>
+                                </div>
+                                <div class="modal-action">
+                                    <form method="dialog">
+                                        <!-- if there is a button in form, it will close the modal -->
+                                        <button class="btn btn-outline hover:bg-[#4B2138] hover:text-[#E9E9E9] text-[#4B2138]">Done</button>
+                                    </form>
+                                </div>
+                            </div>
+                        </dialog>
+                    </div>
                 </div>
 
                 <!-- peoples -->
                 <div id="people-parent" class="people-parent ml-6 mr-2 my-2 overflow-y-scroll no-scrollbar">
                     <% if (currentChatPeople) { %>
                     <% currentChatPeople.forEach((element)=> { %>
-                    <div class="people-child" data-element="<%= btoa(JSON.stringify(element)) %>" onclick="chatClicked(this)">
+                    <div class="people-child group" data-element="<%= btoa(JSON.stringify(element)) %>" onclick="chatClicked(this)">
                         <div class="chats_img indicator">
                             <span class="indicator-item badge badge-success h-2 p-[0.4rem] translate-x-[5%] translate-y-[10%] hidden status"></span>
                             <% if(element.profilePic){ %>
@@ -287,6 +328,7 @@
 <script src="/js/components/messages.js"></script>
 <script src="/js/components/emojiPicker.js"></script>
 <script type="module" src="https://cdn.jsdelivr.net/npm/emoji-picker-element@^1/index.js"></script>
+<script type="module" src="/js/components/changeDetails.js"></script>
 <script src="/socket.io/socket.io.js"></script>
 <script src="/js/socket/socket.js"></script>
 
