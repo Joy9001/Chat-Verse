@@ -1,14 +1,14 @@
 {
 	"name": "server",
 	"version": "1.0.0",
-	"exports": "./app.js",
+	"exports": "./server.js",
 	"type": "module",
 	"engines": {
 		"node": ">=16"
 	},
 	"scripts": {
-		"dev": "nodemon app.js",
-		"start": "node app.js"
+		"dev": "nodemon server.js",
+		"start": "node server.js"
 	},
 	"keywords": [],
 	"author": "",

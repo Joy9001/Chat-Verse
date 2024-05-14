@@ -7,12 +7,12 @@ const PORT = process.env.PORT || 3000;
 
 import { app, server } from "./helpers/socket.helper.js";
 
-app.set("views", path.join("../client/views"));
+app.set("views", path.join("../client/src/views"));
 app.set("view engine", "ejs");
 
-app.use(express.static(path.join("../client/public")));
-app.use(express.static(path.join("../client/src")));
-app.use(express.static(path.join("../server/uploads/")));
+app.use(express.static(path.join("../client/src/public")));
+app.use(express.static(path.join("../client/src/styles/")));
+app.use(express.static(path.join("../client/src/scripts/")));
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
