@@ -7,7 +7,7 @@ import {
 	deleteConversationController,
 	blockUserController,
 	unblockUserController,
-} from "../controllers/message.controller.js";
+} from "../controllers/chat.controller.js";
 
 router.post("/send-message", sendMessageController);
 

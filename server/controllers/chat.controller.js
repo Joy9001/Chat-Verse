@@ -18,9 +18,8 @@ const messageController = async (req, res) => {
 
 	try {
 		const peopleToAdd = await addPeople(currentUserId);
-		const currentUserAddedPeopleToChat = await getPeopleToChat(
-			currentUserId
-		);
+		const currentUserAddedPeopleToChat =
+			await getPeopleToChat(currentUserId);
 
 		let currentChatPeople = [];
 		if (currentUserAddedPeopleToChat) {
@@ -61,7 +60,7 @@ const messageController = async (req, res) => {
 
 		// console.log("Unread Msg Count: ", unreadMesseges);
 
-		return res.render("messages", {
+		return res.render("chat", {
 			peopleToAdd,
 			currentChatPeople,
 			unreadMesseges,

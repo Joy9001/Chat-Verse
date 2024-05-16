@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="cupcake">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0>">
+    <title>Login</title>
+    <link rel="stylesheet" href="/output.css">
+</head>
+
+<body>
+    <div class="login_body absolute h-full w-full flex justify-center items-center">
+        <div class="login_main absolute flex h-4/5 w-3/4 flex-row rounded-xl backdrop-blur-2xl shadow-2xl">
+            <div class="login_form flex justify-center items-center absolute w-1/2 rounded-l-xl left-0 h-full max-xl:w-full">
+                <div class="flex absolute h-[95%] w-[95%] flex-col space-y-6 p-8 items-center justify-center no-scrollbar overflow-scroll">
+                    <h1 class="absolute top-11 text-5xl font-bold text-[#E9E9E9] mb-7 max-md:hidden">Chat Verse</h1>
+                    <h1 class="text-4xl font-bold text-[#E9E9E9] mb-4">Login</h1>
+                    <div class="flex flex-col space-y-2">
+                        <label for="email" class="text-lg font-semibold text-[#E9E9E9]">Email</label>
+                        <input type="email" name="email" id="email" class="p-2 rounded-md bg-[#E9E9E9] border-2 border-solid border-[#4B2138] text-[#4B2138] outline-none w-60" />
+                    </div>
+                    <div class="flex flex-col space-y-2">
+                        <label for="password" class="text-lg font-semibold text-[#E9E9E9]">Password</label>
+                        <input type="password" name="password" id="password" class="p-2 rounded-md bg-[#E9E9E9] border-2 border-solid border-[#4B2138] text-[#4B2138] outline-none w-60" />
+                    </div>
+                    <button type="submit" class="btn border-[#E9E9E9] hover:bg-[#E9E9E9] hover:text-[#4B2138] bg-[#4B2138] text-[#E9E9E9] p-2 rounded-md w-40">Login</button>
+                    <p class="text-[#E9E9E9]">Don't have an account? <a href="/register" class="text-[#E9E9E9] underline">Register</a></p>
+                </div>
+            </div>
+            <div class="side_img absolute right-0 h-full w-1/2 rounded-r-xl max-xl:hidden">
+                <img class="w-full h-full rounded-r-xl" src="/assets/side-image.png" alt=" login" />
+            </div>
+        </div>
+    </div>
+</body>
+<script src="../bundle.js"></script>
+
+</html>

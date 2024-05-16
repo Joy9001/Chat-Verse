@@ -1,24 +1,40 @@
 {
-	"name": "client",
+	"name": "chat-app",
 	"version": "1.0.0",
-	"description": "",
-	"main": "../server/app.js",
+	"exports": "./server/server.js",
 	"type": "module",
 	"engines": {
 		"node": ">=16"
 	},
 	"scripts": {
+		"dev": "nodemon ./server/server.js",
+		"start": "node ./server/server.js",
 		"build:css": "npm-run-all --parallel build:css:*",
-		"build:css:chatVerse": "tailwindcss -i .src/styles/style.css -o ./src/styles/output.css --watch",
-		"build:webpack:dev": "webpack --config webpack.dev.js",
-		"build:webpack:prod": "webpack --config ./webpack.prod.js"
+		"build:css:chatVerse": "tailwindcss -i ./client/styles/style.css -o ./client/styles/output.css --watch"
 	},
 	"keywords": [],
 	"author": "",
 	"license": "ISC",
+	"description": "",
+	"dependencies": {
+		"@dicebear/collection": "^8.0.1",
+		"@dicebear/core": "^8.0.1",
+		"@socket.io/admin-ui": "^0.5.1",
+		"bcrypt": "^5.1.1",
+		"dotenv": "^16.4.5",
+		"ejs": "^3.1.9",
+		"emoji-picker-element": "^1.21.1",
+		"express": "^4.19.2",
+		"mongodb": "^6.5.0",
+		"mongoose": "^8.3.0",
+		"socket.io": "^4.7.5",
+		"socket.io-client": "^4.7.5",
+		"validator": "^13.11.0"
+	},
 	"devDependencies": {
 		"@babel/core": "^7.24.5",
 		"@babel/preset-env": "^7.24.5",
+		"@faker-js/faker": "^8.4.1",
 		"@minify-html/node": "^0.15.0",
 		"@swc/core": "^1.5.6",
 		"autoprefixer": "^10.4.17",
@@ -27,11 +43,12 @@
 		"css-loader": "^7.1.1",
 		"css-minimizer-webpack-plugin": "^7.0.0",
 		"daisyui": "^4.10.1",
-		"ejs-loader": "^0.5.0",
+		"file-loader": "^6.2.0",
 		"html-loader": "^5.0.0",
 		"html-minimizer-webpack-plugin": "^5.0.0",
 		"html-webpack-plugin": "^5.6.0",
 		"mini-css-extract-plugin": "^2.9.0",
+		"nodemon": "^3.1.0",
 		"npm-run-all": "^4.1.5",
 		"postcss": "^8.4.35",
 		"postcss-loader": "^8.1.1",
@@ -43,19 +60,12 @@
 		"sass-loader": "^14.2.1",
 		"style-loader": "^4.0.0",
 		"tailwindcss": "^3.4.1",
-		"template-ejs-loader": "^0.9.4",
 		"terser-webpack-plugin": "^5.3.10",
 		"underscore": "^1.13.6",
 		"webpack": "^5.91.0",
 		"webpack-cli": "^5.1.4",
+		"webpack-dev-middleware": "^7.2.1",
 		"webpack-hot-middleware": "^2.26.1",
 		"webpack-merge": "^5.10.0"
-	},
-	"dependencies": {
-		"@dicebear/collection": "^8.0.1",
-		"@dicebear/core": "^8.0.1",
-		"ejs": "^3.1.9",
-		"emoji-picker-element": "^1.21.1",
-		"socket.io-client": "^4.7.5"
 	}
 }

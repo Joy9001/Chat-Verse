@@ -1,6 +1,6 @@
 import { Router } from "express";
 const router = Router();
-import { messageController } from "../controllers/message.controller.js";
+import { messageController } from "../controllers/chat.controller.js";
 
 router.get("/login", (req, res) => {
 	res.render("login");
