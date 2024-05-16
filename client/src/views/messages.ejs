@@ -6,10 +6,10 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>ChatVerse</title>
-    <link rel="stylesheet" href="/output.css" />
+    <link rel="stylesheet" href="../bundle.css">
 </head>
 
-<%- include('../public/svgs/icons.svg') %>
+<%- include ('../public/svgs/icons.svg') %>
 
 <body data-current-user-id="<%= btoa(currentUser._id) %>" class="no-scrollbar">
 
@@ -32,7 +32,7 @@
                         <!-- add user btn -->
                         <div class="add-people-btn mr-2 flex cursor-pointer items-center justify-center rounded-lg max-md:hidden" id="add-people-btn">
                             <div>
-                                <img src="/assets/add-user-7-svgrepo-com.svg" alt="">
+                                <img src="../public/assets/add-user-7-svgrepo-com.svg" alt="">
                             </div>
                         </div>
 
@@ -45,7 +45,7 @@
                             <!-- all users -->
                             <div class="popup-people-all mt-2 flex h-[calc(100%-6rem)] grow flex-col no-scrollbar overflow-y-scroll">
                                 <% peopleToAdd.forEach((element) => { %>
-                                <div class="popup-people" data-id="<%= btoa(element._id) %>" data-element="<%= btoa(JSON.stringify(element)) %>" onclick="addPeopleToChat(this)">
+                                <div class=" popup-people" data-id="<%= btoa(element._id) %>" data-element="<%= btoa(JSON.stringify(element)) %>" onclick="addPeopleToChat(this)">
                                     <% if(element.profilePic) { %>
                                     <img src="<%=element.profilePic %>" alt="User" />
                                     <% } else { %>
@@ -56,10 +56,6 @@
                                     </h3>
                                 </div>
                                 <% }) %>
-                                <!-- <div class=" popup-people">
-                  <img src="/assets/logo.jpeg" alt="User" />
-                  <h3>Sekiro</h3>
-                </div> -->
                             </div>
                         </div>
                     </div>
@@ -86,8 +82,16 @@
                                     <div class="flex flex-col space-y-2">
                                         <label for="gender" class="text-lg font-semibold text-[#4B2138]">Gender</label>
                                         <select name="gender" id="change-details-gender" class="p-2 rounded-md bg-[#E9E9E9] border-2 border-solid border-[#4B2138] text-[#4B2138] outline-none w-60 text-base">
-                                            <option <% if (currentUser.gender === "male") { %> selected <% } %> value="male">Male</option>
-                                            <option <% if (currentUser.gender === "female") { %> selected <% } %>value="female">Female</option>
+                                            <% if (currentUser.gender === "male") { %>
+                                            <option selected>Male</option>
+                                            <% } else { %>
+                                            <option>Male</option>
+                                            <% } %>
+                                            <% if (currentUser.gender === "female") { %>
+                                            <option selected>Female</option>
+                                            <% } else { %>
+                                            <option>Female</option>
+                                            <% } %>
                                         </select>
                                     </div>
                                     <div class="flex flex-col space-y-2 justify-center items-center">
@@ -158,7 +162,7 @@
                         <div class="chats_img flex h-10 w-10 items-center justify-center rounded-full indicator">
                             <span class="indicator-item badge badge-success h-2 p-1 translate-x-[5%] translate-y-[10%] hidden status"></span>
                             <a href="#">
-                                <img id="chat-head-img" src="/assets/logo.jpeg" alt="User" />
+                                <img id="chat-head-img" src="../public/assets/logo.jpeg" alt="User" />
                             </a>
                         </div>
                         <div class="text-lg font-semibold text-[#1B0C1A]">
@@ -189,7 +193,7 @@
                         <div id="to-user-info-popup" class="absolute right-4 top-14 z-30 hidden h-fit w-64 flex-col rounded-lg popup border-2 border-black">
                             <!-- name & username -->
                             <div class="mt-1 flex h-18 cursor-pointer border-b-2 border-black pl-2">
-                                <img src="/assets/logo.jpeg" alt="User" class="ml-2 mt-2 h-14 w-14 rounded-full p-1" />
+                                <img src="../public/assets/logo.jpeg" alt="User" class="ml-2 mt-2 h-14 w-14 rounded-full p-1" />
                                 <div class="ml-3 mt-4 flex flex-col">
                                     <h3 class="mb-[-4px] text-base font-bold">Emma</h3>
                                     <h4 class="mt-0 text-sm font-medium">@emma123</h4>
@@ -229,7 +233,7 @@
                             <!-- to-user-profile-sec-img -->
                             <a href="#">
                                 <div class="to-user-profile-sec-img flex h-20 w-20 items-center justify-center">
-                                    <img src="/assets/logo.jpeg" alt="To User" />
+                                    <img src="../public/assets/logo.jpeg" alt="To User" />
                                 </div>
                             </a>
 
@@ -286,7 +290,7 @@
                     <!-- emoji -->
                     <div id="emoji-btn" class="cursor-pointer max-sm:hidden">
                         <div id="emoji-popup-btn" class="emoji-popup-btn flex h-8 w-8 items-center justify-center hover:scale-110 hover:duration-200">
-                            <img src="/assets/smile.png" alt="Emoji" />
+                            <img src="../public/assets/smile.png" alt="Emoji" />
                         </div>
 
                         <div id="emoji-popup" class="popup absolute bottom-16 left-0 hidden h-80 w-[24rem] rounded-lg border-1 ml-1 mb-1 border-[#FADCD5] p-3 shadow-lg z-50">
@@ -324,12 +328,6 @@
     </div>
 
 </body>
-
-<script src="/components/messages.js"></script>
-<script src="/components/emojiPicker.js"></script>
-<script type="module" src="https://cdn.jsdelivr.net/npm/emoji-picker-element@^1/index.js"></script>
-<script type="module" src="/components/changeDetails.js"></script>
-<script src="/socket.io/socket.io.js"></script>
-<script src="/socket/socket.js"></script>
+<script src="../bundle.js"></script>
 
 </html>

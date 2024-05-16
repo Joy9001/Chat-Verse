@@ -5,7 +5,7 @@
 @layer components {
 	@font-face {
 		font-family: Operator Mono;
-		src: url("../assets/OPERATORMONO-BOOKITALIC.OTF");
+		src: url("../public/assets/OPERATORMONO-BOOKITALIC.OTF");
 	}
 
 	body {
@@ -15,7 +15,7 @@
 	.people_body,
 	.login_body,
 	.register_body {
-		background-image: url("../assets/bg-img.png");
+		background-image: url("../public/assets/bg-img.png");
 		background-size: cover;
 		background-position: center;
 	}
@@ -53,8 +53,6 @@
 	}
 
 	.people-child.active {
-		/* background: #b2a4ff; */
-		/* @apply gradvioletrev; */
 		background: #fadcd5;
 		@apply shadow-md;
 	}
