@@ -28,6 +28,8 @@ import addPeopleToChatRouter from "./routes/addPeopleToChat.route.js";
 import getConversationRouter from "./routes/getConversation.route.js";
 import messageRouter from "./routes/chat.route.js";
 import searchPeopleRouter from "./routes/searchPeople.route.js";
+import avatarRouter from "./routes/avatar.route.js";
+import changeDetailsRouter from "./routes/changeDetails.route.js";
 
 // import { createAdminData } from "./helpers/fakeData.js";
 
@@ -41,10 +43,12 @@ app.get("/", (req, res) => {
 });
 
 app.use("/", indexRouter);
-app.use("/add-people-to-chat", addPeopleToChatRouter);
-app.use("/get-conversation", getConversationRouter);
-app.use("/message", messageRouter);
-app.use("/search-people", searchPeopleRouter);
+app.use("/add-people-api/", addPeopleToChatRouter);
+app.use("/get-conv-api/", getConversationRouter);
+app.use("/message/", messageRouter);
+app.use("/search/", searchPeopleRouter);
+app.use("/api/", avatarRouter);
+app.use("/api/", changeDetailsRouter);
 
 server.listen(PORT, async () => {
 	await connectMongo().then(() => {

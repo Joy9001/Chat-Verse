@@ -48,15 +48,15 @@ const handleChatHeadAndEnd = (parsedElement, isOnline) => {
 	chat_head.classList.remove("hidden");
 	chat_mid.classList.remove("hidden");
 	chat_head_name.innerText = parsedElement.name;
-	chat_head_img.src = parsedElement.profilePic
-		? parsedElement.profilePic
+	chat_head_img.src = parsedElement.avatar
+		? parsedElement.avatar
 		: `https://avatar.iran.liara.run/username?username=${parsedElement.name.replace(" ", "+")}`;
 	to_user_info_popup.children[0].children[1].children[0].innerText =
 		parsedElement.name;
 	to_user_info_popup.children[0].children[1].children[1].innerText =
 		parsedElement.username;
-	to_user_info_popup.children[0].children[0].src = parsedElement.profilePic
-		? parsedElement.profilePic
+	to_user_info_popup.children[0].children[0].src = parsedElement.avatar
+		? parsedElement.avatar
 		: `https://avatar.iran.liara.run/username?username=${parsedElement.name.replace(" ", "+")}`;
 
 	if (isOnline) {
@@ -144,7 +144,7 @@ const handleConversation = (receiverId) => {
 	let chat_end = document.getElementById("chats-end");
 
 	const currentUserId = atob(document.body.dataset.currentUserId);
-	fetch("/get-conversation", {
+	fetch("/get-conv-api/get-conversation", {
 		method: "POST",
 		headers: {
 			"Content-Type": "application/json",
@@ -195,8 +195,8 @@ const handleChats = (parsedElement) => {
 		".to-user-profile-sec-img"
 	);
 	let toUserProfileSecImg = toUserProfileSecImgDiv.children[0];
-	toUserProfileSecImg.src = parsedElement.profilePic
-		? parsedElement.profilePic
+	toUserProfileSecImg.src = parsedElement.avatar
+		? parsedElement.avatar
 		: `https://avatar.iran.liara.run/username?username=${parsedElement.name.replace(" ", "+")}`;
 
 	let toUserProfileSecNameDiv = document.querySelector(
@@ -213,7 +213,7 @@ const handleChats = (parsedElement) => {
 };
 
 const chatClicked = (htmlElement) => {
-	let all_people_children = document.getElementById("people-parent").children;
+	let all_chats_children = document.getElementById("chat-parent").children;
 	let chatSection = document.querySelector(".chat-section");
 
 	let unreadElement = htmlElement.children[2];
@@ -226,9 +226,9 @@ const chatClicked = (htmlElement) => {
 	const parsedElement = JSON.parse(atob(element));
 	// console.log(parsedElement.name);
 
-	for (let i = 0; i < all_people_children.length; i++) {
-		if (all_people_children[i].classList.contains("active")) {
-			all_people_children[i].classList.remove("active");
+	for (let i = 0; i < all_chats_children.length; i++) {
+		if (all_chats_children[i].classList.contains("active")) {
+			all_chats_children[i].classList.remove("active");
 		}
 	}
 
@@ -251,8 +251,8 @@ function addActive(ele) {
 }
 
 document.querySelector("#transparent-modal").addEventListener("click", () => {
-	let add_people_btn = document.getElementById("add-people-btn");
-	let add_people_popup = document.getElementById("add-people-popup");
+	let add_people_btn = document.getElementById("add-chat-btn");
+	let add_people_popup = document.getElementById("add-chat-popup");
 	let overlay = document.querySelector("#transparent-modal");
 	let to_user_info_popup = document.getElementById("to-user-info-popup");
 	let to_user_info_btn = document.getElementById("to-user-info-btn");
@@ -269,11 +269,11 @@ document.querySelector("#transparent-modal").addEventListener("click", () => {
 	}
 });
 
-document.getElementById("add-people-btn").addEventListener("click", (event) => {
+document.getElementById("add-chat-btn").addEventListener("click", (event) => {
 	event.stopPropagation();
 
-	let add_people_btn = document.getElementById("add-people-btn");
-	let add_people_popup = document.getElementById("add-people-popup");
+	let add_people_btn = document.getElementById("add-chat-btn");
+	let add_people_popup = document.getElementById("add-chat-popup");
 	let add_people_list = document.querySelector(".popup-people-all");
 	let popup_search = document.getElementById("popup-search");
 	let overlay = document.querySelector("#transparent-modal");
@@ -295,7 +295,7 @@ document.getElementById("add-people-btn").addEventListener("click", (event) => {
 
 const createLeftsidePeople = (data) => {
 	let parentDiv = document.createElement("div");
-	parentDiv.classList.add("people-child");
+	parentDiv.classList.add("chat-child");
 	parentDiv.dataset.element = btoa(JSON.stringify(data));
 	parentDiv.onclick = () => chatClicked(parentDiv);
 
@@ -306,8 +306,8 @@ const createLeftsidePeople = (data) => {
 	let statusDiv = `<span class="indicator-item badge badge-success h-2 p-[0.4rem] translate-x-[5%] translate-y-[10%] hidden status"></span>`;
 
 	let img = document.createElement("img");
-	img.src = data.profilePic
-		? data.profilePic
+	img.src = data.avatar
+		? data.avatar
 		: `https://avatar.iran.liara.run/username?username=${data.name.replace(" ", "+")}`;
 	img.alt = data.name;
 
@@ -316,10 +316,10 @@ const createLeftsidePeople = (data) => {
 	parentDiv.appendChild(imgDiv);
 
 	let nameDiv = document.createElement("div");
-	nameDiv.classList.add("people_name_parent");
+	nameDiv.classList.add("chat-name-parent");
 
 	let name = document.createElement("h4");
-	name.classList.add("people_name");
+	name.classList.add("chat-name");
 	name.innerText = data.name;
 
 	nameDiv.appendChild(name);
@@ -332,15 +332,15 @@ const createLeftsidePeople = (data) => {
 
 	parentDiv.innerHTML += badgeDiv;
 
-	let all_people = document.getElementById("people-parent");
-	all_people.appendChild(parentDiv);
+	let all_chats = document.getElementById("chat-parent");
+	all_chats.appendChild(parentDiv);
 
 	chatClicked(parentDiv);
 	handleHtmlOnlineUsers(atob(onlineUsers));
 };
 
 const addPeopleToChat = (event) => {
-	let leftPeople = document.querySelectorAll(".people-child");
+	let leftPeople = document.querySelectorAll(".chat-child");
 	let alreadyThere = false;
 	let clickedPerson = "";
 
@@ -354,7 +354,7 @@ const addPeopleToChat = (event) => {
 
 	if (!alreadyThere) {
 		const currentUserId = atob(document.body.dataset.currentUserId);
-		fetch("/add-people-to-chat", {
+		fetch("/add-people-api/add-people-to-chat", {
 			method: "POST",
 			headers: {
 				"Content-Type": "application/json",
@@ -472,7 +472,7 @@ document.getElementById("send-btn").addEventListener("click", (e) => {
 
 	if (msg.length > 0) {
 		let receiverData = JSON.parse(
-			atob(document.querySelector(".people-child.active").dataset.element)
+			atob(document.querySelector(".chat-child.active").dataset.element)
 		);
 		let receiverId = receiverData._id;
 		handleSendRequest(receiverId, msg);
@@ -493,8 +493,7 @@ document.getElementById("msg-input").addEventListener("keydown", (event) => {
 		if (msg.length > 0) {
 			let receiverData = JSON.parse(
 				atob(
-					document.querySelector(".people-child.active").dataset
-						.element
+					document.querySelector(".chat-child.active").dataset.element
 				)
 			);
 			let receiverId = receiverData._id;
@@ -527,7 +526,7 @@ const deleteMessege = (btn) => {
 	let msgId = parent.dataset.id;
 	console.log("msgId", msgId);
 	let receiverData = JSON.parse(
-		atob(document.querySelector(".people-child.active").dataset.element)
+		atob(document.querySelector(".chat-child.active").dataset.element)
 	);
 	let receiverId = receiverData._id;
 
@@ -568,7 +567,7 @@ const deleteConversation = () => {
 	let chat_head = document.getElementById("chats-head");
 	let blockDiv = document.querySelector("#chats-end-block");
 
-	let receiver = document.querySelector(".people-child.active");
+	let receiver = document.querySelector(".chat-child.active");
 	let receiverData = JSON.parse(atob(receiver.dataset.element));
 	let receiverId = receiverData._id;
 
@@ -647,7 +646,7 @@ const handleUnblockUser = (currentUserId, receiverId, htmlElement) => {
 };
 
 const blockUnblockUser = (htmlElement) => {
-	let receiver = document.querySelector(".people-child.active");
+	let receiver = document.querySelector(".chat-child.active");
 	let receiverData = JSON.parse(atob(receiver.dataset.element));
 	let receiverId = receiverData._id;
 	let currentUserId = atob(document.body.dataset.currentUserId);
@@ -671,7 +670,7 @@ const searchPeople = (event) => {
 		});
 		return;
 	} else {
-		fetch("/search-people", {
+		fetch("/search/search-people", {
 			method: "POST",
 			headers: {
 				"Content-Type": "application/json",

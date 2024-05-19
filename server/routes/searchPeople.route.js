@@ -2,6 +2,6 @@ import { Router } from "express";
 const router = Router();
 import searchPeopleController from "../controllers/searchPeople.controller.js";
 
-router.post("/", searchPeopleController);
+router.post("/search-people", searchPeopleController);
 
 export default router;

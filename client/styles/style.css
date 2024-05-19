@@ -12,7 +12,7 @@
 		font-family: Operator Mono;
 	}
 
-	.people_body,
+	.chat-body,
 	.login_body,
 	.register_body {
 		background-image: url("/assets/bg-img.png");
@@ -20,11 +20,11 @@
 		background-position: center;
 	}
 
-	.add-people-btn:hover:not(.active) {
+	.add-chat-btn :hover:not(.active) {
 		@apply scale-110 delay-200 ease-in-out;
 	}
 
-	.add-people-btn.active {
+	.add-chat-btn .active {
 		scale: 110%;
 	}
 
@@ -48,21 +48,21 @@
 		transform: translate(-5px, -5px) scaleX(-1);
 	}
 
-	.people-child {
+	.chat-child {
 		@apply my-2 flex h-20 cursor-pointer items-center rounded-2xl p-1;
 	}
 
-	.people-child.active {
+	.chat-child.active {
 		background: #fadcd5;
 		@apply shadow-md;
 	}
 
-	.people-child:hover:not(.active) {
+	.chat-child:hover:not(.active) {
 		background: #fadcd5;
 		@apply shadow-md;
 	}
 
-	.people_name_parent {
+	.chat-name-parent {
 		@apply ml-4 text-[#FADCD5] group-hover:text-[#1B0C1A] group-[.active]:text-[#1B0C1A];
 	}
 
@@ -76,7 +76,7 @@
 		@apply h-full w-full rounded-full;
 	}
 
-	.people_name {
+	.chat-name {
 		@apply text-lg font-semibold;
 	}
 

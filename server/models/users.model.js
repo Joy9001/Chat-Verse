@@ -35,7 +35,7 @@ const userSchema = new Schema(
 			required: [true, "Please enter a password"],
 			validate: passwordValidator,
 		},
-		profilePic: {
+		avatar: {
 			type: Schema.Types.String,
 			default: "",
 		},
@@ -48,10 +48,10 @@ const userSchema = new Schema(
 );
 
 userSchema.pre("save", function (next) {
-	if (this.profilePic === "") {
+	if (this.avatar === "") {
 		try {
-			this.profilePic = generateAvatar(this.name);
-			// console.log("Avatar generated successfully", this.profilePic);
+			this.avatar = generateAvatar(this.name);
+			console.log("Avatar generated successfully", this.avatar);
 		} catch (error) {
 			console.error("Error generating avatar", error);
 		}

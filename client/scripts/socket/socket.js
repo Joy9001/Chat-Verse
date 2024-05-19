@@ -41,7 +41,7 @@ const handleHtmlGet = (message) => {
 };
 
 const handleHtmlOnlineUsers = (users) => {
-	const leftPeople = document.querySelectorAll(".people-child");
+	const leftPeople = document.querySelectorAll(".chat-child");
 	leftPeople.forEach((person) => {
 		let data = JSON.parse(atob(person.dataset.element));
 		let status = person.children[0].children[0];
@@ -64,7 +64,7 @@ const handleHtmlOnlineUsers = (users) => {
 
 const createLeftsidePeopleR = (data) => {
 	let parentDiv = document.createElement("div");
-	parentDiv.classList.add("people-child");
+	parentDiv.classList.add("chat-child");
 	parentDiv.dataset.element = btoa(JSON.stringify(data));
 	parentDiv.onclick = () => chatClicked(parentDiv);
 
@@ -75,8 +75,8 @@ const createLeftsidePeopleR = (data) => {
 	let statusDiv = `<span class="indicator-item badge badge-success h-2 p-[0.4rem] translate-x-[5%] translate-y-[10%] status"></span>`;
 
 	let img = document.createElement("img");
-	img.src = data.profilePic
-		? data.profilePic
+	img.src = data.avatar
+		? data.avatar
 		: `https://avatar.iran.liara.run/username?username=${data.name.replace(" ", "+")}`;
 	img.alt = data.name;
 
@@ -85,10 +85,10 @@ const createLeftsidePeopleR = (data) => {
 	parentDiv.appendChild(imgDiv);
 
 	let nameDiv = document.createElement("div");
-	nameDiv.classList.add("people_name_parent");
+	nameDiv.classList.add("chat-name-parent");
 
 	let name = document.createElement("h4");
-	name.classList.add("people_name");
+	name.classList.add("chat-name");
 	name.innerText = data.name;
 
 	nameDiv.appendChild(name);
@@ -101,8 +101,8 @@ const createLeftsidePeopleR = (data) => {
 
 	parentDiv.innerHTML += badgeDiv;
 
-	let all_people = document.getElementById("people-parent");
-	all_people.appendChild(parentDiv);
+	let all_chats = document.getElementById("chat-parent");
+	all_chats.appendChild(parentDiv);
 	return parentDiv;
 };
 
@@ -121,7 +121,7 @@ socket.on("getOnlineUsers", (users) => {
 
 socket.on("newMessage", (message, senderId) => {
 	console.log("New message", message);
-	let leftPeople = document.querySelectorAll(".people-child");
+	let leftPeople = document.querySelectorAll(".chat-child");
 	let sender = "";
 	leftPeople.forEach((person) => {
 		let data = JSON.parse(atob(person.dataset.element));
@@ -208,7 +208,7 @@ socket.on("deleteMessage", (dltMsgId) => {
 });
 
 socket.on("deleteConversation", (senderId) => {
-	let receiver = document.querySelector(".people-child.active");
+	let receiver = document.querySelector(".chat-child.active");
 	let chat_head = document.getElementById("chats-head");
 	let chat_mid = document.getElementById("all-chats");
 	let chat_end = document.getElementById("chats-end");
@@ -225,7 +225,7 @@ socket.on("deleteConversation", (senderId) => {
 socket.on("blockUser", (senderId) => {
 	console.log("Blocked user", senderId);
 
-	if (document.querySelector(".people-child.active")) {
+	if (document.querySelector(".chat-child.active")) {
 		let chat_end = document.getElementById("chats-end");
 		chat_end.classList.add("hidden");
 
@@ -253,7 +253,7 @@ socket.on("blockUser", (senderId) => {
 
 socket.on("unblockUser", (senderId) => {
 	console.log("Unblocked user", senderId);
-	if (document.querySelector(".people-child.active")) {
+	if (document.querySelector(".chat-child.active")) {
 		let blockDiv = document.querySelector("#chats-end-block");
 		blockDiv.classList.add("hidden");
 
