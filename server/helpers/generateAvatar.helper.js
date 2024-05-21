@@ -1,10 +1,12 @@
-import { createAvatar } from "@dicebear/core";
-import * as avatars from "@dicebear/collection";
+import { createAvatar } from '@dicebear/core'
+import * as avatars from '@dicebear/collection'
+import { hashPassword } from './password.helper.js'
 
 export const generateAvatar = (name) => {
-	const avatar = createAvatar(avatars.adventurer, {
-		seed: name,
-	});
+    const avatar = createAvatar(avatars.adventurer, {
+        seed: name,
+    })
 
-	return avatar.toDataUriSync();
-};
+    const dataUri = avatar.toDataUriSync()
+    return dataUri
+}

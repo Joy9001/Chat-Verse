@@ -344,6 +344,10 @@ const addPeopleToChat = (event) => {
         if (data._id === atob(event.dataset.id)) {
             alreadyThere = true
             clickedPerson = person
+
+            if (person.classList.contains('hidden')) {
+                person.classList.remove('hidden')
+            }
         }
     })
 
@@ -572,8 +576,9 @@ const deleteConversation = () => {
         .then((data) => {
             console.log(data.message)
             if (data.message === 'Conversation deleted') {
-                receiver.classList.remove('active')
-                receiver.classList.add('hidden')
+                // receiver.classList.remove('active')
+                // receiver.classList.add('hidden')
+                receiver.remove()
                 chat_head.classList.add('hidden')
                 chat_mid.classList.add('hidden')
                 chat_end.classList.add('hidden')

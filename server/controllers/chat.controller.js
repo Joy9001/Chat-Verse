@@ -13,6 +13,8 @@ const messageController = async (req, res) => {
     const currentUserId = req.params.id
 
     const currentUser = await User.findById(currentUserId)
+    if (!currentUser) return res.status(404).json({ message: 'User not found' })
+
     let unreadMesseges = []
 
     try {
@@ -61,7 +63,7 @@ const messageController = async (req, res) => {
             currentUser,
         })
     } catch (error) {
-        console.log('Error getting people: ', error)
+        console.log('Error getting people inside messageController: ', error)
     }
 }
 

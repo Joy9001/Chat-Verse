@@ -8936,7 +8936,7 @@ html:has(.drawer-open.drawer-open) {
 @font-face {
   font-family: Operator Mono;
 
-  src: url("/assets/OPERATORMONO-BOOKITALIC.OTF");
+  src: url('/assets/OPERATORMONO-BOOKITALIC.OTF');
 }
 
 body {
@@ -8944,9 +8944,9 @@ body {
 }
 
 .chat-body,
-	.login_body,
-	.register-body {
-  background-image: url("/assets/bg-img.png");
+    .login_body,
+    .register-body {
+  background-image: url('/assets/bg-img.png');
   background-size: cover;
   background-position: center;
 }
@@ -9042,20 +9042,20 @@ body {
 }
 
 .chats_img,
-	.from-user-img {
+    .from-user-img {
   margin-left: 0.5rem;
   height: 3.5rem;
 }
 
 @media not all and (min-width: 1024px) {
   .chats_img,
-	.from-user-img {
+    .from-user-img {
     display: none;
   }
 }
 
 .chats_img img,
-	.from-user-img img {
+    .from-user-img img {
   height: 100%;
   width: 100%;
   border-radius: 9999px;
@@ -9065,6 +9065,8 @@ body {
   font-size: 1.125rem;
   line-height: 1.75rem;
   font-weight: 600;
+  --tw-text-opacity: 1;
+  color: rgb(27 12 26 / var(--tw-text-opacity));
 }
 
 .popup-people {
@@ -9124,18 +9126,13 @@ body {
 }
 
 .to-user-msg::after {
-  content: "";
+  content: '';
   position: absolute;
   bottom: 0px;
   left: -7.5px;
   width: 15px;
   height: 15px;
-  background: linear-gradient(
-			-45deg,
-			#4b2138 0%,
-			#4b2138 50%,
-			transparent 50%
-		);
+  background: linear-gradient(-45deg, #4b2138 0%, #4b2138 50%, transparent 50%);
 }
 
 .to-user-msg p {
@@ -9185,18 +9182,13 @@ body {
 }
 
 .from-user-msg::after {
-  content: "";
+  content: '';
   position: absolute;
   bottom: 0px;
   right: -7.5px;
   width: 15px;
   height: 15px;
-  background: linear-gradient(
-			45deg,
-			#e9e9e9 0%,
-			#e9e9e9 50%,
-			transparent 50%
-		);
+  background: linear-gradient(45deg, #e9e9e9 0%, #e9e9e9 50%, transparent 50%);
 }
 
 .from-user-msg p {
