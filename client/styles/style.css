@@ -14,7 +14,7 @@
 
 	.chat-body,
 	.login_body,
-	.register_body {
+	.register-body {
 		background-image: url("/assets/bg-img.png");
 		background-size: cover;
 		background-position: center;

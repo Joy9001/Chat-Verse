@@ -1,15 +1,15 @@
-import { Router } from "express";
-const router = Router();
-import { messageController } from "../controllers/chat.controller.js";
+import { Router } from 'express'
+const router = Router()
+import { messageController } from '../controllers/chat.controller.js'
 
-router.get("/login", (req, res) => {
-	res.render("login");
-});
+router.get('/login', (req, res) => {
+    res.render('login')
+})
 
-router.get("/register", (req, res) => {
-	res.render("register");
-});
+router.get('/register', (req, res) => {
+    res.render('register')
+})
 
-router.get("/messages/:id", messageController);
+router.get('/chats/:id', messageController)
 
-export default router;
+export default router

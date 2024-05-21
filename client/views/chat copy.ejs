@@ -29,11 +29,10 @@
                         <div class="ml-4 text-xl font-bold max-lg:text-lg max-md:text-base max-sm:text-sm">
                             <h1>ChatVerse</h1>
                         </div>
-                        
-                        <!-- add user -->
+    
                         <div id="add-user-btn-parent">
                             <!-- add user btn -->
-                            <div class="add-chat-btn mr-2 flex cursor-pointer items-center justify-center rounded-lg max-md:hidden" id="add-chat-btn">
+                            <div class="add-chat-btn mr-2 flex cursor-pointer items-center justify-center rounded-lg max-md:hidden" id="add-chat-btn ">
                                 <div>
                                     <img src="/assets/add-user-7-svgrepo-com.svg" alt="">
                                 </div>
@@ -48,6 +47,17 @@
     
                                 <!-- all users -->
                                 <div class="popup-people-all mt-2 flex h-[calc(100%-6rem)] grow flex-col no-scrollbar overflow-y-scroll">
+                                    <% peopleToAdd.forEach((element) => { %>
+                                    <div class=" popup-people" data-id="<%= btoa(element._id) %>" data-element="<%= btoa(JSON.stringify(element)) %>" onclick="addPeopleToChat(this)">
+                                        <% if (element.avatar) { %>
+                                        <img src="<%= element.avatar %>" alt="User" />
+                                        <% } else { %><img src="https://avatar.iran.liara.run/username?username=<%= element.name.replace(' ', '+') %>" alt="User" />
+                                        <% } %>
+                                        <h3>
+                                            <%= element.name %>
+                                        </h3>
+                                    </div>
+                                    <% }) %>
                                 </div>
                             </div>
                         </div>
@@ -161,6 +171,7 @@
                             <% } %>
                         </div>
                         <% }) %>
+    
                         <% } %>
                     </div>
     
@@ -231,7 +242,7 @@
                                     </div>
     
                                     <!-- Report -->
-                                    <a href="#" class="mx-2 flex h-10 w-60 items-center justify-center rounded-md hover:cursor-pointer hover:bg-[#6D3C52] hover:text-[#FADCD5]">
+                                    <a href="#" class="mx-2 flex h-10 w-60 items-center justify-center rounded-md hover:bg-[#FADCD5]">
                                         <div id="report-to-user">
                                             <h3>Report</h3>
                                         </div>

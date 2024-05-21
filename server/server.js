@@ -3,6 +3,7 @@ import { app, server } from "./helpers/socket.helper.js";
 import path from "path";
 import dotenv from "dotenv";
 dotenv.config();
+import open from "open";
 
 // database connection
 import connectMongo from "./db/connectMongo.db.js";
@@ -51,9 +52,10 @@ app.use("/api/", avatarRouter);
 app.use("/api/", changeDetailsRouter);
 
 server.listen(PORT, async () => {
-	await connectMongo().then(() => {
+	await connectMongo().then(async () => {
 		console.log("MongoDB connected");
 		console.log(`Server running on http://localhost:${PORT}`);
+		// await open(`http://localhost:${PORT}`);
 	});
 	// .then(async () => {
 	// 	try {

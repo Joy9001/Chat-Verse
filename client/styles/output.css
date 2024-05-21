@@ -8945,7 +8945,7 @@ body {
 
 .chat-body,
 	.login_body,
-	.register_body {
+	.register-body {
   background-image: url("/assets/bg-img.png");
   background-size: cover;
   background-position: center;
@@ -11225,6 +11225,10 @@ textarea::-webkit-scrollbar {
   padding: 1rem;
 }
 
+.p-6 {
+  padding: 1.5rem;
+}
+
 .p-8 {
   padding: 2rem;
 }
@@ -12109,16 +12113,8 @@ textarea::-webkit-scrollbar {
   stroke: #4B2138;
 }
 
-.group:hover .group-hover\:stroke-\[\#9376E0\] {
-  stroke: #9376E0;
-}
-
 .group:hover .group-hover\:stroke-\[\#E9E9E9\] {
   stroke: #E9E9E9;
-}
-
-.group:hover .group-hover\:stroke-\[\#FADCD5\] {
-  stroke: #FADCD5;
 }
 
 @media not all and (min-width: 1280px) {

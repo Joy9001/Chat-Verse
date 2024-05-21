@@ -1,24 +1,27 @@
-import { Router } from "express";
-const router = Router();
+import { Router } from 'express'
+const router = Router()
 import {
-	sendMessageController,
-	deleteMessageController,
-	unreadMessageController,
-	deleteConversationController,
-	blockUserController,
-	unblockUserController,
-} from "../controllers/chat.controller.js";
+    sendMessageController,
+    deleteMessageController,
+    unreadMessageController,
+    deleteConversationController,
+    blockUserController,
+    unblockUserController,
+    getPeopleToAddController,
+} from '../controllers/chat.controller.js'
 
-router.post("/send-message", sendMessageController);
+router.post('/get-people-to-add', getPeopleToAddController)
 
-router.post("/delete-message", deleteMessageController);
+router.post('/send-message', sendMessageController)
 
-router.post("/unread-message", unreadMessageController);
+router.post('/delete-message', deleteMessageController)
 
-router.post("/delete-conversation", deleteConversationController);
+router.post('/unread-message', unreadMessageController)
 
-router.post("/block-user", blockUserController);
+router.post('/delete-conversation', deleteConversationController)
 
-router.post("/unblock-user", unblockUserController);
+router.post('/block-user', blockUserController)
 
-export default router;
+router.post('/unblock-user', unblockUserController)
+
+export default router
