@@ -80,6 +80,10 @@
         @apply text-lg font-semibold text-[#1B0C1A];
     }
 
+    .chat-username {
+        @apply text-sm font-medium text-[#1B0C1A];
+    }
+
     .last-msg {
         @apply flex text-sm text-slate-600 max-sm:hidden;
     }
@@ -92,8 +96,12 @@
         @apply ml-2 h-9 rounded-full p-1;
     }
 
-    .popup-people h3 {
+    .popup-people-name {
         @apply pl-2 text-base font-semibold;
+    }
+
+    .popup-people-username {
+        @apply pl-2 text-sm font-medium;
     }
 
     .to-user-msg {

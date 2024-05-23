@@ -2,15 +2,49 @@ import express from 'express'
 import { app, server } from './helpers/socket.helper.js'
 import path from 'path'
 import dotenv from 'dotenv'
-dotenv.config()
+import morgan from 'morgan'
+import cookieParser from 'cookie-parser'
+import session from 'express-session'
+import MongoStore from 'connect-mongo'
+import passport from 'passport'
+import indexRouter from './routes/index.route.js'
 
 // database connection
 import connectMongo from './db/connectMongo.db.js'
 const PORT = process.env.PORT || 3000
 
+// load environment variables
+dotenv.config()
+
+// logger
+app.use(morgan('dev'))
+
 // view engine setup
 app.set('views', path.resolve('client/views'))
 app.set('view engine', 'ejs')
+
+// cookie parser
+app.use(cookieParser())
+
+// session
+app.use(
+    session({
+        secret: process.env.SESSION_SECRET,
+        resave: false,
+        saveUninitialized: false,
+        cookie: {
+            maxAge: 1000 * 60 * 60 * 24 * 7,
+        },
+        store: MongoStore.create({
+            mongoUrl: process.env.MONGO_DB_URI,
+            collectionName: 'sessions',
+        }),
+    })
+)
+
+// passport
+app.use(passport.initialize())
+app.use(passport.session())
 
 // static files
 app.use(express.static(path.resolve('client/public')))
@@ -23,31 +57,15 @@ app.use(express.urlencoded({ extended: true }))
 app.use(express.json())
 
 // routes
-import indexRouter from './routes/index.route.js'
-import addPeopleToChatRouter from './routes/addPeopleToChat.route.js'
-import getConversationRouter from './routes/getConversation.route.js'
-import messageRouter from './routes/chat.route.js'
-import searchPeopleRouter from './routes/searchPeople.route.js'
-import avatarRouter from './routes/avatar.route.js'
-import changeDetailsRouter from './routes/changeDetails.route.js'
-import { createAdminData } from './helpers/fakeData.js'
-
-// instrument(io, {
-// 	auth: false,
-// 	mode: "development",
-// });
 
 app.get('/', (req, res) => {
-    res.redirect('/login')
+    if (req.isAuthenticated()) {
+        return res.redirect('/chat')
+    }
+    return res.redirect('/auth/login')
 })
 
 app.use('/', indexRouter)
-app.use('/add-people-api/', addPeopleToChatRouter)
-app.use('/get-conv-api/', getConversationRouter)
-app.use('/message/', messageRouter)
-app.use('/search/', searchPeopleRouter)
-app.use('/api/', avatarRouter)
-app.use('/api/', changeDetailsRouter)
 
 server.listen(PORT, async () => {
     await connectMongo().then(async () => {

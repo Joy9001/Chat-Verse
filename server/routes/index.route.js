@@ -1,15 +1,19 @@
 import { Router } from 'express'
 const router = Router()
-import { messageController } from '../controllers/chat.controller.js'
+import addPeopleToChatRouter from './addPeopleToChat.route.js'
+import conversationRouter from './conversation.route.js'
+import chatRouter from './chat.route.js'
+import searchPeopleRouter from './searchPeople.route.js'
+import avatarRouter from './avatar.route.js'
+import changeDetailsRouter from './changeDetails.route.js'
+import authRouter from './auth.route.js'
 
-router.get('/login', (req, res) => {
-    res.render('login')
-})
-
-router.get('/register', (req, res) => {
-    res.render('register')
-})
-
-router.get('/chats/:id', messageController)
+router.use('/auth/', authRouter)
+router.use('/add-people-api/', addPeopleToChatRouter)
+router.use('/get-conv-api/', conversationRouter)
+router.use('/chat/', chatRouter)
+router.use('/search/', searchPeopleRouter)
+router.use('/api/', avatarRouter)
+router.use('/api/', changeDetailsRouter)
 
 export default router
