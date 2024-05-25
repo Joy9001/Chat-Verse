@@ -165,13 +165,14 @@ const unreadMessageController = async (req, res) => {
     try {
         const senderId = await User.findOne({ username: senderUsername }, { _id: 1 })
         // console.log('inside unreadMessageController:', senderId, receiverId, unreadMsgCount)
+        console.log('inside unreadMessageController:', senderId)
         let findConversation = await Conversation.findOne({
             participants: { $all: [senderId, receiverId] },
         })
 
         if (findConversation) {
             let findUnreadMsgCount = findConversation.unreadMsgCount.find(
-                (obj) => obj.senderId.toString() === senderId.toString()
+                (obj) => obj.senderId.toString() === senderId._id.toString()
             )
 
             // console.log("findUnreadMsgCount: ", findUnreadMsgCount);
