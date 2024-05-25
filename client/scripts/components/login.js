@@ -1,4 +1,4 @@
-document.querySelector('#login-btn').addEventListener('click', () => {
+document.querySelector('#login-btn').addEventListener('click', async () => {
     const email = document.querySelector('#login-email').value
     const password = document.querySelector('#login-password').value
 
@@ -13,28 +13,34 @@ document.querySelector('#login-btn').addEventListener('click', () => {
         return
     }
 
-    fetch('/auth/login', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ email, password }),
-    })
-        .then((res) => res.json())
-        .then((data) => {
-            console.log(data)
-            if (data.error) {
-                document.querySelector('#login-alert span').textContent = data.error
-                document.querySelector('#login-alert').classList.remove('hidden')
-                return
-            }
-            document.querySelector('#login-alert span').textContent = 'Logged in successfully'
-            document.querySelector('#login-alert').classList.remove('hidden')
-
-            window.location.href = '/chat'
-
-            setTimeout(() => {
-                document.querySelector('#login-alert').classList.add('hidden')
-            }, 10000)
+    try {
+        const response = await fetch('/auth/login', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ email, password }),
         })
+
+        const data = await response.json()
+
+        // alert(data.message)
+        if (data.error) {
+            throw new Error(data.error)
+        }
+
+        document.querySelector('#login-alert span').textContent = data.message
+        document.querySelector('#login-alert').classList.remove('hidden')
+
+        setTimeout(() => {
+            window.location.href = '/chat'
+        }, 5000)
+    } catch (error) {
+        document.querySelector('#login-alert span').textContent = error.message
+        document.querySelector('#login-alert').classList.remove('hidden')
+
+        setTimeout(() => {
+            document.querySelector('#login-alert').classList.add('hidden')
+        }, 3000)
+    }
 })

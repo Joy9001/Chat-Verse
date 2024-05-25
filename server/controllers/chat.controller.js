@@ -11,7 +11,7 @@ import { io, getReceiverSocketId } from '../helpers/socket.helper.js'
 
 const messageController = async (req, res) => {
     // const currentUserId = req.session.passport.user._id
-    const currentUserId = req.params.id
+    const currentUserId = req.user._id
 
     const currentUser = await User.findById(currentUserId)
     if (!currentUser) return res.status(404).json({ message: 'User not found' })
@@ -58,6 +58,24 @@ const messageController = async (req, res) => {
         await Promise.all(unreadMessagePromises)
 
         // console.log("Unread Msg Count: ", unreadMesseges);
+        // console.log('req user', req.user)
+        if (req.user.accessToken) {
+            console.log('Set the accessToken in cookie inside messageController', req.user.accessToken)
+            return res
+                .cookie('accessToken', req.user.accessToken, {
+                    httpOnly: true,
+                    secure: true,
+                    sameSite: 'none',
+                    maxAge: 60 * 60 * 1000, // 1 hour
+                })
+                .render('chat', {
+                    peopleToAdd,
+                    currentChatPeople,
+                    unreadMesseges,
+                    currentUser,
+                })
+        }
+        // console.log('res cookies', res.cookies)
 
         return res.render('chat', {
             peopleToAdd,

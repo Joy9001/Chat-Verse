@@ -30,8 +30,8 @@ app.use(cookieParser())
 app.use(
     session({
         secret: process.env.SESSION_SECRET,
-        resave: false,
-        saveUninitialized: false,
+        resave: true,
+        saveUninitialized: true,
         cookie: {
             maxAge: 1000 * 60 * 60 * 24 * 7,
         },
@@ -59,10 +59,19 @@ app.use(express.json())
 // routes
 
 app.get('/', (req, res) => {
-    if (req.isAuthenticated()) {
-        return res.redirect('/chat')
-    }
-    return res.redirect('/auth/login')
+    passport.authenticate('jwt', (err, user, info) => {
+        if (err) {
+            console.log('Error in /: ', err.message)
+            return res.redirect('/auth/login')
+        }
+
+        if (user) {
+            return res.redirect('/chat')
+        }
+
+        console.log('Info in /: ', info.message)
+        res.redirect('/auth/login')
+    })(req, res)
 })
 
 app.use('/', indexRouter)

@@ -10,17 +10,16 @@ import {
     unblockUserController,
     getPeopleToAddController,
 } from '../controllers/chat.controller.js'
-import isAuthenticated from '../helpers/auth.helper.js'
+import passport from 'passport'
+import '../strategies/passport-jwt.strategy.js'
 
-router.get('/', isAuthenticated, (req, res) => {
-    const currentUserId = req.session.passport.user._id
-    if (!currentUserId) {
-        res.status(401).json({ error: 'Unauthorized' })
-    }
+router.get('/', (req, res) => {
+    const currentUserId = req.user._id
+    console.log('Current User Id in /chat: ', currentUserId)
     return res.redirect(`/chat/${currentUserId}`)
 })
 
-router.get('/:id', isAuthenticated, messageController)
+router.get('/:id', messageController)
 
 router.post('/get-people-to-add', getPeopleToAddController)
 

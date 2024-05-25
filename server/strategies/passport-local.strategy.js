@@ -1,18 +1,14 @@
 import passport from 'passport'
-import { Strategy as LocalStrategy } from 'passport-local'
 import User from '../models/users.model.js'
-import { hashPassword, comparePassword } from '../helpers/password.helper.js'
-import { identicon } from '@dicebear/collection'
+import { comparePassword } from '../helpers/password.helper.js'
+import { Strategy as LocalStrategy } from 'passport-local'
 
 passport.serializeUser((user, done) => {
     console.log('Inside Serialize User')
-    const userSession = {
+    let userSession = {
         _id: user._id,
-        email: user.email,
-        name: user.name,
-        username: user.username,
-        gender: user.gender,
-        avatar: user.avatar,
+        accessToken: '',
+        refreshToken: '',
     }
     done(null, userSession)
 })
@@ -20,6 +16,7 @@ passport.serializeUser((user, done) => {
 passport.deserializeUser(async (userSession, done) => {
     console.log('Inside Deserialize User')
     try {
+        // console.log('User Session in Deserialize User: ', userSession)
         const findUser = await User.findById(userSession._id)
         if (!findUser) throw new Error('User not found')
         done(null, findUser)
@@ -37,11 +34,15 @@ export default passport.use(
         async (username, password, done) => {
             try {
                 const findUser = await User.findOne({ email: username })
-                console.log('Inside Local Strategy', findUser)
+                console.log('Inside Local Strategy', findUser._id)
                 if (!findUser) throw new Error('User not found')
                 const isPasswordMatch = await comparePassword(password, findUser.password)
                 if (!isPasswordMatch) throw new Error('Invalid credentials')
-                done(null, findUser)
+
+                const userSession = {
+                    _id: findUser._id,
+                }
+                done(null, userSession)
             } catch (err) {
                 console.log('Error in Local Strategy: ', err.message)
                 done(err, null)
