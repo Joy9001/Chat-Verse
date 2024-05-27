@@ -276,12 +276,20 @@ socket.on('deleteConversation', (senderUsername) => {
     let chat_mid = document.getElementById('all-chats')
     let chat_end = document.getElementById('chats-end')
     let blockDiv = document.querySelector('#chats-end-block')
+    let blockOption = document.querySelector('.block-info')
+    let blockBtn = document.querySelector('#block-to-user')
+    let deleteChatBtn = document.querySelector('#delete-chat-to-user')
 
     chat_head.classList.add('hidden')
     chat_mid.classList.add('hidden')
     chat_mid.querySelector('.message-container').innerHTML = ''
     chat_end.classList.add('hidden')
     blockDiv.classList.add('hidden')
+    if (blockOption) {
+        blockOption.remove()
+    }
+    blockBtn.classList.remove('hidden')
+    deleteChatBtn.classList.remove('hidden')
 })
 
 socket.on('blockUser', (senderId) => {
@@ -300,11 +308,10 @@ socket.on('blockUser', (senderId) => {
         let deleteChatBtn = document.querySelector('#delete-chat-to-user')
         deleteChatBtn.classList.add('hidden')
 
-        let blockInfoDiv = document.createElement('div')
-        blockInfoDiv.classList.add('block-info')
-        blockInfoDiv.innerHTML = `
-		<h3>You have been blocked</h3>
-		`
+        let blockInfoDiv = document.querySelector('.block-info')
+        if (blockInfoDiv.classList.contains('hidden')) {
+            blockInfoDiv.classList.remove('hidden')
+        }
 
         let toUserInfoPopupOptions = document.querySelector('.to-user-info-popup-options')
         toUserInfoPopupOptions.appendChild(blockInfoDiv)
@@ -324,7 +331,10 @@ socket.on('unblockUser', (senderId) => {
         deleteChatBtn.classList.remove('hidden')
 
         let blockInfoDiv = document.querySelector('.block-info')
-        blockInfoDiv.remove()
+        if (!blockInfoDiv.classList.contains('hidden')) {
+            console.log('removing')
+            blockInfoDiv.classList.add('hidden')
+        }
 
         let chat_end = document.getElementById('chats-end')
         chat_end.classList.remove('hidden')

@@ -55,7 +55,7 @@ router.get('/jwt/refresh-token', async (req, res) => {
         res.cookie('accessToken', encryptedAccessToken, {
             httpOnly: true,
             secure: true,
-            sameSite: 'strict',
+            sameSite: 'none',
             maxAge: 1000 * 60 * 30, // 30 minutes
         })
         res.status(200).json({ message: 'Access token refreshed' })

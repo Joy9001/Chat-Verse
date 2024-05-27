@@ -317,9 +317,10 @@ var handleConversation = function handleConversation(receiverId) {
       blockBtn.classList.add('hidden');
       var deleteChatBtn = document.querySelector('#delete-chat-to-user');
       deleteChatBtn.classList.add('hidden');
-      var blockInfoDiv = document.createElement('div');
-      blockInfoDiv.classList.add('block-info');
-      blockInfoDiv.innerHTML = "\n\t\t\t\t\t<h3>You have been blocked</h3>\n\t\t\t\t";
+      var blockInfoDiv = document.querySelector('.block-info');
+      if (blockInfoDiv.classList.contains('hidden')) {
+        blockInfoDiv.classList.remove('hidden');
+      }
       var toUserInfoPopupOptions = document.querySelector('.to-user-info-popup-options');
       toUserInfoPopupOptions.appendChild(blockInfoDiv);
     }
@@ -985,7 +986,7 @@ setInterval(function () {
   })["catch"](function (error) {
     return console.log(error.message);
   });
-}, 1000 * 60 * 10 // 10 minutes
+}, 1000 * 5 // 10 minutes
 );
 
 /***/ }),
@@ -1310,11 +1311,19 @@ socket.on('deleteConversation', function (senderUsername) {
   var chat_mid = document.getElementById('all-chats');
   var chat_end = document.getElementById('chats-end');
   var blockDiv = document.querySelector('#chats-end-block');
+  var blockOption = document.querySelector('.block-info');
+  var blockBtn = document.querySelector('#block-to-user');
+  var deleteChatBtn = document.querySelector('#delete-chat-to-user');
   chat_head.classList.add('hidden');
   chat_mid.classList.add('hidden');
   chat_mid.querySelector('.message-container').innerHTML = '';
   chat_end.classList.add('hidden');
   blockDiv.classList.add('hidden');
+  if (blockOption) {
+    blockOption.remove();
+  }
+  blockBtn.classList.remove('hidden');
+  deleteChatBtn.classList.remove('hidden');
 });
 socket.on('blockUser', function (senderId) {
   console.log('Blocked user', senderId);
@@ -1327,9 +1336,10 @@ socket.on('blockUser', function (senderId) {
     blockBtn.classList.add('hidden');
     var deleteChatBtn = document.querySelector('#delete-chat-to-user');
     deleteChatBtn.classList.add('hidden');
-    var blockInfoDiv = document.createElement('div');
-    blockInfoDiv.classList.add('block-info');
-    blockInfoDiv.innerHTML = "\n\t\t<h3>You have been blocked</h3>\n\t\t";
+    var blockInfoDiv = document.querySelector('.block-info');
+    if (blockInfoDiv.classList.contains('hidden')) {
+      blockInfoDiv.classList.remove('hidden');
+    }
     var toUserInfoPopupOptions = document.querySelector('.to-user-info-popup-options');
     toUserInfoPopupOptions.appendChild(blockInfoDiv);
   }
@@ -1344,7 +1354,10 @@ socket.on('unblockUser', function (senderId) {
     var deleteChatBtn = document.querySelector('#delete-chat-to-user');
     deleteChatBtn.classList.remove('hidden');
     var blockInfoDiv = document.querySelector('.block-info');
-    blockInfoDiv.remove();
+    if (!blockInfoDiv.classList.contains('hidden')) {
+      console.log('removing');
+      blockInfoDiv.classList.add('hidden');
+    }
     var chat_end = document.getElementById('chats-end');
     chat_end.classList.remove('hidden');
   }

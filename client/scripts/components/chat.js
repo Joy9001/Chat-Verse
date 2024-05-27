@@ -154,11 +154,10 @@ const handleConversation = (receiverId) => {
                 let deleteChatBtn = document.querySelector('#delete-chat-to-user')
                 deleteChatBtn.classList.add('hidden')
 
-                let blockInfoDiv = document.createElement('div')
-                blockInfoDiv.classList.add('block-info')
-                blockInfoDiv.innerHTML = `
-					<h3>You have been blocked</h3>
-				`
+                let blockInfoDiv = document.querySelector('.block-info')
+                if (blockInfoDiv.classList.contains('hidden')) {
+                    blockInfoDiv.classList.remove('hidden')
+                }
 
                 let toUserInfoPopupOptions = document.querySelector('.to-user-info-popup-options')
                 toUserInfoPopupOptions.appendChild(blockInfoDiv)
@@ -800,5 +799,5 @@ setInterval(
             })
             .catch((error) => console.log(error.message))
     },
-    1000 * 60 * 10 // 10 minutes
+    1000 * 5 // 10 minutes
 )
