@@ -27,20 +27,19 @@ app.set('view engine', 'ejs')
 app.use(cookieParser())
 
 // session
-app.use(
-    session({
-        secret: process.env.SESSION_SECRET,
-        resave: true,
-        saveUninitialized: true,
-        cookie: {
-            maxAge: 1000 * 60 * 60 * 24 * 7,
-        },
-        store: MongoStore.create({
-            mongoUrl: process.env.MONGO_DB_URI,
-            collectionName: 'sessions',
-        }),
-    })
-)
+const sessionMiddleware = session({
+    secret: process.env.SESSION_SECRET,
+    resave: true,
+    saveUninitialized: true,
+    cookie: {
+        maxAge: 1000 * 60 * 60 * 24,
+    },
+    store: MongoStore.create({
+        mongoUrl: process.env.MONGO_DB_URI,
+        collectionName: 'sessions',
+    }),
+})
+app.use(sessionMiddleware)
 
 // passport
 app.use(passport.initialize())
@@ -50,11 +49,8 @@ app.use(passport.session())
 app.use(express.static(path.resolve('client/public')))
 app.use(express.static(path.resolve('client/styles')))
 app.use(express.static(path.resolve('client/scripts')))
+app.use(express.static(path.resolve('client/dist')))
 // app.use(express.static("./dist"));
-
-// middlewares for parsing
-app.use(express.urlencoded({ extended: true }))
-app.use(express.json())
 
 // routes
 

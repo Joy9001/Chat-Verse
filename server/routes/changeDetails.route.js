@@ -22,7 +22,8 @@ router.post('/username-available', (req, res) => {
 })
 
 router.post('/change-details', async (req, res) => {
-    const { id, name, username, gender, avatar } = req.body
+    const id = req.user._id
+    const { name, username, gender, avatar } = req.body
 
     const findUser = await User.findById(id)
     if (!findUser) {

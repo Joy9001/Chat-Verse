@@ -15,7 +15,7 @@ import '../strategies/passport-jwt.strategy.js'
 
 router.get('/', (req, res) => {
     const currentUserId = req.user._id
-    console.log('Current User Id in /chat: ', currentUserId)
+    // console.log('Current User Id in /chat: ', currentUserId)
     return res.redirect(`/chat/${currentUserId}`)
 })
 

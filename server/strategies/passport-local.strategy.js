@@ -7,8 +7,6 @@ passport.serializeUser((user, done) => {
     console.log('Inside Serialize User')
     let userSession = {
         _id: user._id,
-        accessToken: '',
-        refreshToken: '',
     }
     done(null, userSession)
 })

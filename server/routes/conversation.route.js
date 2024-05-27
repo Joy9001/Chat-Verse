@@ -5,7 +5,8 @@ import getConversation from '../helpers/conversation.helper.js'
 import User from '../models/users.model.js'
 
 router.post('/get-conversation', async (req, res) => {
-    const { senderId, receiverId } = req.body
+    const senderId = req.user._id
+    const { receiverId } = req.body
     // console.log(senderId, receiverId);
 
     try {
@@ -35,6 +36,7 @@ router.post('/get-conversation', async (req, res) => {
                         messages: conversation,
                         isBlocked: findConversation.isBlocked,
                         blockedBy: findConversation.blockedBy,
+                        senderId: senderId,
                     })
                 } catch (error) {
                     console.log('Error getting conversation: ', error.message)

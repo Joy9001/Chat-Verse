@@ -69,11 +69,6 @@ document.querySelector('#register-btn').addEventListener('click', () => {
             document.querySelector('#register-alert span').textContent = 'Registered successfully'
             document.querySelector('#register-alert').classList.remove('hidden')
 
-            document.cookie = `id=${data._id}`
-            document.cookie = `name=${data.name}`
-            document.cookie = `username=${data.username}`
-            document.cookie = `gender=${data.gender}`
-            document.cookie = `avatar=${data.avatar}`
             window.location.href = '/auth/login'
 
             setTimeout(() => {

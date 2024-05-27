@@ -59,6 +59,8 @@ const messageController = async (req, res) => {
 
         // console.log("Unread Msg Count: ", unreadMesseges);
         // console.log('req user', req.user)
+
+        // Refresh the access token if expired
         if (req.user.accessToken) {
             console.log('Set the accessToken in cookie inside messageController', req.user.accessToken)
             return res
@@ -66,7 +68,7 @@ const messageController = async (req, res) => {
                     httpOnly: true,
                     secure: true,
                     sameSite: 'none',
-                    maxAge: 60 * 60 * 1000, // 1 hour
+                    maxAge: 1000 * 30, // 30 seconds
                 })
                 .render('chat', {
                     peopleToAdd,
@@ -89,7 +91,8 @@ const messageController = async (req, res) => {
 }
 
 const sendMessageController = async (req, res) => {
-    const { senderId, receiverId, message } = req.body
+    const senderId = req.user._id
+    const { receiverId, message } = req.body
 
     try {
         const msg = new Message({
@@ -116,7 +119,8 @@ const sendMessageController = async (req, res) => {
 }
 
 const deleteMessageController = async (req, res) => {
-    const { senderId, receiverId, msgId } = req.body
+    const senderId = req.user._id
+    const { receiverId, msgId } = req.body
     let senderUsername = await User.findOne({ _id: senderId }, { _id: 0, username: 1 })
     // console.log("Message Id: ", msgId);
     try {
@@ -206,7 +210,8 @@ const unreadMessageController = async (req, res) => {
 }
 
 const deleteConversationController = async (req, res) => {
-    const { senderId, receiverId } = req.body
+    const senderId = req.user._id
+    const { receiverId } = req.body
     try {
         const findConversation = await Conversation.findOne({
             participants: { $all: [senderId, receiverId] },
@@ -253,7 +258,8 @@ const deleteConversationController = async (req, res) => {
 }
 
 const blockUserController = async (req, res) => {
-    const { senderId, receiverId } = req.body
+    const senderId = req.user._id
+    const { receiverId } = req.body
     try {
         let conversation = await Conversation.findOne({
             participants: { $all: [senderId, receiverId] },
@@ -286,16 +292,19 @@ const blockUserController = async (req, res) => {
 }
 
 const unblockUserController = async (req, res) => {
-    const { senderId, receiverId } = req.body
-    // console.log("Unblock user: ", senderId, receiverId);
+    const senderId = req.user._id
+    const { receiverId } = req.body
+    // console.log('Unblock user: ', senderId, receiverId)
+
     try {
         let conversation = await Conversation.findOne({
             participants: { $all: [senderId, receiverId] },
         })
+        // console.log('Conversation: ', conversation)
 
         if (conversation) {
             // console.log("Id compare: ", conversation.blockedBy, senderId);
-            if (conversation.blockedBy.toString() === senderId) {
+            if (conversation.blockedBy.equals(senderId)) {
                 conversation.isBlocked = false
                 conversation.blockedBy = null
                 await conversation.save()
@@ -311,6 +320,8 @@ const unblockUserController = async (req, res) => {
                     message: 'Conversation is not blocked by you',
                 })
             }
+        } else {
+            return res.status(400).json({ message: 'Conversation not found' })
         }
         // } else {
         // 	let newConversation = new Conversation({

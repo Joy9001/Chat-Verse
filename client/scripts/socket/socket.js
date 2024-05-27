@@ -1,3 +1,6 @@
+import { io } from 'socket.io-client'
+import { utcToLocal } from '../components/chat.js'
+
 const handleHtmlGet = (message) => {
     let date = utcToLocal(message.createdAt)
     let msgDate = date.slice(6)
@@ -43,7 +46,6 @@ const handleHtmlGet = (message) => {
 const handleHtmlOnlineUsers = (users) => {
     const leftPeople = document.querySelectorAll('.chat-child')
     leftPeople.forEach(async (person) => {
-        // let data = JSON.parse(atob(person.dataset.element))
         const personUsername = person.querySelector('.chat-username').innerText
         let personData = await fetch('/get-conv-api/user-details', {
             method: 'POST',
@@ -130,7 +132,10 @@ const createLeftsidePeopleR = (data) => {
     return parentDiv
 }
 
+// console.log('cookie', document)
+
 const socket = io('http://localhost:3000', {
+    withCredentials: true,
     query: {
         userId: atob(document.body.dataset.currentUserId),
     },

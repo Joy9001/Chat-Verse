@@ -7,7 +7,8 @@ import User from '../models/users.model.js'
 router.post('/add-people-to-chat', async (req, res) => {
     try {
         // console.log(req.body);
-        const { senderId, receiverId } = req.body
+        const senderId = req.user._id
+        const { receiverId } = req.body
         const receiverObjectid = new Types.ObjectId(`${receiverId}`)
         const result = await addPeopleToChat(senderId, receiverId)
         const findReceiver = await User.findOne(

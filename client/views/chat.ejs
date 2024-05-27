@@ -218,11 +218,9 @@
                                 </div>
 
                                 <!-- Report -->
-                                <a href="#" class="mx-2 flex h-10 w-60 items-center justify-center rounded-md hover:cursor-pointer hover:bg-[#6D3C52] hover:text-[#FADCD5]">
-                                    <div id="report-to-user">
-                                        <h3>Report</h3>
-                                    </div>
-                                </a>
+                                <div id="report-to-user" class="mx-2 flex h-10 w-60 items-center justify-center rounded-md hover:bg-[#6D3C52] hover:cursor-pointer hover:text-[#FADCD5]">
+                                    <h3>Report</h3>
+                                </div>
 
                                 <!-- Delete Conversation -->
                                 <div id="delete-chat-to-user" class="mx-2 flex h-10 w-60 items-center justify-center rounded-md hover:bg-[#6D3C52] hover:cursor-pointer hover:text-[#FADCD5]" onclick="deleteConversation()">
@@ -304,10 +302,11 @@
     </div>
 </body>
 
-<script src="/components/chat.js"></script>
+<!-- <script src="/components/chat.js"></script>
 <script type="module" src="/components/emojiPicker.js"></script>
-<script src="/socket.io/socket.io.js"></script>
-<script src="/socket/socket.js"></script>
-<script type="module" src="https://cdn.jsdelivr.net/npm/emoji-picker-element@^1/index.js"></script>
+<script type="module" src="https://cdn.jsdelivr.net/npm/emoji-picker-element@^1/index.js"></script> -->
+<!-- <script src="/socket/socket.js"></script> -->
+<script type="module" src="/chat.bundle.js"></script>
+<!-- <script src="/socket.io/socket.io.js"></script> -->
 
 </html>

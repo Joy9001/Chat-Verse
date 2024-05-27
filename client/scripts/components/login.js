@@ -24,6 +24,7 @@ document.querySelector('#login-btn').addEventListener('click', async () => {
 
         const data = await response.json()
 
+        console.log('Data in login.js: ', data)
         // alert(data.message)
         if (data.error) {
             throw new Error(data.error)
@@ -33,8 +34,9 @@ document.querySelector('#login-btn').addEventListener('click', async () => {
         document.querySelector('#login-alert').classList.remove('hidden')
 
         setTimeout(() => {
+            document.querySelector('#login-alert').classList.add('hidden')
             window.location.href = '/chat'
-        }, 5000)
+        }, 3000)
     } catch (error) {
         document.querySelector('#login-alert span').textContent = error.message
         document.querySelector('#login-alert').classList.remove('hidden')

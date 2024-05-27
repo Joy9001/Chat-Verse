@@ -1,27 +1,62 @@
 import { Router } from 'express'
 const router = Router()
-import { hashPassword, comparePassword } from '../helpers/password.helper.js'
+import { hashPassword } from '../helpers/password.helper.js'
 import User from '../models/users.model.js'
 import passport from 'passport'
 import jwt from 'jsonwebtoken'
 import '../strategies/passport-jwt.strategy.js'
 import '../strategies/passport-local.strategy.js'
+import Auth from '../models/auth.model.js'
+import * as CryptoEnc from '../helpers/crypto.helper.js'
 
-router.get('/jwt/refreshtoken', (req, res) => {
-    const refreshToken = req.cookies.refreshToken
+router.get('/jwt/refresh-token', async (req, res) => {
+    const encryptedRefreshToken = req.cookies.refreshToken
 
-    if (!refreshToken) {
+    if (!encryptedRefreshToken) {
         return res.status(403).json({ error: 'Access Forbidden. No refresh token exists' })
     }
 
     try {
+        const refreshTokenFromDb = await Auth.findOne({ refreshToken: encryptedRefreshToken })
+        if (!refreshTokenFromDb) {
+            return res.status(404).json({ error: 'Refresh token not found' })
+        }
+
+        const refreshToken = CryptoEnc.decryptWithCryptoJS(encryptedRefreshToken)
         const decoded = jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET)
-        const accessToken = jwt.sign({ user: decoded.user }, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '1h' })
-        res.cookie('accessToken', accessToken, {
+
+        // console.log('refreshtokendb user: ', refreshTokenFromDb.user, 'Decoded user: ', decoded.user)
+        if (refreshTokenFromDb.user.toString() !== decoded.user) {
+            return res.status(403).json({ error: 'Access Forbidden. Invalid refresh token' })
+        }
+
+        // if the updated refresh token in older than 1 day, then send a new refresh token
+        // if (Date.now() - refreshTokenFromDb.updatedAt.getTime() > 1000 * 30) {
+        if (Date.now() - refreshTokenFromDb.updatedAt.getTime() > 1000 * 60 * 60 * 24) {
+            const newRefreshToken = jwt.sign({ user: decoded.user }, process.env.REFRESH_TOKEN_SECRET, {
+                expiresIn: '7d',
+            })
+            const newEncryptedRefreshToken = CryptoEnc.encryptWithCryptoJS(newRefreshToken)
+
+            refreshTokenFromDb.refreshToken = newEncryptedRefreshToken
+            await refreshTokenFromDb.save()
+
+            console.log('New refresh token: ', newRefreshToken)
+            res.cookie('refreshToken', newEncryptedRefreshToken, {
+                httpOnly: true,
+                secure: true,
+                sameSite: 'none',
+                maxAge: 1000 * 60 * 60 * 24 * 7, // 7 days
+            })
+        }
+
+        const accessToken = jwt.sign({ user: decoded.user }, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '30m' })
+        const encryptedAccessToken = CryptoEnc.encryptWithCryptoJS(accessToken)
+        res.cookie('accessToken', encryptedAccessToken, {
             httpOnly: true,
             secure: true,
-            sameSite: 'none',
-            maxAge: 60 * 60 * 1000, // 1 hour
+            sameSite: 'strict',
+            maxAge: 1000 * 60 * 30, // 30 minutes
         })
         res.status(200).json({ message: 'Access token refreshed' })
     } catch (error) {
@@ -45,31 +80,51 @@ router.get('/login', (req, res, next) => {
     })(req, res, next)
 })
 
-router.post('/login', passport.authenticate('local'), (req, res) => {
+router.post('/login', passport.authenticate('local'), async (req, res) => {
     const user = req.user
 
     if (!user) {
         return res.status(400).json({ error: 'Invalid credentials' })
     }
 
-    const accessToken = jwt.sign({ user: user._id }, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '30s' })
+    const accessToken = jwt.sign({ user: user._id }, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '30m' })
+    const encryptedAccessToken = CryptoEnc.encryptWithCryptoJS(accessToken)
+
     const refreshToken = jwt.sign({ user: user._id }, process.env.REFRESH_TOKEN_SECRET, { expiresIn: '7d' })
+    const encryptedRefreshToken = CryptoEnc.encryptWithCryptoJS(refreshToken)
 
-    res.cookie('accessToken', accessToken, {
+    // Save the refresh token in db
+    const findAuth = await Auth.findOne({ user: user._id })
+    if (!findAuth) {
+        const newAuth = new Auth({
+            user: user._id,
+            refreshToken: encryptedRefreshToken,
+        })
+
+        await newAuth.save()
+    } else {
+        findAuth.refreshToken = encryptedRefreshToken
+        await findAuth.save()
+    }
+
+    res.cookie('accessToken', encryptedAccessToken, {
         httpOnly: true,
         secure: true,
         sameSite: 'none',
-        maxAge: 60 * 60 * 1000, // 1 hour
+        maxAge: 1000 * 60 * 30, // 30 minutes
     })
 
-    res.cookie('refreshToken', refreshToken, {
+    res.cookie('refreshToken', encryptedRefreshToken, {
         httpOnly: true,
         secure: true,
         sameSite: 'none',
-        maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+        maxAge: 1000 * 60 * 60 * 24 * 7, // 7 days
     })
 
-    return res.status(200).json({ message: 'Login successful', accessToken, refreshToken })
+    return res.status(200).json({ message: 'Login successful' })
+    // res.setHeader('Authorization', `Bearer ${accessToken}`)
+    // console.log('Authorization in login: ', res.getHeaders())
+    // return res.redirect('/chat')
 })
 
 router.get('/register', (req, res, next) => {
@@ -122,15 +177,47 @@ router.post('/register', async (req, res) => {
     }
 })
 
-router.get('/logout', (req, res) => {
-    req.logOut((err) => {
-        if (err) {
-            return res.status(500).json({ error: 'Error logging out' })
+router.get('/logout', async (req, res) => {
+    try {
+        await new Promise((resolve, reject) => {
+            req.logOut((err) => {
+                if (err) {
+                    reject(new Error('Error logging out'))
+                } else {
+                    resolve()
+                }
+            })
+        })
+
+        await new Promise((resolve, reject) => {
+            req.session.destroy((err) => {
+                if (err) {
+                    reject(new Error('Error destroying session'))
+                } else {
+                    resolve()
+                }
+            })
+        })
+
+        // Remove the refresh token from db and clear the cookie
+        const encryptedRefreshToken = req.cookies.refreshToken
+        if (!encryptedRefreshToken) {
+            return res.status(403).json({ error: 'Access Forbidden. No refresh token exists' })
         }
-        res.clearCookie('accessToken')
-        res.clearCookie('refreshToken')
+
+        const authData = await Auth.findOneAndDelete({ refreshToken: encryptedRefreshToken })
+        if (!authData) {
+            return res.status(404).json({ error: 'Refresh token not found' })
+        }
+
+        res.clearCookie('refreshToken', { httpOnly: true, secure: true, sameSite: 'strict' })
+
+        // Remove the access token from the cookie
+        res.clearCookie('accessToken', { httpOnly: true, secure: true, sameSite: 'strict' })
         return res.redirect('/auth/login')
-    })
+    } catch (error) {
+        return res.status(500).json({ error: 'Internal Server Error' })
+    }
 })
 
 export default router
