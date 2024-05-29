@@ -13,13 +13,14 @@ import {
 import passport from 'passport'
 import '../strategies/passport-jwt.strategy.js'
 
-router.get('/', (req, res) => {
-    const currentUserId = req.user._id
-    // console.log('Current User Id in /chat: ', currentUserId)
-    return res.redirect(`/chat/${currentUserId}`)
-})
+// router.get('/', (req, res) => {
+//     console.log('Current User in /chat: ', req.user)
+//     const currentUserId = req.user._id
+//     // console.log('Current User Id in /chat: ', currentUserId)
+//     return res.redirect(`/chat/${currentUserId}`)
+// })
 
-router.get('/:id', messageController)
+router.get('/', messageController)
 
 router.post('/get-people-to-add', getPeopleToAddController)
 

@@ -9,13 +9,14 @@ import changeDetailsRouter from './changeDetails.route.js'
 import authRouter from './auth.route.js'
 import passport from 'passport'
 import '../strategies/passport-jwt.strategy.js'
+import { isAuthenticated } from '../middlewares/auth.middleware.js'
 
 router.use('/auth/', authRouter)
-router.use('/add-people-api/', passport.authenticate('jwt'), addPeopleToChatRouter)
-router.use('/get-conv-api/', passport.authenticate('jwt'), conversationRouter)
-router.use('/chat/', passport.authenticate('jwt'), chatRouter)
-router.use('/search/', passport.authenticate('jwt'), searchPeopleRouter)
+router.use('/add-people-api/', isAuthenticated, addPeopleToChatRouter)
+router.use('/get-conv-api/', isAuthenticated, conversationRouter)
+router.use('/chat/', isAuthenticated, chatRouter)
+router.use('/search/', isAuthenticated, searchPeopleRouter)
 router.use('/api/', avatarRouter)
-router.use('/api/', passport.authenticate('jwt'), changeDetailsRouter)
+router.use('/api/', isAuthenticated, changeDetailsRouter)
 
 export default router

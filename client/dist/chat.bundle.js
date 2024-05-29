@@ -986,7 +986,7 @@ setInterval(function () {
   })["catch"](function (error) {
     return console.log(error.message);
   });
-}, 1000 * 5 // 10 minutes
+}, 1000 * 60 * 5 // 5 minutes
 );
 
 /***/ }),
@@ -1070,8 +1070,7 @@ var handleHtmlGet = function handleHtmlGet(message) {
   console.log('message id', message._id);
   msg_div.innerHTML = "\n        <div class=\"msg-container\">\n            <p>".concat(message.message, "</p>\n            <span>").concat(msgTime, "</span>\n        </div>\n\t\t<div class=\"pl-2 delete-msg-btn hidden\" onclick=\"deleteMessege(this)\">\n\t\t\t<button class=\"btn btn-circle btn-outline border-[#e9e9e9] bg-[#4B2138] hover:bg-[#e9e9e9] hover:border-[#4b2138] h-6 w-6 min-h-4 group\">\n\t\t\t\t<svg xmlns=\"http://www.w3.org/2000/svg\" class=\"h-4 w-4 group-hover:stroke-[#4B2138]\" fill=\"none\" viewBox=\"0 0 24 24\" stroke=\"#e9e9e9\"><path stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M6 18L18 6M6 6l12 12\" /></svg>\n\t\t\t</button>\n\t\t</div>\n    ");
   msgContainerDiv.appendChild(msg_div);
-  var chatSection = document.querySelector('.chat-section');
-  chatSection.scrollTop = chatSection.scrollHeight;
+  msgContainerDiv.scrollTop = msgContainerDiv.scrollHeight;
 };
 var handleHtmlOnlineUsers = function handleHtmlOnlineUsers(users) {
   var leftPeople = document.querySelectorAll('.chat-child');
@@ -1164,10 +1163,7 @@ var createLeftsidePeopleR = function createLeftsidePeopleR(data) {
 // console.log('cookie', document)
 
 var socket = (0,socket_io_client__WEBPACK_IMPORTED_MODULE_0__.io)('http://localhost:3000', {
-  withCredentials: true,
-  query: {
-    userId: atob(document.body.dataset.currentUserId)
-  }
+  withCredentials: true
 });
 var onlineUsers = [];
 socket.on('getOnlineUsers', function (users) {

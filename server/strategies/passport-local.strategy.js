@@ -17,7 +17,11 @@ passport.deserializeUser(async (userSession, done) => {
         // console.log('User Session in Deserialize User: ', userSession)
         const findUser = await User.findById(userSession._id)
         if (!findUser) throw new Error('User not found')
-        done(null, findUser)
+
+        const user = {
+            _id: findUser._id,
+        }
+        done(null, user)
     } catch (err) {
         done(err, null)
     }
@@ -32,7 +36,7 @@ export default passport.use(
         async (username, password, done) => {
             try {
                 const findUser = await User.findOne({ email: username })
-                console.log('Inside Local Strategy', findUser._id)
+                // console.log('Inside Local Strategy', findUser._id)
                 if (!findUser) throw new Error('User not found')
                 const isPasswordMatch = await comparePassword(password, findUser.password)
                 if (!isPasswordMatch) throw new Error('Invalid credentials')

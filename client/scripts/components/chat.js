@@ -799,5 +799,5 @@ setInterval(
             })
             .catch((error) => console.log(error.message))
     },
-    1000 * 5 // 10 minutes
+    1000 * 60 * 5 // 5 minutes
 )

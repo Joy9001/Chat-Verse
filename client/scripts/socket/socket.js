@@ -38,9 +38,7 @@ const handleHtmlGet = (message) => {
 		</div>
     `
     msgContainerDiv.appendChild(msg_div)
-
-    let chatSection = document.querySelector('.chat-section')
-    chatSection.scrollTop = chatSection.scrollHeight
+    msgContainerDiv.scrollTop = msgContainerDiv.scrollHeight
 }
 
 const handleHtmlOnlineUsers = (users) => {
@@ -136,9 +134,6 @@ const createLeftsidePeopleR = (data) => {
 
 const socket = io('http://localhost:3000', {
     withCredentials: true,
-    query: {
-        userId: atob(document.body.dataset.currentUserId),
-    },
 })
 
 let onlineUsers = []

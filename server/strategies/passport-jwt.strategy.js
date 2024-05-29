@@ -6,30 +6,9 @@ dotenv.config()
 import jwt from 'jsonwebtoken'
 import * as CryptoEnc from '../helpers/crypto.helper.js'
 
-const refreshToken = async (req) => {
-    try {
-        const encryptedRefreshToken = req.cookies.refreshToken
-        if (!encryptedRefreshToken) {
-            return null
-        }
-        const refreshToken = CryptoEnc.decryptWithCryptoJS(encryptedRefreshToken)
-
-        const decoded = jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET)
-        const accessToken = jwt.sign({ user: decoded.user }, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '30m' })
-        const encryptedAccessToken = CryptoEnc.encryptWithCryptoJS(accessToken)
-
-        req.cookies.accessToken = encryptedAccessToken
-        return encryptedAccessToken
-    } catch (error) {
-        console.log('Error in refreshToken: ', error.message)
-    }
-
-    return null
-}
-
 const cookieExtractor = (req) => {
     if (req && req.cookies) {
-        console.log('Cookies in cookieExtractor: ', req.cookies)
+        // console.log('Cookies in cookieExtractor: ', req.cookies)
 
         const encryptedAccessToken = req.cookies.accessToken
 
@@ -58,8 +37,11 @@ export default passport.use(
             // console.log('User in passport-jwt.strategy: ', user._id)
             if (!user) return done(null, false)
 
-            req.user = user
-            return done(null, user._id)
+            const userSession = {
+                _id: user._id,
+            }
+            req.user = userSession
+            return done(null, userSession)
         } catch (error) {
             console.log('Error in passport-jwt.strategy: ', error.message)
             return done(error, false)

@@ -6,11 +6,11 @@ import Conversation from '../models/conversation.model.js'
 import AddedPeopleToChat from '../models/addedPeopleToChat.model.js'
 import { addPeopleToChat } from '../helpers/addPeopleToChat.helper.js'
 import User from '../models/users.model.js'
-import { io, getReceiverSocketId } from '../helpers/socket.helper.js'
-// const currentUserId from "../helpers/currentUserId.helper.js");
+import { io } from '../server.js'
+import { getReceiverSocketId } from '../helpers/socket.helper.js'
 
 const messageController = async (req, res) => {
-    // const currentUserId = req.session.passport.user._id
+    // console.log('Current User in /chat/:id: ', req.user)
     const currentUserId = req.user._id
 
     const currentUser = await User.findById(currentUserId)
