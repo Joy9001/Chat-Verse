@@ -5,6 +5,12 @@ import * as CryptoEnc from '../helpers/crypto.helper.js'
 
 export const isAuthenticated = (req, res, next) => {
     console.log('req url', req.url)
+    console.log('req user', req.user)
+
+    if (req.isAuthenticated()) {
+        return next()
+    }
+
     passport.authenticate('jwt', async (err, user, info) => {
         if (err) {
             console.error('Error in isAuthenticated: ', err.message)
@@ -25,7 +31,7 @@ export const isAuthenticated = (req, res, next) => {
 
                 if (!encryptedRefreshToken) {
                     console.log('No refresh token exists')
-                    if (req.url === '/login') {
+                    if (req.url === '/login' || req.url === '/register') {
                         return next()
                     }
                     return res.redirect('/auth/login')
@@ -34,7 +40,7 @@ export const isAuthenticated = (req, res, next) => {
                 const refreshtokendb = await Auth.findOne({ refreshToken: encryptedRefreshToken })
                 if (!refreshtokendb) {
                     console.log('Refresh token not found')
-                    if (req.url === '/auth/login') {
+                    if (req.url === '/login' || req.url === '/register') {
                         return next()
                     }
                     return res.redirect('/login')
@@ -88,6 +94,6 @@ export const isAuthenticated = (req, res, next) => {
         }
 
         console.log('Info in isAuthenticated: ', info.message)
-        return res.redirect('/auth/login')
+        next()
     })(req, res, next)
 }

@@ -6,6 +6,8 @@ import passport from 'passport'
 import jwt from 'jsonwebtoken'
 import '../strategies/passport-jwt.strategy.js'
 import '../strategies/passport-local.strategy.js'
+import '../strategies/passport-google.strategy.js'
+import '../strategies/passport-google-one-tap.strategy.js'
 import Auth from '../models/auth.model.js'
 import * as CryptoEnc from '../helpers/crypto.helper.js'
 import { isAuthenticated } from '../middlewares/auth.middleware.js'
@@ -119,20 +121,31 @@ router.post('/login', passport.authenticate('local'), async (req, res) => {
     // return res.redirect('/chat')
 })
 
-router.get('/register', (req, res, next) => {
-    passport.authenticate('jwt', (err, user, info) => {
-        if (err) {
-            console.log('Error in register: ', err.message)
-            return next(err)
-        }
+// google auth routes
+router.get('/login/google', passport.authenticate('google'))
 
-        if (user) {
-            return res.redirect('/chat')
-        }
+router.get(
+    '/google/callback',
+    passport.authenticate('google', {
+        successRedirect: '/chat',
+        failureRedirect: '/auth/login',
+    })
+)
 
-        console.log('Info in register: ', info.message)
-        res.render('register')
-    })(req, res, next)
+// google one tap route
+router.post(
+    '/one-tap-google/callback',
+    passport.authenticate('google-one-tap', {
+        successRedirect: '/chat',
+        failureRedirect: '/auth/login',
+    })
+)
+
+router.get('/register', isAuthenticated, (req, res) => {
+    if (req.user) {
+        return res.redirect('/chat')
+    }
+    res.render('register')
 })
 
 router.post('/register', async (req, res) => {
@@ -193,16 +206,14 @@ router.get('/logout', async (req, res) => {
 
         // Remove the refresh token from db and clear the cookie
         const encryptedRefreshToken = req.cookies.refreshToken
-        if (!encryptedRefreshToken) {
-            return res.status(403).json({ error: 'Access Forbidden. No refresh token exists' })
-        }
+        if (encryptedRefreshToken) {
+            const authData = await Auth.findOneAndDelete({ refreshToken: encryptedRefreshToken })
+            if (!authData) {
+                return res.status(404).json({ error: 'Refresh token not found' })
+            }
 
-        const authData = await Auth.findOneAndDelete({ refreshToken: encryptedRefreshToken })
-        if (!authData) {
-            return res.status(404).json({ error: 'Refresh token not found' })
+            res.clearCookie('refreshToken', { httpOnly: true, secure: true, sameSite: 'strict' })
         }
-
-        res.clearCookie('refreshToken', { httpOnly: true, secure: true, sameSite: 'strict' })
 
         // Remove the access token from the cookie
         res.clearCookie('accessToken', { httpOnly: true, secure: true, sameSite: 'strict' })

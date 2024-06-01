@@ -27,8 +27,16 @@
                     <button type="submit" id="login-btn" class="btn border-[#E9E9E9] hover:bg-[#E9E9E9] hover:text-[#4B2138] bg-[#4B2138] text-[#E9E9E9] p-2 rounded-md w-40">
                         Login
                     </button>
+                    <div class="divider divider-info text-[#E9E9E9]">OR</div>
+                    <!-- Google Button -->
+                    <div id="g_id_onload" class="hidden" data-client_id="368519354830-lf7bkpjqadbvmh2h9l4fqaqd89b4ldil.apps.googleusercontent.com" data-context="signin" data-ux_mode="redirect" data-login_uri="http://localhost:3000/auth/one-tap-google/callback">
+                    </div>
+                    <button id="google-signin-btn" type="submit" class="btn border-[#E9E9E9] hover:bg-[#E9E9E9] hover:text-[#4B2138] bg-[#4B2138] text-[#E9E9E9] rounded-md w-fit flex justify-center items-center">
+                        <a href="/auth/login/google"><span class="mx-9 flex justify-center items-center"><img class="mr-2" src="/svgs/google-icon.svg" alt="google-icon">Sign in with Google</span></a>
+                    </button>
+                    <!-- Go to register -->
                     <p class="text-[#E9E9E9]">
-                        Don't have an account?
+                        <span>Don't have an account?</span>
                         <a href="/auth/register" class="text-[#E9E9E9] underline">Register</a>
                     </p>
                 </div>
@@ -47,5 +55,6 @@
 </body>
 <!-- <script type="module" src="/components/login.js"></script> -->
 <script src="/login.bundle.js"></script>
+<script src="https://accounts.google.com/gsi/client" async></script>
 
 </html>

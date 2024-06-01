@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="ie=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0>" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Register</title>
     <link rel="stylesheet" href="/output.css" />
 </head>
@@ -76,9 +76,17 @@
                         </div>
                     </dialog>
 
-                    <button id="register-btn" type="submit" class="btn border-[#E9E9E9] hover:bg-[#E9E9E9] hover:text-[#4B2138] bg-[#4B2138] text-[#E9E9E9] p-2 rounded-md w-40">
-                        Register
+                    <button id="register-btn" type="submit" class="btn border-[#E9E9E9] hover:bg-[#E9E9E9] hover:text-[#4B2138] bg-[#4B2138] text-[#E9E9E9] rounded-md w-fit">
+                        <span class="mx-9">Register</span>
                     </button>
+                    <div class="divider divider-info text-[#E9E9E9]">OR</div>
+                    <!-- Google Button -->
+                    <div id="g_id_onload" class="hidden" data-client_id="368519354830-lf7bkpjqadbvmh2h9l4fqaqd89b4ldil.apps.googleusercontent.com" data-context="signin" data-ux_mode="redirect" data-login_uri="http://localhost:3000/auth/one-tap-google/callback">
+                    </div>
+                    <button id="google-signup-btn" type="submit" class="btn border-[#E9E9E9] hover:bg-[#E9E9E9] hover:text-[#4B2138] bg-[#4B2138] text-[#E9E9E9] rounded-md w-fit flex justify-center items-center">
+                        <a href="/auth/login/google"><span class="mx-9 flex justify-center items-center"><img class="mr-2" src="/svgs/google-icon.svg" alt="google-icon">Sign up with Google</span></a>
+                    </button>
+                    <!-- Go to login -->
                     <p class="text-[#E9E9E9]">
                         <span>Already have an account?</span>
                         <a href="/auth/login" class="text-[#E9E9E9] underline">Login</a>
@@ -96,5 +104,6 @@
 </body>
 <!-- <script src="/components/register.js"></script> -->
 <script src="/register.bundle.js"></script>
+<script src="https://accounts.google.com/gsi/client" async defer></script>
 
 </html>

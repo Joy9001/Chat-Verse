@@ -4,7 +4,7 @@ import { comparePassword } from '../helpers/password.helper.js'
 import { Strategy as LocalStrategy } from 'passport-local'
 
 passport.serializeUser((user, done) => {
-    console.log('Inside Serialize User')
+    console.log('Inside Serialize User', user)
     let userSession = {
         _id: user._id,
     }
@@ -14,12 +14,12 @@ passport.serializeUser((user, done) => {
 passport.deserializeUser(async (userSession, done) => {
     console.log('Inside Deserialize User')
     try {
-        // console.log('User Session in Deserialize User: ', userSession)
+        console.log('User Session in Deserialize User: ', userSession)
         const findUser = await User.findById(userSession._id)
         if (!findUser) throw new Error('User not found')
 
         const user = {
-            _id: findUser._id,
+            _id: findUser?._id,
         }
         done(null, user)
     } catch (err) {
