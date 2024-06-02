@@ -21,7 +21,7 @@ export default passport.use(
 
             try {
                 const findUser = await User.findOne({ providerId: googleId })
-                console.log('findUser in google: ', findUser)
+                // console.log('findUser in google: ', findUser)
                 if (!findUser) {
                     console.log('found no user in google')
                     const newUser = new User({

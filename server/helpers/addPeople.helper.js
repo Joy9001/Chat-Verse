@@ -1,18 +1,17 @@
-import User from "../models/users.model.js";
+import User from '../models/users.model.js'
 
 const addPeople = async (currentUserId) => {
-	try {
-		let people = (await User.find()).filter(
-			(person) => person._id.toString() !== currentUserId
-		);
-		// console.log("People: ", people);
-		people = await User.find({ _id: { $in: people } });
+    try {
+        console.log('current user id in addPeople: ', currentUserId)
+        let people = (await User.find()).filter((person) => person._id.toString() !== currentUserId.toString())
+        // console.log("People: ", people);
+        people = await User.find({ _id: { $in: people } })
 
-		return people;
-	} catch (error) {
-		console.log("Error getting people for adding: ", error.message);
-		return [];
-	}
-};
+        return people
+    } catch (error) {
+        console.log('Error getting people for adding: ', error.message)
+        return []
+    }
+}
 
-export default addPeople;
+export default addPeople
