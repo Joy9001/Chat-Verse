@@ -84,10 +84,6 @@
         @apply text-sm font-medium text-[#1B0C1A];
     }
 
-    .last-msg {
-        @apply flex text-sm text-slate-600 max-sm:hidden;
-    }
-
     .popup-people {
         @apply m-1 flex h-12 cursor-pointer items-center justify-start rounded-lg text-[#1B0C1A] hover:bg-[#6D3C52] hover:text-[#fadfd9];
     }
@@ -119,10 +115,10 @@
     }
 
     .to-user-msg p {
-        @apply text-wrap text-left text-base font-semibold text-[#e9e9e9];
+        @apply text-wrap text-left text-base font-semibold text-[#e9e9e9] whitespace-pre-wrap;
     }
     .to-user-msg span {
-        @apply flex self-end font-semibold text-[#e9e9e9];
+        @apply flex self-end font-semibold text-[#e9e9e9] whitespace-pre-wrap;
         font-size: 0.8rem;
     }
 
@@ -145,11 +141,11 @@
     }
 
     .from-user-msg p {
-        @apply text-wrap text-right text-base font-semibold text-[#4B2138];
+        @apply text-wrap text-right text-base font-semibold text-[#4B2138] whitespace-pre-wrap;
     }
 
     .from-user-msg span {
-        @apply flex self-start font-semibold text-[#4B2138];
+        @apply flex self-start font-semibold text-[#4B2138] whitespace-pre-wrap;
         font-size: 0.8rem;
     }
 

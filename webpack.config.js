@@ -1,6 +1,8 @@
 import dotenv from 'dotenv'
 dotenv.config()
 import path from 'path'
+import TerserPlugin from 'terser-webpack-plugin'
+import webpack from 'webpack'
 
 export default {
     mode: 'development',
@@ -15,7 +17,7 @@ export default {
         clean: true,
         publicPath: '/',
     },
-    devtool: 'source-map',
+    devtool: process.env.NODE_ENV === 'development' ? 'source-map' : false,
     module: {
         rules: [
             {
@@ -30,5 +32,19 @@ export default {
             },
         ],
     },
-    plugins: [],
+    optimization: {
+        minimize: true,
+        minimizer: [
+            new TerserPlugin({
+                exclude: /\/node_modules/,
+                extractComments: false,
+                terserOptions: {
+                    format: {
+                        comments: false,
+                    },
+                },
+            }),
+        ],
+    },
+    plugins: [new webpack.EnvironmentPlugin(['SITE_URL', 'PORT'])],
 }

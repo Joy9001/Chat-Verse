@@ -11,6 +11,7 @@ import '../strategies/passport-google-one-tap.strategy.js'
 import Auth from '../models/auth.model.js'
 import * as CryptoEnc from '../helpers/crypto.helper.js'
 import { isAuthenticated } from '../middlewares/auth.middleware.js'
+import { limiter } from '../helpers/rateLimit.helper.js'
 
 router.get('/jwt/refresh-token', async (req, res) => {
     const encryptedRefreshToken = req.cookies.refreshToken
@@ -48,7 +49,7 @@ router.get('/jwt/refresh-token', async (req, res) => {
             res.cookie('refreshToken', newEncryptedRefreshToken, {
                 httpOnly: true,
                 secure: true,
-                sameSite: 'lax',
+                sameSite: 'strict',
                 maxAge: 1000 * 60 * 60 * 24 * 7, // 7 days
             })
         }
@@ -58,7 +59,7 @@ router.get('/jwt/refresh-token', async (req, res) => {
         res.cookie('accessToken', encryptedAccessToken, {
             httpOnly: true,
             secure: true,
-            sameSite: 'lax',
+            sameSite: 'strict',
             maxAge: 1000 * 60 * 30, // 30 minutes
         })
         res.status(200).json({ message: 'Access token refreshed' })
@@ -67,7 +68,7 @@ router.get('/jwt/refresh-token', async (req, res) => {
     }
 })
 
-router.get('/login', isAuthenticated, (req, res) => {
+router.get('/login', limiter, isAuthenticated, (req, res) => {
     if (req.user) {
         return res.redirect('/chat')
     }
@@ -104,14 +105,14 @@ router.post('/login', passport.authenticate('local'), async (req, res) => {
     res.cookie('accessToken', encryptedAccessToken, {
         httpOnly: true,
         secure: true,
-        sameSite: 'lax',
+        sameSite: 'strict',
         maxAge: 1000 * 60 * 30, // 30 minutes
     })
 
     res.cookie('refreshToken', encryptedRefreshToken, {
         httpOnly: true,
         secure: true,
-        sameSite: 'lax',
+        sameSite: 'strict',
         maxAge: 1000 * 60 * 60 * 24 * 7, // 7 days
     })
 
@@ -141,7 +142,7 @@ router.post(
     })
 )
 
-router.get('/register', isAuthenticated, (req, res) => {
+router.get('/register', limiter, isAuthenticated, (req, res) => {
     if (req.user) {
         return res.redirect('/chat')
     }

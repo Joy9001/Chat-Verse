@@ -8,6 +8,7 @@ router.post('/get-conversation', async (req, res) => {
     const senderId = req.user._id
     const { receiverId } = req.body
     // console.log(senderId, receiverId);
+    // console.log('type of receiverId: ', typeof receiverId)
 
     try {
         const findConversation = await Conversation.findOne({
@@ -24,7 +25,7 @@ router.post('/get-conversation', async (req, res) => {
             } else {
                 try {
                     findConversation.unreadMsgCount.forEach((obj) => {
-                        if (obj.senderId.toString() === receiverId.toString()) {
+                        if (obj.senderId.toString() === receiverId) {
                             // console.log("obj unreadCount", obj.unreadCount);
                             obj.unreadCount = 0
                         }

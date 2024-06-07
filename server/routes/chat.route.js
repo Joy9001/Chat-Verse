@@ -12,15 +12,9 @@ import {
 } from '../controllers/chat.controller.js'
 import passport from 'passport'
 import '../strategies/passport-jwt.strategy.js'
+import { limiter } from '../helpers/rateLimit.helper.js'
 
-// router.get('/', (req, res) => {
-//     console.log('Current User in /chat: ', req.user)
-//     const currentUserId = req.user._id
-//     // console.log('Current User Id in /chat: ', currentUserId)
-//     return res.redirect(`/chat/${currentUserId}`)
-// })
-
-router.get('/', messageController)
+router.get('/', limiter, messageController)
 
 router.post('/get-people-to-add', getPeopleToAddController)
 

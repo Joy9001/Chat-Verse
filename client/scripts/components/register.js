@@ -75,4 +75,9 @@ document.querySelector('#register-btn').addEventListener('click', () => {
                 document.querySelector('#register-alert').classList.add('hidden')
             }, 10000)
         })
+        .catch((err) => {
+            console.log(err.message)
+            document.querySelector('#register-alert span').textContent = 'Internal server error'
+            document.querySelector('#register-alert').classList.remove('hidden')
+        })
 })

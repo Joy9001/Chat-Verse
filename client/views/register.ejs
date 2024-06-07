@@ -23,19 +23,21 @@
                         Chat Verse
                     </h1>
                     <h1 class="flex items-center justify-center text-4xl font-bold text-[#E9E9E9]">Register</h1>
-                    <div class="flex flex-col space-y-2">
-                        <label for="email" class="text-lg font-semibold text-[#E9E9E9]">Email</label>
-                        <input type="email" name="email" id="register-email" class="p-2 rounded-md bg-[#E9E9E9] border-2 border-solid border-[#4B2138] text-[#4B2138] outline-none w-60" />
-                    </div>
-                    <div class="flex flex-col space-y-2">
-                        <label for="password" class="text-lg font-semibold text-[#E9E9E9]">Password</label>
-                        <input type="password" name="password" id="register-password" class="p-2 rounded-md bg-[#E9E9E9] border-2 border-solid border-[#4B2138] text-[#4B2138] outline-none w-60" />
-                    </div>
+                    <form>
+                        <div class="flex flex-col space-y-2">
+                            <label for="email" class="text-lg font-semibold text-[#E9E9E9]">Email</label>
+                            <input type="email" name="email" title="email" placeholder="Enter your email" autocomplete="email" id="register-email" class="p-2 rounded-md bg-[#E9E9E9] border-2 border-solid border-[#4B2138] text-[#4B2138] outline-none w-60" />
+                        </div>
+                        <div class="flex flex-col space-y-2">
+                            <label for="password" class="text-lg font-semibold text-[#E9E9E9]">Password</label>
+                            <input type="password" name="password" title="password" placeholder="Enter your password" autocomplete="current-password" id="register-password" class="p-2 rounded-md bg-[#E9E9E9] border-2 border-solid border-[#4B2138] text-[#4B2138] outline-none w-60" />
+                        </div>
+                    </form>
                     <!-- Open the modal using ID.showModal() method -->
-                    <button class="btn border-[#E9E9E9] hover:bg-[#E9E9E9] hover:text-[#4B2138] bg-[#4B2138] text-[#E9E9E9]" onclick="my_modal_1.showModal()">
+                    <button class="btn border-[#E9E9E9] hover:bg-[#E9E9E9] hover:text-[#4B2138] bg-[#4B2138] text-[#E9E9E9]" onclick="my_modal_2.showModal()">
                         Enter Details
                     </button>
-                    <dialog id="my_modal_1" class="modal no-scrollbar">
+                    <dialog id="my_modal_2" class="modal no-scrollbar">
                         <div class="modal-box bg-[#E9E9E9] no-scrollbar">
                             <div class="change-details space-y-4 flex flex-col justify-center items-center">
                                 <div class="flex flex-col space-y-2">
@@ -54,7 +56,8 @@
                                     </select>
                                 </div>
                                 <div class="flex flex-col space-y-2 justify-center items-center">
-                                    <label for="profilePic" class="text-lg font-semibold text-[#4B2138]">Profile Picture</label>
+                                    <label for="profilePic" class="text-lg font-semibold text-[#4B2138]">Profile
+                                        Picture</label>
                                     <div class="avatar">
                                         <div class="w-24 rounded-full">
                                             <img id="change-details-profilePic" src="https://api.dicebear.com/8.x/adventurer/svg" />
@@ -84,7 +87,12 @@
                     <div id="g_id_onload" class="hidden" data-client_id="368519354830-lf7bkpjqadbvmh2h9l4fqaqd89b4ldil.apps.googleusercontent.com" data-context="signin" data-ux_mode="redirect" data-login_uri="http://localhost:3000/auth/one-tap-google/callback">
                     </div>
                     <button id="google-signup-btn" type="submit" class="btn border-[#E9E9E9] hover:bg-[#E9E9E9] hover:text-[#4B2138] bg-[#4B2138] text-[#E9E9E9] rounded-md w-fit flex justify-center items-center">
-                        <a href="/auth/login/google"><span class="mx-9 flex justify-center items-center"><img class="mr-2" src="/svgs/google-icon.svg" alt="google-icon">Sign up with Google</span></a>
+                        <a href="/auth/login/google">
+                            <div class="mx-9 flex justify-center items-center">
+                                <img class="mr-2" src="/svgs/google-icon.svg" alt="google-icon">
+                                <span>Sign up with Google</span>
+                            </div>
+                        </a>
                     </button>
                     <!-- Go to login -->
                     <p class="text-[#E9E9E9]">

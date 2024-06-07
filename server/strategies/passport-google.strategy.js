@@ -14,6 +14,7 @@ export default passport.use(
         async (acessToken, refreshToken, profile, done) => {
             console.log('acessToken in google: ', acessToken)
             console.log('refreshToken in google: ', refreshToken)
+            console.log('profile in google: ', profile)
             const googleId = profile.id
             const name = profile.displayName
             const email = profile.emails[0].value

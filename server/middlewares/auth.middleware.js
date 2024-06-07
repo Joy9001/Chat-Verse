@@ -8,7 +8,10 @@ export const isAuthenticated = (req, res, next) => {
     console.log('req user', req.user)
 
     if (req.isAuthenticated()) {
+        console.log('Inside req.isAuthenticated checkpoint')
         return next()
+    } else {
+        console.log('Inside else checkpoint')
     }
 
     passport.authenticate('jwt', async (err, user, info) => {
@@ -66,7 +69,7 @@ export const isAuthenticated = (req, res, next) => {
                     res.cookie('refreshToken', newEncryptedRefreshToken, {
                         httpOnly: true,
                         secure: true,
-                        sameSite: 'lax',
+                        sameSite: 'strict',
                         maxAge: 1000 * 60 * 60 * 24 * 7, // 7 days
                     })
                 }
@@ -78,7 +81,7 @@ export const isAuthenticated = (req, res, next) => {
                 res.cookie('accessToken', encryptedAccessToken, {
                     httpOnly: true,
                     secure: true,
-                    sameSite: 'lax',
+                    sameSite: 'strict',
                     maxAge: 1000 * 60 * 30, // 30 minutes
                 })
 

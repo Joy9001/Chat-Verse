@@ -25,23 +25,36 @@ const handleHtmlGet = (message) => {
     let msg_div = document.createElement('div')
     msg_div.classList.add('to-user-msg')
     msg_div.dataset.id = message._id
-    console.log('message id', message._id)
-    msg_div.innerHTML = `
-        <div class="msg-container">
-            <p>${message.message}</p>
-            <span>${msgTime}</span>
-        </div>
-		<div class="pl-2 delete-msg-btn hidden" onclick="deleteMessege(this)">
-			<button class="btn btn-circle btn-outline border-[#e9e9e9] bg-[#4B2138] hover:bg-[#e9e9e9] hover:border-[#4b2138] h-6 w-6 min-h-4 group">
-				<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 group-hover:stroke-[#4B2138]" fill="none" viewBox="0 0 24 24" stroke="#e9e9e9"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
-			</button>
-		</div>
+    // console.log('message id', message._id)
+
+    //Message
+    let msgTextDiv = document.createElement('div')
+    msgTextDiv.classList.add('msg-container')
+    let msgP = document.createElement('p')
+    msgP.innerText = message.message
+    let msgTimeP = document.createElement('p')
+    msgTimeP.innerText = msgTime
+    msgTextDiv.appendChild(msgP)
+    msgTextDiv.appendChild(msgTimeP)
+
+    // Delete Button
+    const deleteMsgBtnDiv = document.createElement('div')
+    deleteMsgBtnDiv.classList.add('delete-msg-btn', 'pl-2', 'hidden')
+    // deleteMsgBtnDiv.setAttribute('onclick', 'deleteMessage(this)')
+
+    deleteMsgBtnDiv.innerHTML = `
+        <button class="btn btn-circle btn-outline border-[#E9E9E9] bg-[#4b2138] hover:bg-[#E9E9E9] hover:border-[#4b2138] h-6 w-6 min-h-4 group">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 group-hover:stroke-[#4b2138] stroke-[#E9E9E9]" fill="none" viewBox="0 0 24 24" stroke="#4B2138"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
+        </button>
     `
+    msg_div.appendChild(msgTextDiv)
+    msg_div.appendChild(deleteMsgBtnDiv)
+
     msgContainerDiv.appendChild(msg_div)
     msgContainerDiv.scrollTop = msgContainerDiv.scrollHeight
 }
 
-const handleHtmlOnlineUsers = (users) => {
+export const handleHtmlOnlineUsers = (users) => {
     const leftPeople = document.querySelectorAll('.chat-child')
     leftPeople.forEach(async (person) => {
         const personUsername = person.querySelector('.chat-username').innerText
@@ -56,7 +69,7 @@ const handleHtmlOnlineUsers = (users) => {
         })
             .then((res) => res.json())
             .then((data) => {
-                console.log('data', data)
+                // console.log('data', data)
                 return data
             })
             .catch((error) => {
@@ -85,7 +98,7 @@ const createLeftsidePeopleR = (data) => {
     let parentDiv = document.createElement('div')
     parentDiv.classList.add('chat-child')
     // parentDiv.dataset.element = btoa(JSON.stringify(data))
-    parentDiv.onclick = () => chatClicked(parentDiv)
+    // parentDiv.onclick = () => chatClicked(parentDiv)
 
     let imgDiv = document.createElement('div')
     imgDiv.classList.add('chats_img')
@@ -96,7 +109,7 @@ const createLeftsidePeopleR = (data) => {
     let img = document.createElement('img')
     img.src = data.avatar
         ? data.avatar
-        : `https://avatar.iran.liara.run/username?username=${data.name.replace(' ', '+')}`
+        : `https://avatar.iran.liara.run/username?username=${data.name.replace(/ /g, '+')}`
     img.alt = data.name
 
     imgDiv.innerHTML = statusDiv
@@ -108,11 +121,11 @@ const createLeftsidePeopleR = (data) => {
 
     let name = document.createElement('h4')
     name.classList.add('chat-name')
-    name.innerText = data.name
+    name.innerText = data.name.trim()
 
     let username = document.createElement('h4')
     username.classList.add('chat-username')
-    username.innerText = data.username
+    username.innerText = data.username.trim()
 
     nameDiv.appendChild(name)
     nameDiv.appendChild(username)
@@ -130,23 +143,22 @@ const createLeftsidePeopleR = (data) => {
     return parentDiv
 }
 
-// console.log('cookie', document)
-
-const socket = io('http://localhost:3000', {
+const socket = io(process.env.SITE_URL, {
     withCredentials: true,
 })
 
 let onlineUsers = []
 socket.on('getOnlineUsers', (users) => {
-    console.log('Online users', users)
+    // console.log('Online users', users)
     onlineUsers = users
     handleHtmlOnlineUsers(users)
 })
 
 socket.on('newMessage', async (message, senderUsername) => {
-    console.log('New message', message)
-    let leftPeople = document.querySelectorAll('.chat-child')
+    // console.log('New message', message)
     let sender = ''
+
+    let leftPeople = document.querySelectorAll('.chat-child')
     leftPeople.forEach((person) => {
         // let data = JSON.parse(atob(person.dataset.element))
         let personUsername = person.querySelector('.chat-username').innerText
@@ -160,7 +172,8 @@ socket.on('newMessage', async (message, senderUsername) => {
         let popupPeople = document.querySelectorAll('.popup-people')
         popupPeople.forEach((person) => {
             // let data = JSON.parse(atob(person.dataset.element))
-            let personUsername = person.querySelector('.popup-people-username').innerText
+            let personUsername = person.querySelector('.popup-people-username').innerText.trim()
+            // console.log(personUsername)
             if (personUsername === senderUsername) {
                 let personName = person.querySelector('.popup-people-name').innerText
                 let personAvatar = person.querySelector('.popup-people-avatar').src
@@ -181,13 +194,13 @@ socket.on('newMessage', async (message, senderUsername) => {
         }
     }
 
-    console.log('sender', sender.children[2])
+    // console.log('sender', sender.children[2])
     if (sender.classList.contains('active')) {
         handleHtmlGet(message)
     } else {
         let unreadMsg = sender.children[2]
         // console.log("sender", sender);
-        console.log('unreadMsg', unreadMsg)
+        // console.log('unreadMsg', unreadMsg)
         let unreadMsgCount = parseInt(unreadMsg.innerText) + 1
         unreadMsg.children[0].innerText = unreadMsgCount
         unreadMsg.classList.remove('hidden')
@@ -199,13 +212,15 @@ socket.on('newMessage', async (message, senderUsername) => {
             },
             body: JSON.stringify({
                 senderUsername,
-                receiverId: atob(document.body.dataset.currentUserId),
                 unreadMsgCount: unreadMsgCount,
             }),
         })
             .then((res) => res.json())
             .then((data) => {
-                console.log('unread', data)
+                // console.log('unread', data)
+            })
+            .catch((err) => {
+                console.log('Error in getting unread messages: ', err)
             })
     }
 })
@@ -215,11 +230,11 @@ socket.on('deleteMessage', (dltMsgId, senderUsername) => {
     let activePerson = document.querySelector('.chat-child.active')
 
     if (activePerson && activePerson.children[1].children[1].innerText === senderUsername) {
-        console.log('deleting message', dltMsgId)
+        // console.log('deleting message', dltMsgId)
         let allToUserMsg = document.querySelectorAll('.to-user-msg')
         allToUserMsg.forEach((msg) => {
             let msgId = msg.dataset.id
-            console.log('msgId', msgId, 'dltMsgId', dltMsgId)
+            // console.log('msgId', msgId, 'dltMsgId', dltMsgId)
             if (msgId === dltMsgId) {
                 msg.remove()
             }
@@ -228,7 +243,7 @@ socket.on('deleteMessage', (dltMsgId, senderUsername) => {
         let allFromuserMsg = document.querySelectorAll('.from-user-msg')
         allFromuserMsg.forEach((msg) => {
             let msgId = msg.dataset.id
-            console.log('msgId', msgId, 'dltMsgId', dltMsgId)
+            // console.log('msgId', msgId, 'dltMsgId', dltMsgId)
             if (msgId === dltMsgId) {
                 msg.remove()
             }
@@ -288,7 +303,7 @@ socket.on('deleteConversation', (senderUsername) => {
 })
 
 socket.on('blockUser', (senderId) => {
-    console.log('Blocked user', senderId)
+    // console.log('Blocked user', senderId)
 
     if (document.querySelector('.chat-child.active')) {
         let chat_end = document.getElementById('chats-end')
@@ -314,7 +329,7 @@ socket.on('blockUser', (senderId) => {
 })
 
 socket.on('unblockUser', (senderId) => {
-    console.log('Unblocked user', senderId)
+    // console.log('Unblocked user', senderId)
     if (document.querySelector('.chat-child.active')) {
         let blockDiv = document.querySelector('#chats-end-block')
         blockDiv.classList.add('hidden')
@@ -327,7 +342,7 @@ socket.on('unblockUser', (senderId) => {
 
         let blockInfoDiv = document.querySelector('.block-info')
         if (!blockInfoDiv.classList.contains('hidden')) {
-            console.log('removing')
+            // console.log('removing')
             blockInfoDiv.classList.add('hidden')
         }
 

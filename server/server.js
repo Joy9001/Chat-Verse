@@ -1,4 +1,6 @@
 import express from 'express'
+import dotenv from 'dotenv'
+dotenv.config()
 import cors from 'cors'
 import http from 'http'
 import { Server } from 'socket.io'
@@ -7,8 +9,8 @@ import passport from 'passport'
 import session from 'express-session'
 import MongoStore from 'connect-mongo'
 import path from 'path'
-import dotenv from 'dotenv'
 import morgan from 'morgan'
+import helmet from 'helmet'
 import cookieParser from 'cookie-parser'
 import indexRouter from './routes/index.route.js'
 import connectMongo from './db/connectMongo.db.js'
@@ -17,13 +19,14 @@ import { onlyForHandshake } from './helpers/socket.helper.js'
 import User from './models/users.model.js'
 
 const PORT = process.env.PORT || 3000
-dotenv.config()
 
 const app = express()
 const server = http.createServer(app)
+// console.log('site url: ', process.env.SITE_URL)
+
 const io = new Server(server, {
     cors: {
-        origin: ['http://localhost:3000', 'https://admin.socket.io'],
+        origin: [process.env.SITE_URL, 'https://admin.socket.io'],
         methods: ['GET', 'POST'],
         credentials: true,
     },
@@ -31,6 +34,13 @@ const io = new Server(server, {
 
 // logger
 app.use(morgan('dev'))
+
+// helmet
+app.use(
+    helmet({
+        contentSecurityPolicy: false,
+    })
+)
 
 // cors
 app.use(cors())
@@ -66,7 +76,6 @@ app.use(passport.session())
 // static files
 app.use(express.static(path.resolve('client/public')))
 app.use(express.static(path.resolve('client/styles')))
-app.use(express.static(path.resolve('client/scripts')))
 app.use(express.static(path.resolve('client/dist')))
 
 // serve admin ui
@@ -148,25 +157,20 @@ io.on('connection', (socket) => {
 
 // routes
 app.get('/', (req, res) => {
-    passport.authenticate('jwt', (err, user, info) => {
-        if (err) {
-            console.log('Error in /: ', err.message)
-            return res.redirect('/auth/login')
-        }
-        if (user) {
-            return res.redirect('/chat')
-        }
-        console.log('Info in /: ', info.message)
-        res.redirect('/auth/login')
-    })(req, res)
+    return res.redirect('/chat')
 })
 app.use('/', indexRouter)
 
 server.listen(PORT, async () => {
-    await connectMongo().then(async () => {
-        console.log('MongoDB connected')
-        console.log(`Server running on http://localhost:${PORT}`)
-    })
+    await connectMongo()
+        .then(async () => {
+            console.log('MongoDB connected')
+            console.log(`Server running on http://localhost:${PORT}`)
+            console.log('Online Users: ', Object.keys(userSockets))
+        })
+        .catch((err) => {
+            console.error('Error connecting to MongoDB: ', err.message)
+        })
 })
 
 export { io, userSockets }

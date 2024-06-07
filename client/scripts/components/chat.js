@@ -1,3 +1,5 @@
+import { handleHtmlOnlineUsers } from '../socket/socket.js'
+
 const getTime = () => {
     let date = new Date()
     let hours = date.getHours()
@@ -37,12 +39,12 @@ const handleChatHeadAndEnd = (clickedUser, isOnline) => {
     chat_head_name.innerText = clickedUser.name
     chat_head_img.src = clickedUser.avatar
         ? clickedUser.avatar
-        : `https://avatar.iran.liara.run/username?username=${clickedUser.name.replace(' ', '+')}`
+        : `https://avatar.iran.liara.run/username?username=${clickedUser.name.replace(/ /g, '+')}`
     to_user_info_popup.children[0].children[1].children[0].innerText = clickedUser.name
     to_user_info_popup.children[0].children[1].children[1].innerText = clickedUser.username
     to_user_info_popup.children[0].children[0].src = clickedUser.avatar
         ? clickedUser.avatar
-        : `https://avatar.iran.liara.run/username?username=${clickedUser.name.replace(' ', '+')}`
+        : `https://avatar.iran.liara.run/username?username=${clickedUser.name.replace(/ /g, '+')}`
 
     if (isOnline) {
         chat_head.children[0].children[0].children[0].classList.remove('hidden')
@@ -83,38 +85,49 @@ const handleHtmlConversation = (data) => {
                 msgContainerDiv.appendChild(dayDiv)
             }
 
+            // Message
+            let msgTextDiv = document.createElement('div')
+            msgTextDiv.classList.add('msg-container')
+            let msgP = document.createElement('p')
+            msgP.innerText = msg.message
+            let msgTimeP = document.createElement('p')
+            msgTimeP.innerText = msgDate.slice(0, 5)
+            msgTextDiv.appendChild(msgP)
+            msgTextDiv.appendChild(msgTimeP)
+
+            // Delete Button
+            const deleteMsgBtnDiv = document.createElement('div')
+            deleteMsgBtnDiv.classList.add('delete-msg-btn', 'hidden')
+            // deleteMsgBtnDiv.setAttribute('onclick', 'deleteMessage(this)')
+
             if (msg.senderId === currentUserId) {
                 const msgDiv = document.createElement('div')
                 msgDiv.classList.add('from-user-msg')
                 msgDiv.dataset.id = msg._id
-                msgDiv.innerHTML = `
-						<div class="pr-2 delete-msg-btn hidden" onclick="deleteMessege(this)">
-							<button class="btn btn-circle btn-outline border-[#4b2138] bg-[#E9E9E9] hover:bg-[#4B2138] hover:border-[#e9e9e9] h-6 w-6 min-h-4 group">
-								<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 group-hover:stroke-[#E9E9E9]" fill="none" viewBox="0 0 24 24" stroke="#4B2138"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
-							</button>
-						</div>
-						<div class="msg-container">
-							<p>${msg.message}</p>
-							<span>${msgDate.slice(0, 5)}</span>
-						</div>
-					`
+
+                deleteMsgBtnDiv.classList.add('pr-2')
+                deleteMsgBtnDiv.innerHTML = `
+                <button class="btn btn-circle btn-outline border-[#4b2138] bg-[#E9E9E9] hover:bg-[#4B2138] hover:border-[#e9e9e9] h-6 w-6 min-h-4 group">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 group-hover:stroke-[#E9E9E9]" fill="none" viewBox="0 0 24 24" stroke="#4B2138"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
+                </button>
+            `
+                msgDiv.appendChild(deleteMsgBtnDiv)
+                msgDiv.appendChild(msgTextDiv)
 
                 msgContainerDiv.appendChild(msgDiv)
             } else {
                 const msgDiv = document.createElement('div')
                 msgDiv.classList.add('to-user-msg')
                 msgDiv.dataset.id = msg._id
-                msgDiv.innerHTML = `
-					<div class="msg-container">
-						<p>${msg.message}</p>
-						<span>${msgDate.slice(0, 5)}</span>
-					</div>
-					<div class="pl-2 delete-msg-btn hidden" onclick="deleteMessege(this)">
-						<button class="btn btn-circle btn-outline border-[#e9e9e9] bg-[#4B2138] hover:bg-[#e9e9e9] hover:border-[#4b2138] h-6 w-6 min-h-4 group">
-							<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 group-hover:stroke-[#4B2138]" fill="none" viewBox="0 0 24 24" stroke="#e9e9e9"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
-						</button>
-					</div>
-				`
+
+                msgDiv.appendChild(msgTextDiv)
+                deleteMsgBtnDiv.classList.add('pl-2')
+                deleteMsgBtnDiv.innerHTML = `
+                <button class="btn btn-circle btn-outline border-[#E9E9E9] bg-[#4b2138] hover:bg-[#E9E9E9] hover:border-[#4b2138] h-6 w-6 min-h-4 group">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 stroke-[#E9E9E9] group-hover:stroke-[#4b2138]" fill="none" viewBox="0 0 24 24" stroke="#4B2138"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
+                </button>
+            `
+                msgDiv.appendChild(deleteMsgBtnDiv)
                 msgContainerDiv.appendChild(msgDiv)
             }
         })
@@ -134,7 +147,7 @@ const handleConversation = (receiverId) => {
     })
         .then((res) => res.json())
         .then((data) => {
-            console.log('data', data)
+            // console.log('data', data)
             let isBlocked = data.isBlocked
             let blockedBy = data.blockedBy
             let currentUserId = data.senderId
@@ -164,6 +177,9 @@ const handleConversation = (receiverId) => {
             }
             handleHtmlConversation(data)
         })
+        .catch((err) => {
+            console.log('Error in getting conversation: ', err)
+        })
 }
 
 const handleChats = (clickedUser) => {
@@ -171,7 +187,7 @@ const handleChats = (clickedUser) => {
     let toUserProfileSecImg = toUserProfileSecImgDiv.children[0]
     toUserProfileSecImg.src = clickedUser.avatar
         ? clickedUser.avatar
-        : `https://avatar.iran.liara.run/username?username=${clickedUser.name.replace(' ', '+')}`
+        : `https://avatar.iran.liara.run/username?username=${clickedUser.name.replace(/ /g, '+')}`
 
     let toUserProfileSecNameDiv = document.querySelector('.to-user-profile-sec-name')
     let toUserProfileSecName = toUserProfileSecNameDiv.children[0]
@@ -184,7 +200,7 @@ const handleChats = (clickedUser) => {
     handleConversation(receiverId)
 }
 
-window.chatClicked = async (htmlElement) => {
+const chatClicked = async (htmlElement) => {
     let all_chats_children = document.getElementById('chat-parent').children
     let chatSection = document.querySelector('.chat-section')
 
@@ -206,6 +222,9 @@ window.chatClicked = async (htmlElement) => {
         .then((data) => {
             clickedUser = data
         })
+        .catch((err) => {
+            console.log('Error in getting user details: ', err)
+        })
 
     for (let i = 0; i < all_chats_children.length; i++) {
         if (all_chats_children[i].classList.contains('active')) {
@@ -225,6 +244,12 @@ window.chatClicked = async (htmlElement) => {
 
     handleChats(clickedUser)
 }
+
+document.querySelector('.chat-parent').addEventListener('click', (event) => {
+    if (event.target.closest('.chat-child')) {
+        chatClicked(event.target.closest('.chat-child'))
+    }
+})
 
 function addActive(ele) {
     ele.classList.add('active')
@@ -276,7 +301,7 @@ const createLeftsidePeople = (data) => {
     let parentDiv = document.createElement('div')
     parentDiv.classList.add('chat-child')
     parentDiv.dataset.element = btoa(JSON.stringify(data))
-    parentDiv.onclick = () => chatClicked(parentDiv)
+    // parentDiv.onclick = () => chatClicked(parentDiv)
 
     let imgDiv = document.createElement('div')
     imgDiv.classList.add('chats_img')
@@ -287,7 +312,7 @@ const createLeftsidePeople = (data) => {
     let img = document.createElement('img')
     img.src = data.avatar
         ? data.avatar
-        : `https://avatar.iran.liara.run/username?username=${data.name.replace(' ', '+')}`
+        : `https://avatar.iran.liara.run/username?username=${data.name.replace(/ /g, '+')}`
     img.alt = data.name
 
     imgDiv.innerHTML = statusDiv
@@ -323,28 +348,31 @@ const createLeftsidePeople = (data) => {
     handleHtmlOnlineUsers(onlineUsers)
 }
 
-window.addPeopleToChat = async (event) => {
+const addPeopleToChat = async (element) => {
     let leftPeople = document.querySelectorAll('.chat-child')
     let alreadyThere = false
     let clickedPerson = ''
-    console.log(event.children[1].children)
-    const eventUsername = event.children[1].children[1].innerText
+    // console.log(element.children[1].children)
+    const eleUsername = element.children[1].children[1].innerText
 
-    let eventData = await fetch('/get-conv-api/user-details', {
+    let eleData = await fetch('/get-conv-api/user-details', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ username: eventUsername }),
+        body: JSON.stringify({ username: eleUsername }),
     })
         .then((res) => res.json())
         .then((data) => {
             return data
         })
+        .catch((err) => {
+            console.log('Error in getting user details: ', err)
+        })
 
     leftPeople.forEach((person) => {
         let personUsername = person.children[1].children[1].innerText
-        if (personUsername === eventData.username) {
+        if (personUsername === eleData.username) {
             alreadyThere = true
             clickedPerson = person
 
@@ -354,7 +382,7 @@ window.addPeopleToChat = async (event) => {
         }
     })
 
-    console.log('alreadyThere', alreadyThere)
+    // console.log('alreadyThere', alreadyThere)
     if (!alreadyThere) {
         fetch('/add-people-api/add-people-to-chat', {
             method: 'POST',
@@ -362,7 +390,7 @@ window.addPeopleToChat = async (event) => {
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify({
-                receiverId: eventData._id,
+                receiverId: eleData._id,
             }),
         })
             .then((res) => res.json())
@@ -376,13 +404,19 @@ window.addPeopleToChat = async (event) => {
                 console.log('Error getting people', error)
             })
     } else {
-        console.log('clickedPerson', clickedPerson)
+        // console.log('clickedPerson', clickedPerson)
         chatClicked(clickedPerson)
         // console.log("Online users here", atob(onlineUsers));
     }
 
     document.querySelector('#transparent-modal').click()
 }
+
+document.querySelector('.popup-people-all').addEventListener('click', (event) => {
+    if (event.target.closest('.popup-people')) {
+        addPeopleToChat(event.target.closest('.popup-people'))
+    }
+})
 
 document.getElementById('to-user-info-btn').addEventListener('click', () => {
     let overlay = document.querySelector('#transparent-modal')
@@ -427,16 +461,24 @@ const handleHtmlSend = (msgRes) => {
     msg_div.classList.add('from-user-msg')
     msg_div.dataset.id = msgRes._id
     msg_div.innerHTML = `
-		<div class="pr-2 delete-msg-btn hidden" onclick="deleteMessege(this)">
+		<div class="pr-2 delete-msg-btn hidden">
 			<button class="btn btn-circle btn-outline border-[#4b2138] bg-[#E9E9E9] hover:bg-[#4B2138] hover:border-[#e9e9e9] h-6 w-6 min-h-4 group">
 				<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 group-hover:stroke-[#E9E9E9]" fill="none" viewBox="0 0 24 24" stroke="#4B2138"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
 			</button>
 		</div>
-		<div class="msg-container">
-			<p>${msgRes.message}</p>
-			<span>${msgTime}</span>
-		</div>
-	`
+    `
+
+    let msgTextDiv = document.createElement('div')
+    msgTextDiv.classList.add('msg-container')
+    let msgP = document.createElement('p')
+    msgP.innerText = msgRes.message
+    let msgTimeP = document.createElement('p')
+    msgTimeP.innerText = msgTime
+
+    msgTextDiv.appendChild(msgP)
+    msgTextDiv.appendChild(msgTimeP)
+    msg_div.append(msgTextDiv)
+
     msgContainerDiv.appendChild(msg_div)
     msgContainerDiv.scrollTop = msgContainerDiv.scrollHeight
 }
@@ -453,6 +495,9 @@ const handleSendRequest = async (receiverUsername, msg) => {
         .then((data) => {
             return data._id
         })
+        .catch((err) => {
+            console.log('Error in getting user details: ', err)
+        })
 
     fetch('/chat/send-message', {
         method: 'POST',
@@ -464,12 +509,22 @@ const handleSendRequest = async (receiverUsername, msg) => {
             message: msg,
         }),
     })
-        .then((res) => {
-            // console.log(res);
-            return res.json()
-        })
+        .then((res) => res.json())
         .then((data) => {
-            handleHtmlSend(data)
+            // console.log('data in /chat/send-message', data)
+            if (data.message === 'User is blocked') {
+                let alert = document.querySelector('.alert')
+                alert.children[1].innerHTML = 'User is blocked'
+                alert.classList.remove('hidden')
+                setTimeout(() => {
+                    alert.classList.add('hidden')
+                }, 5000)
+            } else {
+                handleHtmlSend(data)
+            }
+        })
+        .catch((err) => {
+            console.log('Error in sending message: ', err)
         })
 }
 
@@ -478,7 +533,7 @@ document.getElementById('send-btn').addEventListener('click', (e) => {
     let msgInput = document.getElementById('msg-input')
 
     let raw_msg = msgInput.value
-    let msg = raw_msg.replace(/\n/g, '<br>')
+    let msg = raw_msg
     msgInput.value = ''
     msgInput.focus()
 
@@ -495,7 +550,8 @@ document.getElementById('msg-input').addEventListener('keydown', (event) => {
         event.preventDefault()
 
         let raw_msg = msgInput.value
-        let msg = raw_msg.replace(/\n/g, '<br>')
+        // let msg = raw_msg.replace(/\n/g, '<br>')
+        let msg = raw_msg
         msgInput.value = ''
         msgInput.focus()
 
@@ -504,21 +560,16 @@ document.getElementById('msg-input').addEventListener('keydown', (event) => {
             handleSendRequest(receiverUsername, msg)
         }
     } else if (event.shiftKey && event.key === 'Enter') {
+        event.preventDefault()
         const start = msgInput.selectionStart
-        const end = msgInput.selectionEnd
-        const textBefore = msgInput.value.substring(0, start)
-        const textAfter = msgInput.value.substring(end)
-        if (textAfter === '') {
-            msgInput.value = textBefore + '\n'
-        } else {
-            msgInput.value = textBefore + '\n' + textAfter
-        }
+        const text = msgInput.value
 
-        msgInput.selectionStart = msgInput.selectionEnd = start
+        msgInput.value = text.slice(0, start) + '\n' + text.slice(start)
+        msgInput.selectionEnd = start + 1
     }
 })
 
-window.deleteMessege = async (btn) => {
+const deleteMessage = async (btn) => {
     let parent = btn.parentElement
     let sibling = ''
 
@@ -528,7 +579,7 @@ window.deleteMessege = async (btn) => {
         sibling = btn.previousElementSibling
     }
     let msgId = parent.dataset.id
-    console.log('msgId', msgId)
+    // console.log('msgId', msgId)
     let receiverUsername = document.querySelector('.chat-child.active').children[1].children[1].innerText
 
     let receiverId = await fetch('/get-conv-api/user-details', {
@@ -541,6 +592,9 @@ window.deleteMessege = async (btn) => {
         .then((res) => res.json())
         .then((data) => {
             return data._id
+        })
+        .catch((err) => {
+            console.log('Error in getting user details: ', err)
         })
 
     fetch('/chat/delete-message', {
@@ -555,7 +609,7 @@ window.deleteMessege = async (btn) => {
     })
         .then((res) => res.json())
         .then((data) => {
-            console.log(data.message)
+            // console.log(data.message)
             if (data.message === 'Message deleted') {
                 parent.remove()
                 let days = document.querySelectorAll('.day')
@@ -572,9 +626,20 @@ window.deleteMessege = async (btn) => {
                 }, 5000)
             }
         })
+        .catch((err) => {
+            console.log('Error in deleting message: ', err)
+        })
 }
 
-window.deleteConversation = async () => {
+document.querySelector('.message-container').addEventListener('click', (event) => {
+    // console.log('event.target', event.target)
+    if (event.target.closest('.delete-msg-btn')) {
+        const deleteMsgBtn = event.target.closest('.delete-msg-btn')
+        deleteMessage(deleteMsgBtn)
+    }
+})
+
+const deleteConversation = async () => {
     let chat_mid = document.getElementById('all-chats')
     let chat_end = document.getElementById('chats-end')
     let chat_head = document.getElementById('chats-head')
@@ -593,6 +658,9 @@ window.deleteConversation = async () => {
         .then((data) => {
             return data._id
         })
+        .catch((err) => {
+            console.log('Error in getting user details: ', err)
+        })
 
     fetch('/chat/delete-conversation', {
         method: 'POST',
@@ -605,7 +673,7 @@ window.deleteConversation = async () => {
     })
         .then((res) => res.json())
         .then((data) => {
-            console.log(data.message)
+            // console.log(data.message)
             if (data.message === 'Conversation deleted') {
                 // receiver.classList.remove('active')
                 // receiver.classList.add('hidden')
@@ -624,7 +692,14 @@ window.deleteConversation = async () => {
                 }, 5000)
             }
         })
+        .catch((err) => {
+            console.log('Error in deleting conversation: ', err)
+        })
 }
+
+document.querySelector('#delete-chat-to-user').addEventListener('click', () => {
+    deleteConversation()
+})
 
 const handleBlockUser = (receiverId, htmlElement) => {
     let chat_end = document.getElementById('chats-end')
@@ -641,12 +716,15 @@ const handleBlockUser = (receiverId, htmlElement) => {
     })
         .then((res) => res.json())
         .then((data) => {
-            console.log(data.message)
+            // console.log(data.message)
             if (data.message === 'User blocked') {
                 htmlElement.children[0].innerText = 'Unblock'
                 chat_end.classList.add('hidden')
                 blockDiv.classList.remove('hidden')
             }
+        })
+        .catch((err) => {
+            console.log('Error in blocking user: ', err)
         })
 }
 
@@ -665,16 +743,19 @@ const handleUnblockUser = (receiverId, htmlElement) => {
     })
         .then((res) => res.json())
         .then((data) => {
-            console.log(data.message)
+            // console.log(data.message)
             if (data.message === 'User unblocked') {
                 htmlElement.children[0].innerText = 'Block'
                 blockDiv.classList.add('hidden')
                 chat_end.classList.remove('hidden')
             }
         })
+        .catch((err) => {
+            console.log('Error in unblocking user: ', err)
+        })
 }
 
-window.blockUnblockUser = async (htmlElement) => {
+const blockUnblockUser = async (htmlElement) => {
     let receiver = document.querySelector('.chat-child.active')
     let receiverUsername = receiver.children[1].children[1].innerText
     let receiverId = await fetch('/get-conv-api/user-details', {
@@ -688,6 +769,9 @@ window.blockUnblockUser = async (htmlElement) => {
         .then((data) => {
             return data._id
         })
+        .catch((err) => {
+            console.log('Error in getting user details: ', err)
+        })
 
     let blockStatus = htmlElement.children[0].innerText
 
@@ -697,6 +781,10 @@ window.blockUnblockUser = async (htmlElement) => {
         handleUnblockUser(receiverId, htmlElement)
     }
 }
+
+document.querySelector('#block-to-user').addEventListener('click', () => {
+    blockUnblockUser(document.querySelector('#block-to-user'))
+})
 
 const searchPeople = (event) => {
     let queryText = event.target.value.toLowerCase()
@@ -728,16 +816,25 @@ const searchPeople = (event) => {
                     }
                 })
             })
+            .catch((err) => {
+                console.log('Error in searching people: ', err)
+            })
     }
 }
 
 document.getElementById('popup-search').addEventListener('keyup', (event) => searchPeople(event))
 
+document.querySelector('#from-user-modal-img').addEventListener('click', () => {
+    my_modal_2.showModal()
+})
+
+// Check Username availability
+
 document.querySelector('#change-profilePic-btn').addEventListener('click', () => {
     const modalProfilePic = document.querySelector('#change-details-profilePic')
 
     const gender = document.querySelector('#change-details-gender option:checked').value
-    console.log(gender)
+    // console.log(gender)
 
     fetch('/api/get-avatar', {
         method: 'POST',
@@ -748,39 +845,53 @@ document.querySelector('#change-profilePic-btn').addEventListener('click', () =>
     })
         .then((res) => res.json())
         .then((data) => {
-            console.log(data.avatar)
+            // console.log(data.avatar)
             // console.log(modalProfilePic.src);
             modalProfilePic.src = data.avatar
         })
-        .catch((error) => console.log(error.message))
+        .catch((err) => {
+            console.log('Error in getting avatar: ', err)
+        })
 })
 
 document.querySelector('#chat-change-details-done-btn').addEventListener('click', () => {
-    //~ TODO: Implement the logic when no changes are made (retrieve the current values from cookies and compare with the new values)
-
-    const name = document.querySelector('#change-details-name').value
-    const username = document.querySelector('#change-details-username').value
-    const gender = document.querySelector('#change-details-gender option:checked').value
-    const avatar = document.querySelector('#change-details-profilePic').src
+    let name = document.querySelector('#change-details-name')
+    let username = document.querySelector('#change-details-username')
+    const gender = document.querySelector('#change-details-gender option:checked')
+    let avatar = document.querySelector('#change-details-profilePic')
+    const csrfToken = document.querySelector('input[name="CSRFToken"]').value
 
     fetch('/api/change-details', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
+            'x-csrf-token': csrfToken,
         },
-        body: JSON.stringify({ name, username, gender, avatar }),
+        body: JSON.stringify({
+            name: name.value,
+            username: username.value,
+            gender: gender.value,
+            avatar: avatar.src,
+        }),
     })
         .then((res) => res.json())
         .then((data) => {
             document.querySelector('#change-details-response').classList.remove('hidden')
             document.querySelector('#change-details-response span').textContent = data.message
             if (data.success) {
-                document.querySelector('#from-user-modal-img').src = avatar
+                document.querySelector('#from-user-modal-img').src = data.user.avatar
+            }
+
+            if (data.message === 'Username already taken') {
+                username.value = data.user.username
             }
             setTimeout(() => {
                 document.querySelector('#change-details-response span').textContent = ''
                 document.querySelector('#change-details-response').classList.add('hidden')
             }, 5000)
+        })
+        .catch((err) => {
+            console.log('Error in changing details: ', err)
         })
 })
 
