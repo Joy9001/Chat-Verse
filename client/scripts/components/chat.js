@@ -828,8 +828,6 @@ document.querySelector('#from-user-modal-img').addEventListener('click', () => {
     my_modal_2.showModal()
 })
 
-// Check Username availability
-
 document.querySelector('#change-profilePic-btn').addEventListener('click', () => {
     const modalProfilePic = document.querySelector('#change-details-profilePic')
 

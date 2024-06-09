@@ -4,7 +4,6 @@ import getCurrentChatPeople from '../helpers/getCurrentChatPeople.helper.js'
 import Message from '../models/message.model.js'
 import Conversation from '../models/conversation.model.js'
 import AddedPeopleToChat from '../models/addedPeopleToChat.model.js'
-import { addPeopleToChat } from '../helpers/addPeopleToChat.helper.js'
 import User from '../models/users.model.js'
 import { io } from '../server.js'
 import { getReceiverSocketId } from '../helpers/socket.helper.js'
@@ -12,7 +11,7 @@ import { csrfSync } from 'csrf-sync'
 import { updateUnreadCount } from '../helpers/conversation.helper.js'
 
 // csrf sync
-const { generateToken, storeTokenInState } = csrfSync()
+const { generateToken } = csrfSync()
 
 const messageController = async (req, res) => {
     try {
