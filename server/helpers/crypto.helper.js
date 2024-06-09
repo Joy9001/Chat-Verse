@@ -13,8 +13,8 @@ const encryptObjectWithCryptoJS = (object) => {
     return CryptoJS.AES.encrypt(JSON.stringify(object), process.env.CRYPTO_SECRET).toString()
 }
 
-const decryptObjectWithCryptoJS = (text) => {
-    const bytes = CryptoJS.AES.decrypt(text, process.env.CRYPTO_SECRET)
+const decryptObjectWithCryptoJS = (object) => {
+    const bytes = CryptoJS.AES.decrypt(object, process.env.CRYPTO_SECRET)
     return JSON.parse(bytes.toString(CryptoJS.enc.Utf8))
 }
 

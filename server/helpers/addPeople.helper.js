@@ -4,7 +4,6 @@ const addPeople = async (currentUserId) => {
     try {
         console.log('current user id in addPeople: ', currentUserId)
         let people = (await User.find()).filter((person) => person._id.toString() !== currentUserId.toString())
-        // console.log("People: ", people);
         people = await User.find({ _id: { $in: people } })
 
         return people

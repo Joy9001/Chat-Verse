@@ -876,8 +876,8 @@ document.querySelector('#chat-change-details-done-btn').addEventListener('click'
     })
         .then((res) => res.json())
         .then((data) => {
-            document.querySelector('#change-details-response').classList.remove('hidden')
-            document.querySelector('#change-details-response span').textContent = data.message
+            document.querySelector('#notification-alert').classList.remove('hidden')
+            document.querySelector('#notification-alert span').textContent = data.message
             if (data.success) {
                 document.querySelector('#from-user-modal-img').src = data.user.avatar
             }
@@ -886,8 +886,8 @@ document.querySelector('#chat-change-details-done-btn').addEventListener('click'
                 username.value = data.user.username
             }
             setTimeout(() => {
-                document.querySelector('#change-details-response span').textContent = ''
-                document.querySelector('#change-details-response').classList.add('hidden')
+                document.querySelector('#notification-alert span').textContent = ''
+                document.querySelector('#notification-alert').classList.add('hidden')
             }, 5000)
         })
         .catch((err) => {

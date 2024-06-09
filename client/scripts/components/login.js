@@ -25,7 +25,6 @@ document.querySelector('#login-btn').addEventListener('click', async () => {
         const data = await response.json()
 
         console.log('Data in login.js: ', data)
-        // alert(data.message)
         if (data.error) {
             throw new Error(data.error)
         }

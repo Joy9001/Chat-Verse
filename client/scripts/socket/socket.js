@@ -1,4 +1,4 @@
-import { io } from 'socket.io-client'
+import io from 'socket.io-client'
 import { utcToLocal } from '../components/chat.js'
 
 const handleHtmlGet = (message) => {
@@ -154,10 +154,11 @@ socket.on('getOnlineUsers', (users) => {
     handleHtmlOnlineUsers(users)
 })
 
-socket.on('newMessage', async (message, senderUsername) => {
+socket.on('newMessage', async (message, senderUsername, callback) => {
     // console.log('New message', message)
     let sender = ''
 
+    // Find Sender in the active chat
     let leftPeople = document.querySelectorAll('.chat-child')
     leftPeople.forEach((person) => {
         // let data = JSON.parse(atob(person.dataset.element))
@@ -168,6 +169,7 @@ socket.on('newMessage', async (message, senderUsername) => {
         }
     })
 
+    // Find Sender in the people popup
     if (sender === '') {
         let popupPeople = document.querySelectorAll('.popup-people')
         popupPeople.forEach((person) => {
@@ -187,6 +189,10 @@ socket.on('newMessage', async (message, senderUsername) => {
 
         if (sender === '') {
             console.log('Sender not found', senderUsername)
+            callback({
+                status: 'failure',
+                error: 'Sender not found',
+            })
             return
         } else {
             console.log('creating')
@@ -197,6 +203,9 @@ socket.on('newMessage', async (message, senderUsername) => {
     // console.log('sender', sender.children[2])
     if (sender.classList.contains('active')) {
         handleHtmlGet(message)
+        callback({
+            status: 'success',
+        })
     } else {
         let unreadMsg = sender.children[2]
         // console.log("sender", sender);
@@ -205,23 +214,24 @@ socket.on('newMessage', async (message, senderUsername) => {
         unreadMsg.children[0].innerText = unreadMsgCount
         unreadMsg.classList.remove('hidden')
 
-        fetch('/chat/unread-message', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                senderUsername,
-                unreadMsgCount: unreadMsgCount,
-            }),
+        document.querySelector('#notification-alert').classList.remove('hidden')
+
+        if (unreadMsgCount === 1) {
+            document.querySelector('#notification-alert span').textContent =
+                `You have a new message from ${senderUsername}`
+        } else {
+            document.querySelector('#notification-alert span').textContent =
+                `You have ${unreadMsgCount} new messages from ${senderUsername}`
+        }
+
+        setTimeout(() => {
+            document.querySelector('#notification-alert span').textContent = ''
+            document.querySelector('#notification-alert').classList.add('hidden')
+        }, 5000)
+
+        callback({
+            status: 'unread',
         })
-            .then((res) => res.json())
-            .then((data) => {
-                // console.log('unread', data)
-            })
-            .catch((err) => {
-                console.log('Error in getting unread messages: ', err)
-            })
     }
 })
 
@@ -357,5 +367,4 @@ socket.on('connection', () => {
 
 socket.on('disconnect', () => {
     console.log('Disconnected from server')
-    socket.off('newMessage')
 })

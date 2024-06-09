@@ -86,7 +86,7 @@ messageSchema.post('save', async function (doc, next) {
                 unreadMsgCount: {
                     senderId: doc.senderId,
                     receiverId: doc.receiverId,
-                    unreadCount: 1,
+                    unreadCount: 0,
                 },
             })
         }

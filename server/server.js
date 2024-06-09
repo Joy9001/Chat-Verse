@@ -22,7 +22,6 @@ const PORT = process.env.PORT || 3000
 
 const app = express()
 const server = http.createServer(app)
-// console.log('site url: ', process.env.SITE_URL)
 
 const io = new Server(server, {
     cors: {
@@ -127,6 +126,7 @@ io.engine.use(onlyForHandshake(sessionMiddleware))
 io.engine.use(onlyForHandshake(passport.session()))
 io.engine.use(
     onlyForHandshake((req, res, next) => {
+        // console.log('req user is handshake: ', req.user)
         if (req.user) {
             next()
         } else {
@@ -140,7 +140,7 @@ io.engine.use(
 const userSockets = {}
 
 io.on('connection', (socket) => {
-    console.log('user in socket', socket.request.user)
+    // console.log('user in socket', socket.request.user)
     const userId = socket.request.user._id
     if (userId) {
         userSockets[userId] = socket.id
@@ -159,6 +159,7 @@ io.on('connection', (socket) => {
 app.get('/', (req, res) => {
     return res.redirect('/chat')
 })
+
 app.use('/', indexRouter)
 
 server.listen(PORT, async () => {
@@ -166,7 +167,6 @@ server.listen(PORT, async () => {
         .then(async () => {
             console.log('MongoDB connected')
             console.log(`Server running on http://localhost:${PORT}`)
-            console.log('Online Users: ', Object.keys(userSockets))
         })
         .catch((err) => {
             console.error('Error connecting to MongoDB: ', err.message)

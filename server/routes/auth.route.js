@@ -17,7 +17,7 @@ router.get('/jwt/refresh-token', async (req, res) => {
     const encryptedRefreshToken = req.cookies.refreshToken
 
     if (!encryptedRefreshToken) {
-        return res.status(403).json({ error: 'Access Forbidden. No refresh token exists' })
+        return res.status(403).json({ error: 'No refresh token exists' })
     }
 
     try {
@@ -31,7 +31,7 @@ router.get('/jwt/refresh-token', async (req, res) => {
 
         // console.log('refreshtokendb user: ', refreshTokenFromDb.user, 'Decoded user: ', decoded.user)
         if (refreshTokenFromDb.user.toString() !== decoded.user) {
-            return res.status(403).json({ error: 'Access Forbidden. Invalid refresh token' })
+            return res.status(403).json({ error: 'Invalid refresh token' })
         }
 
         // if the updated refresh token in older than 1 day, then send a new refresh token
@@ -75,51 +75,63 @@ router.get('/login', limiter, isAuthenticated, (req, res) => {
     res.render('login')
 })
 
-router.post('/login', passport.authenticate('local'), async (req, res) => {
-    const user = req.user
+router.post('/login', (req, res, next) => {
+    passport.authenticate('local', async (err, user, info) => {
+        if (err) {
+            return res.status(400).json({ error: err.message })
+        }
 
-    if (!user) {
-        return res.status(400).json({ error: 'Invalid credentials' })
-    }
+        if (!user) {
+            return res.status(400).json({ error: 'Invalid credentials' })
+        }
 
-    const accessToken = jwt.sign({ user: user._id }, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '30m' })
-    const encryptedAccessToken = CryptoEnc.encryptWithCryptoJS(accessToken)
-
-    const refreshToken = jwt.sign({ user: user._id }, process.env.REFRESH_TOKEN_SECRET, { expiresIn: '7d' })
-    const encryptedRefreshToken = CryptoEnc.encryptWithCryptoJS(refreshToken)
-
-    // Save the refresh token in db
-    const findAuth = await Auth.findOne({ user: user._id })
-    if (!findAuth) {
-        const newAuth = new Auth({
-            user: user._id,
-            refreshToken: encryptedRefreshToken,
+        // LogIn the user manually
+        req.logIn(user, (err) => {
+            if (err) {
+                return res.status(400).json({ error: err.message })
+            }
         })
 
-        await newAuth.save()
-    } else {
-        findAuth.refreshToken = encryptedRefreshToken
-        await findAuth.save()
-    }
+        try {
+            const accessToken = jwt.sign({ user: user._id }, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '30m' })
+            const encryptedAccessToken = CryptoEnc.encryptWithCryptoJS(accessToken)
 
-    res.cookie('accessToken', encryptedAccessToken, {
-        httpOnly: true,
-        secure: true,
-        sameSite: 'strict',
-        maxAge: 1000 * 60 * 30, // 30 minutes
-    })
+            const refreshToken = jwt.sign({ user: user._id }, process.env.REFRESH_TOKEN_SECRET, { expiresIn: '7d' })
+            const encryptedRefreshToken = CryptoEnc.encryptWithCryptoJS(refreshToken)
 
-    res.cookie('refreshToken', encryptedRefreshToken, {
-        httpOnly: true,
-        secure: true,
-        sameSite: 'strict',
-        maxAge: 1000 * 60 * 60 * 24 * 7, // 7 days
-    })
+            // Save the refresh token in db
+            const findAuth = await Auth.findOne({ user: user._id })
+            if (!findAuth) {
+                const newAuth = new Auth({
+                    user: user._id,
+                    refreshToken: encryptedRefreshToken,
+                })
 
-    return res.status(200).json({ message: 'Login successful' })
-    // res.setHeader('Authorization', `Bearer ${accessToken}`)
-    // console.log('Authorization in login: ', res.getHeaders())
-    // return res.redirect('/chat')
+                await newAuth.save()
+            } else {
+                findAuth.refreshToken = encryptedRefreshToken
+                await findAuth.save()
+            }
+
+            res.cookie('accessToken', encryptedAccessToken, {
+                httpOnly: true,
+                secure: true,
+                sameSite: 'strict',
+                maxAge: 1000 * 60 * 30, // 30 minutes
+            })
+
+            res.cookie('refreshToken', encryptedRefreshToken, {
+                httpOnly: true,
+                secure: true,
+                sameSite: 'strict',
+                maxAge: 1000 * 60 * 60 * 24 * 7, // 7 days
+            })
+
+            return res.status(200).json({ message: 'Login successful' })
+        } catch (tokenError) {
+            return res.status(500).json({ error: 'Token generation failed' })
+        }
+    })(req, res, next)
 })
 
 // google auth routes

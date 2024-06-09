@@ -1,6 +1,8 @@
 import passport from 'passport'
 import { Strategy as GoogleStrategy } from 'passport-google-oauth20'
 import User from '../models/users.model.js'
+import dotenv from 'dotenv'
+dotenv.config()
 
 export default passport.use(
     new GoogleStrategy(
@@ -12,9 +14,6 @@ export default passport.use(
             state: true,
         },
         async (acessToken, refreshToken, profile, done) => {
-            console.log('acessToken in google: ', acessToken)
-            console.log('refreshToken in google: ', refreshToken)
-            console.log('profile in google: ', profile)
             const googleId = profile.id
             const name = profile.displayName
             const email = profile.emails[0].value

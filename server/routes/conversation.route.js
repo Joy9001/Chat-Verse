@@ -1,7 +1,7 @@
 import { Router } from 'express'
 const router = Router()
 import Conversation from '../models/conversation.model.js'
-import getConversation from '../helpers/conversation.helper.js'
+import { getConversation } from '../helpers/conversation.helper.js'
 import User from '../models/users.model.js'
 
 router.post('/get-conversation', async (req, res) => {

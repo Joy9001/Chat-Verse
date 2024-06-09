@@ -4,7 +4,7 @@ import { comparePassword } from '../helpers/password.helper.js'
 import { Strategy as LocalStrategy } from 'passport-local'
 
 passport.serializeUser((user, done) => {
-    console.log('Inside Serialize User', user)
+    console.log('Inside Serialize User')
     let userSession = {
         _id: user._id,
     }
@@ -36,7 +36,6 @@ export default passport.use(
         async (username, password, done) => {
             try {
                 const findUser = await User.findOne({ email: username })
-                // console.log('Inside Local Strategy', findUser._id)
                 if (!findUser) throw new Error('User not found')
                 const isPasswordMatch = await comparePassword(password, findUser.password)
                 if (!isPasswordMatch) throw new Error('Invalid credentials')
