@@ -1,6 +1,5 @@
 import { Router } from 'express'
 import User from '../models/users.model.js'
-import AddedPeopleToChat from '../models/addedPeopleToChat.model.js'
 import { csrfSync } from 'csrf-sync'
 const router = Router()
 import { getReceiverSocketId } from '../helpers/socket.helper.js'
@@ -68,19 +67,21 @@ router.post('/change-details', csrfSynchronisedProtection, async (req, res) => {
         }
 
         // Send the details to all the users who have added the current user to chat
-        const allSenders = await AddedPeopleToChat.find(
+        const allSenders = await User.find(
             {
-                recivers: {
-                    $in: [currentUserId],
+                _id: {
+                    $nin: [currentUserId],
                 },
             },
             {
-                senderId: 1,
+                name: 1,
+                username: 1,
+                avatar: 1,
             }
         )
 
         allSenders.forEach(async (sender) => {
-            const senderSocketId = getReceiverSocketId(sender.senderId)
+            const senderSocketId = getReceiverSocketId(sender._id)
 
             if (senderSocketId) {
                 io.to(senderSocketId).emit('receiver-changed-details', oldUserDetails, newUserDetails, (response) => {
