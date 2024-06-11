@@ -1,4 +1,3 @@
-import { faker } from '@faker-js/faker'
 import User from '../models/users.model.js'
 import { hashPassword } from './password.helper.js'
 

@@ -44,6 +44,10 @@ app.use(
 // cors
 app.use(cors())
 
+// Troubleshooting Proxy Issues
+const numberOfProxies = 3
+app.set('trust proxy', numberOfProxies)
+
 // middlewares for parsing
 app.use(express.urlencoded({ extended: true }))
 app.use(express.json())
@@ -110,7 +114,7 @@ app.use(
             return res.status(401).json({ error: 'Unauthorized! Only admin can access this page!' })
         })(req, res, next)
     },
-    express.static('admin/@socket.io/admin-ui/ui/dist')
+    express.static(path.resolve('./client/admin-ui/dist'))
 )
 
 // admin ui for socket.io
@@ -120,6 +124,7 @@ instrument(io, {
         username: process.env.ADMIN_EMAIL,
         password: process.env.ADMIN_HASHED_PASSWORD,
     },
+    mode: 'development',
 })
 
 io.engine.use(onlyForHandshake(sessionMiddleware))

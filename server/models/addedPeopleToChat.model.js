@@ -1,5 +1,4 @@
 import { Schema, model } from 'mongoose'
-import User from './users.model.js'
 
 const addedPeopleToChatSchema = new Schema({
     senderId: {

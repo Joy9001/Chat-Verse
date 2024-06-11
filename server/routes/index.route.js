@@ -7,7 +7,6 @@ import searchPeopleRouter from './searchPeople.route.js'
 import avatarRouter from './avatar.route.js'
 import changeDetailsRouter from './changeDetails.route.js'
 import authRouter from './auth.route.js'
-import passport from 'passport'
 import '../strategies/passport-jwt.strategy.js'
 import { isAuthenticated } from '../middlewares/auth.middleware.js'
 

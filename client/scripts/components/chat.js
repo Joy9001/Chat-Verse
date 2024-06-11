@@ -1,4 +1,4 @@
-import { handleHtmlOnlineUsers } from '../socket/socket.js'
+import { handleHtmlOnlineUsers, onlineUsers } from '../socket/socket.js'
 
 const getTime = () => {
     let date = new Date()
@@ -511,7 +511,7 @@ const handleSendRequest = async (receiverUsername, msg) => {
     })
         .then((res) => res.json())
         .then((data) => {
-            // console.log('data in /chat/send-message', data)
+            console.log('data in /chat/send-message', data)
             if (data.message === 'User is blocked') {
                 let alert = document.querySelector('.alert')
                 alert.children[1].innerHTML = 'User is blocked'

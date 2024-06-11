@@ -4,12 +4,17 @@
 
 @layer components {
     @font-face {
-        font-family: Operator Mono;
+        font-family: 'Operator Mono';
         src: url('/assets/OPERATORMONO-BOOKITALIC.OTF');
     }
 
     body {
-        font-family: Operator Mono;
+        font-family: 'Operator Mono', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji', 'Apple Color Emoji',
+            sans-serif;
+    }
+
+    #msg-input {
+        font-family: 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji', 'Apple Color Emoji', sans-serif;
     }
 
     .chat-body,

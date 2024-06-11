@@ -10,7 +10,6 @@ import {
     unblockUserController,
     getPeopleToAddController,
 } from '../controllers/chat.controller.js'
-import passport from 'passport'
 import '../strategies/passport-jwt.strategy.js'
 import { limiter } from '../helpers/rateLimit.helper.js'
 

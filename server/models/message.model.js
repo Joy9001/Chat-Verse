@@ -1,5 +1,4 @@
 import { Schema, model } from 'mongoose'
-import User from './users.model.js'
 import Conversation from './conversation.model.js'
 import { addPeopleToChat } from '../helpers/addPeopleToChat.helper.js'
 import AddedPeopleToChat from './addedPeopleToChat.model.js'

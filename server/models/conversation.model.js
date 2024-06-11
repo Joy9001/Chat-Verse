@@ -1,6 +1,5 @@
 import { Schema, model } from 'mongoose'
 import Message from './message.model.js'
-import AddedPeopleToChat from './addedPeopleToChat.model.js'
 
 const unreadMsgCountSchema = new Schema({
     senderId: {

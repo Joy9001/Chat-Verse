@@ -1,6 +1,7 @@
 import { Router } from 'express'
 import { generateAvatar } from '../helpers/generateAvatar.helper.js'
 const router = Router()
+import fetch from 'node-fetch' // Node ver>=18 doesn't have fetch by deafult
 
 router.post('/get-avatar', (req, res) => {
     const { gender } = req.body

@@ -54,7 +54,7 @@ const handleHtmlGet = (message) => {
     msgContainerDiv.scrollTop = msgContainerDiv.scrollHeight
 }
 
-export const handleHtmlOnlineUsers = (users) => {
+const handleHtmlOnlineUsers = (users) => {
     const leftPeople = document.querySelectorAll('.chat-child')
     leftPeople.forEach(async (person) => {
         const personUsername = person.querySelector('.chat-username').innerText
@@ -361,6 +361,62 @@ socket.on('unblockUser', (senderId) => {
     }
 })
 
+socket.on('receiver-changed-details', (oldUserDetails, newUserDetails, callback) => {
+    try {
+        // add user popup
+        let popupPeople = document.querySelectorAll('.popup-people')
+        popupPeople.forEach((person) => {
+            let personUsername = person.querySelector('.popup-people-username').innerText.trim()
+            if (personUsername === oldUserDetails.username) {
+                person.querySelector('.popup-people-name').innerText = newUserDetails.name
+                person.querySelector('.popup-people-username').innerText = newUserDetails.username
+                person.querySelector('.popup-people-avatar').src = newUserDetails.avatar
+            }
+        })
+
+        // left side chats list
+        let allLeftSideUser = document.querySelectorAll('.chat-child')
+        allLeftSideUser.forEach((user) => {
+            let username = user.querySelector('.chat-username').innerText.trim()
+            if (username === oldUserDetails.username) {
+                user.querySelector('.chat-name').innerText = newUserDetails.name
+                user.querySelector('.chat-username').innerText = newUserDetails.username
+                user.querySelector('.chats_img img').src = newUserDetails.avatar
+
+                // chat section on right
+                if (user.classList.contains('active')) {
+                    // chat head
+                    let chat_head = document.querySelector('.chats-head')
+                    chat_head.querySelector('.chats_img img').src = newUserDetails.avatar
+                    chat_head.querySelector('#chat-head-name').innerText = newUserDetails.name
+
+                    // chat head popup
+                    document.querySelector('.to-user-info-popup-details img').src = newUserDetails.avatar
+                    document.querySelector('.to-user-info-popup-details h3').innerText = newUserDetails.name
+                    document.querySelector('.to-user-info-popup-details h4').innerText = newUserDetails.username
+
+                    // chat mid
+                    let toUserProfileSec = document.querySelector('.to-user-profile-sec')
+                    toUserProfileSec.querySelector('.to-user-profile-sec-img img').src = newUserDetails.avatar
+                    toUserProfileSec.querySelector('.to-user-profile-sec-name h1').innerText = newUserDetails.name
+                    toUserProfileSec.querySelector('.to-user-profile-sec-name h3').innerText = newUserDetails.username
+                }
+            }
+        })
+
+        callback({
+            status: 'success',
+            message: 'details updated',
+        })
+    } catch (error) {
+        console.log('Error:', error)
+        callback({
+            status: 'failure',
+            error: error,
+        })
+    }
+})
+
 socket.on('connection', () => {
     console.log('Connected to server', socket.id)
 })
@@ -368,3 +424,5 @@ socket.on('connection', () => {
 socket.on('disconnect', () => {
     console.log('Disconnected from server')
 })
+
+export { onlineUsers, handleHtmlOnlineUsers }
