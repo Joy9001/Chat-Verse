@@ -84,14 +84,19 @@ router.post('/change-details', csrfSynchronisedProtection, async (req, res) => {
             const senderSocketId = getReceiverSocketId(sender._id)
 
             if (senderSocketId) {
-                io.to(senderSocketId).emit('receiver-changed-details', oldUserDetails, newUserDetails, (response) => {
-                    console.log(response)
-                    if (response.status === 'success') {
-                        console.log('Changed details send successfully')
-                    } else {
-                        console.error('Error sending changed details')
-                    }
-                })
+                io.to(senderSocketId)
+                    .timeout(2000)
+                    .emit('receiver-changed-details', oldUserDetails, newUserDetails, (err, responses) => {
+                        console.log(responses)
+                        if (err) {
+                            console.error(err)
+                        }
+                        if (responses[0].status === 'success') {
+                            console.log('Changed details send successfully')
+                        } else {
+                            console.error('Error sending changed details')
+                        }
+                    })
             }
         })
         return res.json({

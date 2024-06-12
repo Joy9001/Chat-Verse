@@ -105,21 +105,29 @@ const sendMessageController = async (req, res) => {
         const receiverSocketId = getReceiverSocketId(receiverId)
         console.log('receiverSocketId: ', receiverSocketId)
         if (receiverSocketId) {
-            io.to(receiverSocketId).emit('newMessage', savedMsg, senderUsername['username'], async (response) => {
-                if (response.status === 'success') {
-                    console.log('Message sent to receiver', receiverSocketId)
-                } else if (response.status === 'failure') {
-                    console.log('Error sending message to receiver: ', response.error)
-                } else {
-                    const result = await updateUnreadCount(senderId, receiverId)
-                    if (result.success) {
-                        console.log('Inside sendMessageController: ', result.message)
-                    } else {
-                        console.log('Inside sendMessageController: ', result.error)
-                        throw new Error(result.error)
+            io.to(receiverSocketId)
+                .timeout(2000)
+                .emit('newMessage', savedMsg, senderUsername['username'], async (err, responses) => {
+                    // console.log('response: ', responses)
+                    if (err) {
+                        console.log('Error sending message to receiver: ', err)
+                        throw new Error(err)
                     }
-                }
-            })
+                    if (responses[0].status === 'success') {
+                        console.log('Message sent to receiver', receiverSocketId)
+                    } else if (responses[0].status === 'failure') {
+                        console.log('Error sending message to receiver: ', response.error)
+                    } else {
+                        console.log(responses)
+                        const result = await updateUnreadCount(senderId, receiverId)
+                        if (result.success) {
+                            console.log('Inside sendMessageController: ', result.message)
+                        } else {
+                            console.log('Inside sendMessageController: ', result.error)
+                            throw new Error(result.error)
+                        }
+                    }
+                })
         } else {
             const result = await updateUnreadCount(senderId, receiverId)
             if (result.success) {
