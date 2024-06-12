@@ -8609,7 +8609,7 @@ html:has(.drawer-open.drawer-open) {
 @font-face {
   font-family: 'Operator Mono';
 
-  src: url('/assets/OPERATORMONO-BOOKITALIC.OTF');
+  src: url('../public/assets/OPERATORMONO-BOOKITALIC.OTF');
 }
 
 body {
@@ -8624,7 +8624,7 @@ body {
 .chat-body,
     .login_body,
     .register-body {
-  background-image: url('/assets/bg-img.png');
+  background-image: url('../public/assets/bg-img.png');
   background-size: cover;
   background-position: center;
 }
@@ -9210,6 +9210,11 @@ textarea::-webkit-scrollbar {
   margin: 1.75rem;
 }
 
+.mx-1 {
+  margin-left: 0.25rem;
+  margin-right: 0.25rem;
+}
+
 .mx-2 {
   margin-left: 0.5rem;
   margin-right: 0.5rem;
@@ -9343,6 +9348,10 @@ textarea::-webkit-scrollbar {
 
 .inline-block {
   display: inline-block;
+}
+
+.\!inline {
+  display: inline !important;
 }
 
 .inline {
@@ -9534,6 +9543,10 @@ textarea::-webkit-scrollbar {
   width: 2.5rem;
 }
 
+.w-11 {
+  width: 2.75rem;
+}
+
 .w-11\/12 {
   width: 91.666667%;
 }
@@ -9548,6 +9561,10 @@ textarea::-webkit-scrollbar {
 
 .w-24 {
   width: 6rem;
+}
+
+.w-3 {
+  width: 0.75rem;
 }
 
 .w-3\/4 {
@@ -10769,6 +10786,20 @@ textarea::-webkit-scrollbar {
   background-color: rgb(255 0 0 / var(--tw-bg-opacity));
 }
 
+.bg-black {
+  --tw-bg-opacity: 1;
+  background-color: rgb(0 0 0 / var(--tw-bg-opacity));
+}
+
+.bg-white {
+  --tw-bg-opacity: 1;
+  background-color: rgb(255 255 255 / var(--tw-bg-opacity));
+}
+
+.bg-none {
+  background-image: none;
+}
+
 .decoration-slice {
   -webkit-box-decoration-break: slice;
           box-decoration-break: slice;
@@ -11551,6 +11582,10 @@ textarea::-webkit-scrollbar {
 
 .\[a-zA-Z0-9\:\\\\-\\\\\._\$\] {
   a-z-a--z0-9: \\-\\. $;
+}
+
+.\[hash\:base64\] {
+  hash: base64;
 }
 
 @media (hover:hover) {
