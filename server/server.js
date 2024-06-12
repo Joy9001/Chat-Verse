@@ -54,7 +54,8 @@ app.use(express.json())
 app.use(cookieParser())
 
 // view engine setup
-app.set('views', path.resolve('client/views'))
+// app.set('views', path.resolve('client/views'))
+app.set('views', path.resolve('client/dist/views'))
 app.set('view engine', 'ejs')
 
 // session middleware
@@ -77,9 +78,20 @@ app.use(passport.initialize())
 app.use(passport.session())
 
 // static files
-app.use(express.static(path.resolve('client/public')))
-app.use(express.static(path.resolve('client/styles')))
-app.use(express.static(path.resolve('client/dist')))
+app.use(
+    express.static(path.resolve('client/public'), {
+        setHeaders: (res, path) => {
+            res.setHeader('Cache-Control', 'public, max-age=31536000') // Cache static files for 1 year
+        },
+    })
+)
+app.use(
+    express.static(path.resolve('client/dist'), {
+        setHeaders: (res, path) => {
+            res.setHeader('Cache-Control', 'public, max-age=604800, immutable') // Cache static files for 1 week
+        },
+    })
+)
 
 // serve admin ui
 app.use(
