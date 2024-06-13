@@ -46,7 +46,7 @@ export default {
                 type: 'asset/resource',
             },
             {
-                test: /\.(png|svg|jpg|jpeg|gif)$/i,
+                test: /\.(png|svg|jpg|jpeg|gif|ico)$/i,
                 type: 'asset/resource',
             },
         ],
@@ -71,18 +71,21 @@ export default {
         new HtmlWebpackPlugin({
             template: '!!raw-loader!./client/views/chat.ejs',
             filename: 'views/chat.ejs',
+            favicon: './client/public/assets/favicon.ico',
             chunks: ['chat', 'css'],
             inject: true,
         }),
         new HtmlWebpackPlugin({
             template: '!!raw-loader!./client/views/login.ejs',
             filename: 'views/login.ejs',
+            favicon: './client/public/assets/favicon.ico',
             chunks: ['login', 'css'],
             inject: true,
         }),
         new HtmlWebpackPlugin({
             template: '!!raw-loader!./client/views/register.ejs',
             filename: 'views/register.ejs',
+            favicon: './client/public/assets/favicon.ico',
             chunks: ['register', 'css'],
             inject: true,
         }),
