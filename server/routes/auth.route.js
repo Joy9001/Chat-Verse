@@ -21,7 +21,7 @@ router.get('/jwt/refresh-token', async (req, res) => {
     }
 
     try {
-        const refreshTokenFromDb = await Auth.findOne({ refreshToken: encryptedRefreshToken })
+        let refreshTokenFromDb = await Auth.findOne({ refreshToken: encryptedRefreshToken })
         if (!refreshTokenFromDb) {
             return res.status(404).json({ error: 'Refresh token not found' })
         }
