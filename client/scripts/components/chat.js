@@ -300,7 +300,7 @@ document.getElementById('add-chat-btn').addEventListener('click', (event) => {
 const createLeftsidePeople = (data) => {
     let parentDiv = document.createElement('div')
     parentDiv.classList.add('chat-child')
-    parentDiv.dataset.element = btoa(JSON.stringify(data))
+    // parentDiv.dataset.element = btoa(JSON.stringify(data))
     // parentDiv.onclick = () => chatClicked(parentDiv)
 
     let imgDiv = document.createElement('div')

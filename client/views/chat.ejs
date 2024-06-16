@@ -21,7 +21,7 @@
             <!-- left bar - all chats -->
             <div class="all-chats absolute flex h-full w-[30%] rounded-l-xl flex-col border-r-[1px] border-[#071952] ">
                 <!-- heading -->
-                <div class="heading w-[100% - 2rem] m-4 flex h-16 items-center justify-between rounded-lg border-2 border-solid border-[#FADCD5] bg-[#FADCD5] shadow-md">
+                <div class="heading w-[100% - 2rem] m-4 p-2 flex h-16 items-center justify-between rounded-lg border-2 border-solid border-[#FADCD5] bg-[#FADCD5] shadow-md">
                     <!-- title -->
                     <div class="ml-4 text-xl font-bold max-lg:text-lg max-md:text-base max-sm:text-sm">
                         <h1>ChatVerse</h1>
@@ -153,13 +153,13 @@
                         </div>
                         <% const unreadMsg=unreadMessages.find((msg)=> msg.senderId.toString() === element._id.toString()); %>
                         <% if (unreadMsg && unreadMsg.unreadCount !== 0) { %>
-                        <div class="unread-badge absolute right-8">
+                        <div class="unread-badge right-8">
                             <div class="badge bg-[#6D3C52] text-white">
                                 <%= unreadMsg.unreadCount %>
                             </div>
                         </div>
                         <% } else { %>
-                        <div class="unread-badge absolute right-8 hidden">
+                        <div class="unread-badge right-8">
                             <div class="badge bg-[#6D3C52] text-white">0</div>
                         </div>
                         <% } %>

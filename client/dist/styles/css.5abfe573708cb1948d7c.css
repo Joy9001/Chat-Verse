@@ -1,5 +1,5 @@
 /*
-! tailwindcss v3.4.3 | MIT License | https://tailwindcss.com
+! tailwindcss v3.4.4 | MIT License | https://tailwindcss.com
 */
 
 /*
@@ -506,6 +506,10 @@ video {
 
 html {
   -webkit-tap-highlight-color: transparent;
+}
+
+* {
+  scrollbar-color: currentColor transparent;
 }
 
 :root {
@@ -8661,10 +8665,6 @@ body {
   background-color: #fadfd9;
 }
 
-#close {
-  transform: translate(12%, -210%);
-}
-
 .chat-child {
   margin-top: 0.5rem;
   margin-bottom: 0.5rem;
@@ -8705,6 +8705,7 @@ body {
 
 .chat-name-parent {
   margin-left: 1rem;
+  width: 70%;
   --tw-text-opacity: 1;
   color: rgb(250 220 213 / var(--tw-text-opacity));
 }
@@ -8743,14 +8744,19 @@ body {
   font-size: 1.125rem;
   line-height: 1.75rem;
   font-weight: 600;
-  --tw-text-opacity: 1;
-  color: rgb(27 12 26 / var(--tw-text-opacity));
 }
 
 .chat-username {
   font-size: 0.875rem;
   line-height: 1.25rem;
   font-weight: 500;
+}
+
+.chat-name,
+    .chat-username {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
   --tw-text-opacity: 1;
   color: rgb(27 12 26 / var(--tw-text-opacity));
 }
@@ -9210,11 +9216,6 @@ textarea::-webkit-scrollbar {
   margin: 1.75rem;
 }
 
-.mx-1 {
-  margin-left: 0.25rem;
-  margin-right: 0.25rem;
-}
-
 .mx-2 {
   margin-left: 0.5rem;
   margin-right: 0.5rem;
@@ -9297,10 +9298,6 @@ textarea::-webkit-scrollbar {
 
 .mr-6 {
   margin-right: 1.5rem;
-}
-
-.mt-0 {
-  margin-top: 0px;
 }
 
 .mt-1 {
@@ -9543,10 +9540,6 @@ textarea::-webkit-scrollbar {
   width: 2.5rem;
 }
 
-.w-11 {
-  width: 2.75rem;
-}
-
 .w-11\/12 {
   width: 91.666667%;
 }
@@ -9561,10 +9554,6 @@ textarea::-webkit-scrollbar {
 
 .w-24 {
   width: 6rem;
-}
-
-.w-3 {
-  width: 0.75rem;
 }
 
 .w-3\/4 {

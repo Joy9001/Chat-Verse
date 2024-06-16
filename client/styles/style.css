@@ -41,18 +41,6 @@
         background-color: #fadfd9;
     }
 
-    .inside-popup {
-        background-color: #7e30e1;
-    }
-
-    #close {
-        transform: translate(12%, -210%);
-    }
-
-    .popup-search-icon {
-        transform: translate(-5px, -5px) scaleX(-1);
-    }
-
     .chat-child {
         @apply my-2 flex h-20 cursor-pointer items-center rounded-2xl p-1;
     }
@@ -68,7 +56,7 @@
     }
 
     .chat-name-parent {
-        @apply ml-4 text-[#FADCD5] group-hover:text-[#1B0C1A] group-[.active]:text-[#1B0C1A];
+        @apply w-[70%] ml-4 text-[#FADCD5] group-hover:text-[#1B0C1A] group-[.active]:text-[#1B0C1A];
     }
 
     .chats_img,
@@ -82,11 +70,16 @@
     }
 
     .chat-name {
-        @apply text-lg font-semibold text-[#1B0C1A];
+        @apply text-lg font-semibold;
     }
 
     .chat-username {
-        @apply text-sm font-medium text-[#1B0C1A];
+        @apply text-sm font-medium;
+    }
+
+    .chat-name,
+    .chat-username {
+        @apply text-[#1B0C1A] whitespace-nowrap overflow-hidden text-ellipsis;
     }
 
     .popup-people {
