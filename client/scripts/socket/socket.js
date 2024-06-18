@@ -162,7 +162,7 @@ socket.on('newMessage', async (message, senderUsername, callback) => {
     let leftPeople = document.querySelectorAll('.chat-child')
     leftPeople.forEach((person) => {
         // let data = JSON.parse(atob(person.dataset.element))
-        let personUsername = person.querySelector('.chat-username').textContent
+        let personUsername = person.querySelector('.chat-username').innerText
 
         if (personUsername === senderUsername) {
             sender = person
@@ -174,10 +174,10 @@ socket.on('newMessage', async (message, senderUsername, callback) => {
         let popupPeople = document.querySelectorAll('.popup-people')
         popupPeople.forEach((person) => {
             // let data = JSON.parse(atob(person.dataset.element))
-            let personUsername = person.querySelector('.popup-people-username').textContent.trim()
+            let personUsername = person.querySelector('.popup-people-username').innerText.trim()
             // console.log(personUsername)
             if (personUsername === senderUsername) {
-                let personName = person.querySelector('.popup-people-name').textContent
+                let personName = person.querySelector('.popup-people-name').innerText
                 let personAvatar = person.querySelector('.popup-people-avatar').src
                 sender = {
                     name: personName,
@@ -210,7 +210,7 @@ socket.on('newMessage', async (message, senderUsername, callback) => {
         let unreadMsg = sender.children[2]
         // console.log("sender", sender);
         // console.log('unreadMsg', unreadMsg)
-        let unreadMsgCount = parseInt(unreadMsg.textContent) + 1
+        let unreadMsgCount = parseInt(unreadMsg.innerText) + 1
         unreadMsg.children[0].textContent = unreadMsgCount
         unreadMsg.classList.remove('hidden')
 
@@ -268,13 +268,13 @@ socket.on('deleteMessage', (dltMsgId, senderUsername) => {
     } else {
         let leftPeople = document.querySelectorAll('.chat-child')
         leftPeople.forEach((person) => {
-            let personUsername = person.querySelector('.chat-username').textContent
+            let personUsername = person.querySelector('.chat-username').innerText
             if (personUsername === senderUsername) {
                 let unreadMsg = person.children[2]
                 if (unreadMsg.classList.contains('hidden')) {
                     return
                 }
-                let unreadMsgCount = parseInt(unreadMsg.textContent) - 1
+                let unreadMsgCount = parseInt(unreadMsg.innerText) - 1
                 unreadMsg.children[0].textContent = unreadMsgCount
                 if (unreadMsgCount === 0) {
                     unreadMsg.classList.add('hidden')
@@ -287,7 +287,7 @@ socket.on('deleteMessage', (dltMsgId, senderUsername) => {
 socket.on('deleteConversation', (senderUsername) => {
     let leftPeople = document.querySelectorAll('.chat-child')
     leftPeople.forEach((person) => {
-        let personUsername = person.querySelector('.chat-username').textContent
+        let personUsername = person.querySelector('.chat-username').innerText
         if (personUsername === senderUsername) {
             person.remove()
         }
@@ -366,7 +366,7 @@ socket.on('receiver-changed-details', (oldUserDetails, newUserDetails, callback)
         // add user popup
         let popupPeople = document.querySelectorAll('.popup-people')
         popupPeople.forEach((person) => {
-            let personUsername = person.querySelector('.popup-people-username').textContent.trim()
+            let personUsername = person.querySelector('.popup-people-username').innerText.trim()
             if (personUsername === oldUserDetails.username) {
                 person.querySelector('.popup-people-name').textContent = newUserDetails.name
                 person.querySelector('.popup-people-username').textContent = newUserDetails.username
@@ -377,7 +377,7 @@ socket.on('receiver-changed-details', (oldUserDetails, newUserDetails, callback)
         // left side chats list
         let allLeftSideUser = document.querySelectorAll('.chat-child')
         allLeftSideUser.forEach((user) => {
-            let username = user.querySelector('.chat-username').textContent.trim()
+            let username = user.querySelector('.chat-username').innerText.trim()
             if (username === oldUserDetails.username) {
                 user.querySelector('.chat-name').textContent = newUserDetails.name
                 user.querySelector('.chat-username').textContent = newUserDetails.username
