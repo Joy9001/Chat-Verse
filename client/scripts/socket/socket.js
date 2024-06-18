@@ -9,13 +9,13 @@ const handleHtmlGet = (message) => {
     let dates = document.querySelectorAll('.date')
     let msgContainerDiv = document.querySelector('.message-container')
 
-    if (dates.length === 0 || dates[dates.length - 1].innerText !== msgDate) {
+    if (dates.length === 0 || dates[dates.length - 1].textContent !== msgDate) {
         const dayDiv = document.createElement('div')
         dayDiv.classList.add('day')
         const dateDiv = document.createElement('div')
         dateDiv.classList.add('date')
         const dateh1 = document.createElement('h1')
-        dateh1.innerText = msgDate
+        dateh1.textContent = msgDate
 
         dateDiv.appendChild(dateh1)
         dayDiv.appendChild(dateDiv)
@@ -31,9 +31,9 @@ const handleHtmlGet = (message) => {
     let msgTextDiv = document.createElement('div')
     msgTextDiv.classList.add('msg-container')
     let msgP = document.createElement('p')
-    msgP.innerText = message.message
+    msgP.textContent = message.message
     let msgTimeP = document.createElement('p')
-    msgTimeP.innerText = msgTime
+    msgTimeP.textContent = msgTime
     msgTextDiv.appendChild(msgP)
     msgTextDiv.appendChild(msgTimeP)
 
@@ -42,11 +42,11 @@ const handleHtmlGet = (message) => {
     deleteMsgBtnDiv.classList.add('delete-msg-btn', 'pl-2', 'hidden')
     // deleteMsgBtnDiv.setAttribute('onclick', 'deleteMessage(this)')
 
-    deleteMsgBtnDiv.innerHTML = `
+    deleteMsgBtnDiv.innerHTML = DOMPurify.sanitize(`
         <button class="btn btn-circle btn-outline border-[#E9E9E9] bg-[#4b2138] hover:bg-[#E9E9E9] hover:border-[#4b2138] h-6 w-6 min-h-4 group">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 group-hover:stroke-[#4b2138] stroke-[#E9E9E9]" fill="none" viewBox="0 0 24 24" stroke="#4B2138"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
         </button>
-    `
+    `)
     msg_div.appendChild(msgTextDiv)
     msg_div.appendChild(deleteMsgBtnDiv)
 
@@ -57,7 +57,7 @@ const handleHtmlGet = (message) => {
 const handleHtmlOnlineUsers = (users) => {
     const leftPeople = document.querySelectorAll('.chat-child')
     leftPeople.forEach(async (person) => {
-        const personUsername = person.querySelector('.chat-username').innerText
+        const personUsername = person.querySelector('.chat-username').textContent
         let personData = await fetch('/get-conv-api/user-details', {
             method: 'POST',
             headers: {
@@ -112,7 +112,7 @@ const createLeftsidePeopleR = (data) => {
         : `https://avatar.iran.liara.run/username?username=${data.name.replace(/ /g, '+')}`
     img.alt = data.name
 
-    imgDiv.innerHTML = statusDiv
+    imgDiv.innerHTML = DOMPurify.sanitize(statusDiv)
     imgDiv.appendChild(img)
     parentDiv.appendChild(imgDiv)
 
@@ -121,11 +121,11 @@ const createLeftsidePeopleR = (data) => {
 
     let name = document.createElement('h4')
     name.classList.add('chat-name')
-    name.innerText = data.name.trim()
+    name.textContent = data.name.trim()
 
     let username = document.createElement('h4')
     username.classList.add('chat-username')
-    username.innerText = data.username.trim()
+    username.textContent = data.username.trim()
 
     nameDiv.appendChild(name)
     nameDiv.appendChild(username)
@@ -136,7 +136,7 @@ const createLeftsidePeopleR = (data) => {
         <div class="badge bg-[#6D3C52] text-white">0</div>
     </div>`
 
-    parentDiv.innerHTML += badgeDiv
+    parentDiv.innerHTML += DOMPurify.sanitize(badgeDiv)
 
     let all_chats = document.getElementById('chat-parent')
     all_chats.appendChild(parentDiv)
@@ -162,7 +162,7 @@ socket.on('newMessage', async (message, senderUsername, callback) => {
     let leftPeople = document.querySelectorAll('.chat-child')
     leftPeople.forEach((person) => {
         // let data = JSON.parse(atob(person.dataset.element))
-        let personUsername = person.querySelector('.chat-username').innerText
+        let personUsername = person.querySelector('.chat-username').textContent
 
         if (personUsername === senderUsername) {
             sender = person
@@ -174,10 +174,10 @@ socket.on('newMessage', async (message, senderUsername, callback) => {
         let popupPeople = document.querySelectorAll('.popup-people')
         popupPeople.forEach((person) => {
             // let data = JSON.parse(atob(person.dataset.element))
-            let personUsername = person.querySelector('.popup-people-username').innerText.trim()
+            let personUsername = person.querySelector('.popup-people-username').textContent.trim()
             // console.log(personUsername)
             if (personUsername === senderUsername) {
-                let personName = person.querySelector('.popup-people-name').innerText
+                let personName = person.querySelector('.popup-people-name').textContent
                 let personAvatar = person.querySelector('.popup-people-avatar').src
                 sender = {
                     name: personName,
@@ -210,8 +210,8 @@ socket.on('newMessage', async (message, senderUsername, callback) => {
         let unreadMsg = sender.children[2]
         // console.log("sender", sender);
         // console.log('unreadMsg', unreadMsg)
-        let unreadMsgCount = parseInt(unreadMsg.innerText) + 1
-        unreadMsg.children[0].innerText = unreadMsgCount
+        let unreadMsgCount = parseInt(unreadMsg.textContent) + 1
+        unreadMsg.children[0].textContent = unreadMsgCount
         unreadMsg.classList.remove('hidden')
 
         document.querySelector('#notification-alert').classList.remove('hidden')
@@ -239,7 +239,7 @@ socket.on('deleteMessage', (dltMsgId, senderUsername) => {
     // console.log("Deleted message", dltMsgId);
     let activePerson = document.querySelector('.chat-child.active')
 
-    if (activePerson && activePerson.children[1].children[1].innerText === senderUsername) {
+    if (activePerson && activePerson.children[1].children[1].textContent === senderUsername) {
         // console.log('deleting message', dltMsgId)
         let allToUserMsg = document.querySelectorAll('.to-user-msg')
         allToUserMsg.forEach((msg) => {
@@ -268,14 +268,14 @@ socket.on('deleteMessage', (dltMsgId, senderUsername) => {
     } else {
         let leftPeople = document.querySelectorAll('.chat-child')
         leftPeople.forEach((person) => {
-            let personUsername = person.querySelector('.chat-username').innerText
+            let personUsername = person.querySelector('.chat-username').textContent
             if (personUsername === senderUsername) {
                 let unreadMsg = person.children[2]
                 if (unreadMsg.classList.contains('hidden')) {
                     return
                 }
-                let unreadMsgCount = parseInt(unreadMsg.innerText) - 1
-                unreadMsg.children[0].innerText = unreadMsgCount
+                let unreadMsgCount = parseInt(unreadMsg.textContent) - 1
+                unreadMsg.children[0].textContent = unreadMsgCount
                 if (unreadMsgCount === 0) {
                     unreadMsg.classList.add('hidden')
                 }
@@ -287,7 +287,7 @@ socket.on('deleteMessage', (dltMsgId, senderUsername) => {
 socket.on('deleteConversation', (senderUsername) => {
     let leftPeople = document.querySelectorAll('.chat-child')
     leftPeople.forEach((person) => {
-        let personUsername = person.querySelector('.chat-username').innerText
+        let personUsername = person.querySelector('.chat-username').textContent
         if (personUsername === senderUsername) {
             person.remove()
         }
@@ -366,10 +366,10 @@ socket.on('receiver-changed-details', (oldUserDetails, newUserDetails, callback)
         // add user popup
         let popupPeople = document.querySelectorAll('.popup-people')
         popupPeople.forEach((person) => {
-            let personUsername = person.querySelector('.popup-people-username').innerText.trim()
+            let personUsername = person.querySelector('.popup-people-username').textContent.trim()
             if (personUsername === oldUserDetails.username) {
-                person.querySelector('.popup-people-name').innerText = newUserDetails.name
-                person.querySelector('.popup-people-username').innerText = newUserDetails.username
+                person.querySelector('.popup-people-name').textContent = newUserDetails.name
+                person.querySelector('.popup-people-username').textContent = newUserDetails.username
                 person.querySelector('.popup-people-avatar').src = newUserDetails.avatar
             }
         })
@@ -377,10 +377,10 @@ socket.on('receiver-changed-details', (oldUserDetails, newUserDetails, callback)
         // left side chats list
         let allLeftSideUser = document.querySelectorAll('.chat-child')
         allLeftSideUser.forEach((user) => {
-            let username = user.querySelector('.chat-username').innerText.trim()
+            let username = user.querySelector('.chat-username').textContent.trim()
             if (username === oldUserDetails.username) {
-                user.querySelector('.chat-name').innerText = newUserDetails.name
-                user.querySelector('.chat-username').innerText = newUserDetails.username
+                user.querySelector('.chat-name').textContent = newUserDetails.name
+                user.querySelector('.chat-username').textContent = newUserDetails.username
                 user.querySelector('.chats_img img').src = newUserDetails.avatar
 
                 // chat section on right
@@ -388,18 +388,18 @@ socket.on('receiver-changed-details', (oldUserDetails, newUserDetails, callback)
                     // chat head
                     let chat_head = document.querySelector('.chats-head')
                     chat_head.querySelector('.chats_img img').src = newUserDetails.avatar
-                    chat_head.querySelector('#chat-head-name').innerText = newUserDetails.name
+                    chat_head.querySelector('#chat-head-name').textContent = newUserDetails.name
 
                     // chat head popup
                     document.querySelector('.to-user-info-popup-details img').src = newUserDetails.avatar
-                    document.querySelector('.to-user-info-popup-details h3').innerText = newUserDetails.name
-                    document.querySelector('.to-user-info-popup-details h4').innerText = newUserDetails.username
+                    document.querySelector('.to-user-info-popup-details h3').textContent = newUserDetails.name
+                    document.querySelector('.to-user-info-popup-details h4').textContent = newUserDetails.username
 
                     // chat mid
                     let toUserProfileSec = document.querySelector('.to-user-profile-sec')
                     toUserProfileSec.querySelector('.to-user-profile-sec-img img').src = newUserDetails.avatar
-                    toUserProfileSec.querySelector('.to-user-profile-sec-name h1').innerText = newUserDetails.name
-                    toUserProfileSec.querySelector('.to-user-profile-sec-name h3').innerText = newUserDetails.username
+                    toUserProfileSec.querySelector('.to-user-profile-sec-name h1').textContent = newUserDetails.name
+                    toUserProfileSec.querySelector('.to-user-profile-sec-name h3').textContent = newUserDetails.username
                 }
             }
         })
