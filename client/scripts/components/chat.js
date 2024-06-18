@@ -36,12 +36,12 @@ const handleChatHeadAndEnd = (clickedUser, isOnline) => {
     chat_end.classList.remove('hidden')
     chat_head.classList.remove('hidden')
     chat_mid.classList.remove('hidden')
-    chat_head_name.innerText = clickedUser.name
+    chat_head_name.textContent = clickedUser.name
     chat_head_img.src = clickedUser.avatar
         ? clickedUser.avatar
         : `https://avatar.iran.liara.run/username?username=${clickedUser.name.replace(/ /g, '+')}`
-    to_user_info_popup.children[0].children[1].children[0].innerText = clickedUser.name
-    to_user_info_popup.children[0].children[1].children[1].innerText = clickedUser.username
+    to_user_info_popup.children[0].children[1].children[0].textContent = clickedUser.name
+    to_user_info_popup.children[0].children[1].children[1].textContent = clickedUser.username
     to_user_info_popup.children[0].children[0].src = clickedUser.avatar
         ? clickedUser.avatar
         : `https://avatar.iran.liara.run/username?username=${clickedUser.name.replace(/ /g, '+')}`
@@ -61,11 +61,11 @@ const handleHtmlConversation = (data) => {
     // console.log("Data: ", data);
 
     if (data.messages.length === 0) {
-        msgContainerDiv.innerHTML = ''
+        msgContainerDiv.textContent = ''
         return
     } else {
         // console.log("Creating new conversation", data.messages);
-        msgContainerDiv.innerHTML = ''
+        msgContainerDiv.textContent = ''
         let date = ''
         data.messages = data.messages.filter((msg) => msg !== null)
         data.messages.forEach((msg) => {
@@ -78,7 +78,7 @@ const handleHtmlConversation = (data) => {
                 const dateDiv = document.createElement('div')
                 dateDiv.classList.add('date')
                 const dateh1 = document.createElement('h1')
-                dateh1.innerText = date
+                dateh1.textContent = date
 
                 dateDiv.appendChild(dateh1)
                 dayDiv.appendChild(dateDiv)
@@ -89,9 +89,9 @@ const handleHtmlConversation = (data) => {
             let msgTextDiv = document.createElement('div')
             msgTextDiv.classList.add('msg-container')
             let msgP = document.createElement('p')
-            msgP.innerText = msg.message
+            msgP.textContent = msg.message
             let msgTimeP = document.createElement('p')
-            msgTimeP.innerText = msgDate.slice(0, 5)
+            msgTimeP.textContent = msgDate.slice(0, 5)
             msgTextDiv.appendChild(msgP)
             msgTextDiv.appendChild(msgTimeP)
 
@@ -106,11 +106,11 @@ const handleHtmlConversation = (data) => {
                 msgDiv.dataset.id = msg._id
 
                 deleteMsgBtnDiv.classList.add('pr-2')
-                deleteMsgBtnDiv.innerHTML = `
-                <button class="btn btn-circle btn-outline border-[#4b2138] bg-[#E9E9E9] hover:bg-[#4B2138] hover:border-[#e9e9e9] h-6 w-6 min-h-4 group">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 group-hover:stroke-[#E9E9E9]" fill="none" viewBox="0 0 24 24" stroke="#4B2138"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
-                </button>
-            `
+                deleteMsgBtnDiv.innerHTML = DOMPurify.sanitize(`
+                    <button class="btn btn-circle btn-outline border-[#4b2138] bg-[#E9E9E9] hover:bg-[#4B2138] hover:border-[#e9e9e9] h-6 w-6 min-h-4 group">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 group-hover:stroke-[#E9E9E9]" fill="none" viewBox="0 0 24 24" stroke="#4B2138"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
+                    </button>
+                `)
                 msgDiv.appendChild(deleteMsgBtnDiv)
                 msgDiv.appendChild(msgTextDiv)
 
@@ -122,11 +122,11 @@ const handleHtmlConversation = (data) => {
 
                 msgDiv.appendChild(msgTextDiv)
                 deleteMsgBtnDiv.classList.add('pl-2')
-                deleteMsgBtnDiv.innerHTML = `
-                <button class="btn btn-circle btn-outline border-[#E9E9E9] bg-[#4b2138] hover:bg-[#E9E9E9] hover:border-[#4b2138] h-6 w-6 min-h-4 group">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 stroke-[#E9E9E9] group-hover:stroke-[#4b2138]" fill="none" viewBox="0 0 24 24" stroke="#4B2138"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
-                </button>
-            `
+                deleteMsgBtnDiv.innerHTML = DOMPurify.sanitize(`
+                    <button class="btn btn-circle btn-outline border-[#E9E9E9] bg-[#4b2138] hover:bg-[#E9E9E9] hover:border-[#4b2138] h-6 w-6 min-h-4 group">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 stroke-[#E9E9E9] group-hover:stroke-[#4b2138]" fill="none" viewBox="0 0 24 24" stroke="#4B2138"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
+                    </button>
+                `)
                 msgDiv.appendChild(deleteMsgBtnDiv)
                 msgContainerDiv.appendChild(msgDiv)
             }
@@ -159,7 +159,7 @@ const handleConversation = (receiverId) => {
 
             if (blockedBy === currentUserId) {
                 let blockBtnChild = document.querySelector('#block-to-user').children[0]
-                blockBtnChild.innerText = 'Unblock'
+                blockBtnChild.textContent = 'Unblock'
             } else if (blockedBy !== null) {
                 let blockBtn = document.querySelector('#block-to-user')
                 blockBtn.classList.add('hidden')
@@ -192,8 +192,8 @@ const handleChats = (clickedUser) => {
     let toUserProfileSecNameDiv = document.querySelector('.to-user-profile-sec-name')
     let toUserProfileSecName = toUserProfileSecNameDiv.children[0]
     let toUserProfileSecUsername = toUserProfileSecNameDiv.children[1]
-    toUserProfileSecName.innerText = clickedUser.name
-    toUserProfileSecUsername.innerText = clickedUser.username
+    toUserProfileSecName.textContent = clickedUser.name
+    toUserProfileSecUsername.textContent = clickedUser.username
 
     let receiverId = clickedUser._id
 
@@ -205,7 +205,7 @@ const chatClicked = async (htmlElement) => {
     let chatSection = document.querySelector('.chat-section')
 
     let unreadElement = htmlElement.children[2]
-    unreadElement.children[0].innerText = 0
+    unreadElement.children[0].textContent = 0
     unreadElement.classList.contains('hidden') ? null : unreadElement.classList.add('hidden')
 
     const clickedUserUsername = htmlElement.children[1].children[1].innerText
@@ -315,7 +315,7 @@ const createLeftsidePeople = (data) => {
         : `https://avatar.iran.liara.run/username?username=${data.name.replace(/ /g, '+')}`
     img.alt = data.name
 
-    imgDiv.innerHTML = statusDiv
+    imgDiv.innerHTML = DOMPurify.sanitize(statusDiv)
     imgDiv.appendChild(img)
     parentDiv.appendChild(imgDiv)
 
@@ -324,11 +324,11 @@ const createLeftsidePeople = (data) => {
 
     let name = document.createElement('h4')
     name.classList.add('chat-name')
-    name.innerText = data.name
+    name.textContent = data.name
 
     let username = document.createElement('h4')
     username.classList.add('chat-username')
-    username.innerText = data.username
+    username.textContent = data.username
 
     nameDiv.appendChild(name)
     nameDiv.appendChild(username)
@@ -339,7 +339,7 @@ const createLeftsidePeople = (data) => {
         <div class="badge badge-accent">0</div>
     </div>`
 
-    parentDiv.innerHTML += badgeDiv
+    parentDiv.innerHTML += DOMPurify.sanitize(badgeDiv)
 
     let all_chats = document.getElementById('chat-parent')
     all_chats.appendChild(parentDiv)
@@ -444,13 +444,13 @@ const handleHtmlSend = (msgRes) => {
 
     let dates = document.querySelectorAll('.date')
 
-    if (dates.length === 0 || dates[dates.length - 1].innerText !== msgDate) {
+    if (dates.length === 0 || dates[dates.length - 1].textContent !== msgDate) {
         const dayDiv = document.createElement('div')
         dayDiv.classList.add('day')
         const dateDiv = document.createElement('div')
         dateDiv.classList.add('date')
         const dateh1 = document.createElement('h1')
-        dateh1.innerText = msgDate
+        dateh1.textContent = msgDate
 
         dateDiv.appendChild(dateh1)
         dayDiv.appendChild(dateDiv)
@@ -460,20 +460,20 @@ const handleHtmlSend = (msgRes) => {
     let msg_div = document.createElement('div')
     msg_div.classList.add('from-user-msg')
     msg_div.dataset.id = msgRes._id
-    msg_div.innerHTML = `
+    msg_div.innerHTML = DOMPurify.sanitize(`
 		<div class="pr-2 delete-msg-btn hidden">
 			<button class="btn btn-circle btn-outline border-[#4b2138] bg-[#E9E9E9] hover:bg-[#4B2138] hover:border-[#e9e9e9] h-6 w-6 min-h-4 group">
 				<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 group-hover:stroke-[#E9E9E9]" fill="none" viewBox="0 0 24 24" stroke="#4B2138"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
 			</button>
 		</div>
-    `
+    `)
 
     let msgTextDiv = document.createElement('div')
     msgTextDiv.classList.add('msg-container')
     let msgP = document.createElement('p')
-    msgP.innerText = msgRes.message
+    msgP.textContent = msgRes.message
     let msgTimeP = document.createElement('p')
-    msgTimeP.innerText = msgTime
+    msgTimeP.textContent = msgTime
 
     msgTextDiv.appendChild(msgP)
     msgTextDiv.appendChild(msgTimeP)
@@ -511,7 +511,7 @@ const handleSendRequest = async (receiverUsername, msg) => {
     })
         .then((res) => res.json())
         .then((data) => {
-            console.log('data in /chat/send-message', data)
+            // console.log('data in /chat/send-message', data)
             if (data.message === 'User is blocked') {
                 let alert = document.querySelector('.alert')
                 alert.children[1].innerHTML = 'User is blocked'
@@ -532,13 +532,12 @@ document.getElementById('send-btn').addEventListener('click', (e) => {
     e.preventDefault()
     let msgInput = document.getElementById('msg-input')
 
-    let raw_msg = msgInput.value
-    let msg = raw_msg
+    let msg = DOMPurify.sanitize(msgInput.value)
     msgInput.value = ''
     msgInput.focus()
 
     if (msg.length > 0) {
-        let receiverUsername = document.querySelector('.chat-child.active').children[1].children[1].innerText
+        let receiverUsername = document.querySelector('.chat-child.active').children[1].children[1].textContent
         handleSendRequest(receiverUsername, msg)
     }
 })
@@ -549,9 +548,7 @@ document.getElementById('msg-input').addEventListener('keydown', (event) => {
     if (event.key === 'Enter' && !event.shiftKey) {
         event.preventDefault()
 
-        let raw_msg = msgInput.value
-        // let msg = raw_msg.replace(/\n/g, '<br>')
-        let msg = raw_msg
+        let msg = DOMPurify.sanitize(msgInput.value)
         msgInput.value = ''
         msgInput.focus()
 
@@ -619,7 +616,7 @@ const deleteMessage = async (btn) => {
                     }
                 })
                 let alert = document.querySelector('.alert')
-                alert.children[1].innerHTML = 'Message deleted for both'
+                alert.children[1].textContent = 'Message deleted for both'
                 alert.classList.remove('hidden')
                 setTimeout(() => {
                     alert.classList.add('hidden')
@@ -646,7 +643,7 @@ const deleteConversation = async () => {
     let blockDiv = document.querySelector('#chats-end-block')
 
     let receiver = document.querySelector('.chat-child.active')
-    let receiverUsername = receiver.children[1].children[1].innerText
+    let receiverUsername = receiver.children[1].children[1].textContent
     let receiverId = await fetch('/get-conv-api/user-details', {
         method: 'POST',
         headers: {
@@ -684,7 +681,7 @@ const deleteConversation = async () => {
                 blockDiv.classList.add('hidden')
 
                 let alert = document.querySelector('.alert')
-                alert.children[1].innerHTML = 'Conversation deleted'
+                alert.children[1].textContent = 'Conversation deleted'
                 alert.classList.remove('hidden')
 
                 setTimeout(() => {
@@ -718,7 +715,7 @@ const handleBlockUser = (receiverId, htmlElement) => {
         .then((data) => {
             // console.log(data.message)
             if (data.message === 'User blocked') {
-                htmlElement.children[0].innerText = 'Unblock'
+                htmlElement.children[0].textContent = 'Unblock'
                 chat_end.classList.add('hidden')
                 blockDiv.classList.remove('hidden')
             }
@@ -745,7 +742,7 @@ const handleUnblockUser = (receiverId, htmlElement) => {
         .then((data) => {
             // console.log(data.message)
             if (data.message === 'User unblocked') {
-                htmlElement.children[0].innerText = 'Block'
+                htmlElement.children[0].textContent = 'Block'
                 blockDiv.classList.add('hidden')
                 chat_end.classList.remove('hidden')
             }
@@ -757,7 +754,7 @@ const handleUnblockUser = (receiverId, htmlElement) => {
 
 const blockUnblockUser = async (htmlElement) => {
     let receiver = document.querySelector('.chat-child.active')
-    let receiverUsername = receiver.children[1].children[1].innerText
+    let receiverUsername = receiver.children[1].children[1].textContent
     let receiverId = await fetch('/get-conv-api/user-details', {
         method: 'POST',
         headers: {
@@ -773,7 +770,7 @@ const blockUnblockUser = async (htmlElement) => {
             console.log('Error in getting user details: ', err)
         })
 
-    let blockStatus = htmlElement.children[0].innerText
+    let blockStatus = htmlElement.children[0].textContent
 
     if (blockStatus === 'Block') {
         handleBlockUser(receiverId, htmlElement)
@@ -807,7 +804,7 @@ const searchPeople = (event) => {
             .then((data) => {
                 // console.log("data.people: ", data.people);
                 add_people.forEach((person) => {
-                    let personUsername = person.querySelector('.popup-people-username').innerText
+                    let personUsername = person.querySelector('.popup-people-username').textContent
                     let personData = data.people.find((personData) => personData.username === personUsername)
                     if (personData) {
                         person.classList.remove('hidden')
@@ -831,7 +828,7 @@ document.querySelector('#from-user-modal-img').addEventListener('click', () => {
 document.querySelector('#change-profilePic-btn').addEventListener('click', () => {
     const modalProfilePic = document.querySelector('#change-details-profilePic')
 
-    const gender = document.querySelector('#change-details-gender option:checked').value
+    const gender = document.querySelector('#change-details-gender option:checked').textContent
     // console.log(gender)
 
     fetch('/api/get-avatar', {
@@ -857,7 +854,7 @@ document.querySelector('#chat-change-details-done-btn').addEventListener('click'
     let username = document.querySelector('#change-details-username')
     const gender = document.querySelector('#change-details-gender option:checked')
     let avatar = document.querySelector('#change-details-profilePic')
-    const csrfToken = document.querySelector('input[name="CSRFToken"]').value
+    const csrfToken = document.querySelector('input[name="CSRFToken"]').textContent
 
     fetch('/api/change-details', {
         method: 'POST',
@@ -866,9 +863,9 @@ document.querySelector('#chat-change-details-done-btn').addEventListener('click'
             'x-csrf-token': csrfToken,
         },
         body: JSON.stringify({
-            name: name.value,
-            username: username.value,
-            gender: gender.value,
+            name: name.textContent,
+            username: username.textContent,
+            gender: gender.textContent,
             avatar: avatar.src,
         }),
     })
@@ -881,7 +878,7 @@ document.querySelector('#chat-change-details-done-btn').addEventListener('click'
             }
 
             if (data.message === 'Username already taken') {
-                username.value = data.user.username
+                username.textContent = data.user.username
             }
             setTimeout(() => {
                 document.querySelector('#notification-alert span').textContent = ''
