@@ -1,6 +1,6 @@
 document.querySelector('#login-btn').addEventListener('click', async () => {
-    const email = document.querySelector('#login-email').value
-    const password = document.querySelector('#login-password').value
+    const email = DOMPurify.sanitize(document.querySelector('#login-email').value)
+    const password = DOMPurify.sanitize(document.querySelector('#login-password').value)
 
     if (!email || !password) {
         const alert = "Email and password can't be empty"

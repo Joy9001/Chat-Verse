@@ -53,9 +53,10 @@ router.post('/get-conversation', async (req, res) => {
 
 router.post('/user-details', async (req, res) => {
     const { username } = req.body
-
+    // console.log('inside /user-details username', username)
+    // console.log('inside /user-details username type', typeof username)
     try {
-        const user = await User.findOne(
+        let user = await User.findOne(
             { username },
             {
                 _id: 1,
@@ -66,8 +67,12 @@ router.post('/user-details', async (req, res) => {
             }
         )
 
-        console.log('inside /user-details', user.name)
-        return res.status(200).json(user)
+        if (user) {
+            console.log('inside /user-details', user, username)
+            return res.status(200).json(user)
+        }
+
+        return res.status(400).json({ error: 'User not found' })
     } catch (err) {
         console.log('Error getting user details: ', err.message)
         return res.status(400).json({ error: err.message })

@@ -1,8 +1,8 @@
 document.querySelector('#change-profilePic-btn').addEventListener('click', () => {
     const modalProfilePic = document.querySelector('#change-details-profilePic')
 
-    const gender = document.querySelector('#change-details-gender option:checked').value
-    console.log(gender)
+    const gender = DOMPurify.sanitize(document.querySelector('#change-details-gender option:checked').value)
+    // console.log(gender)
 
     fetch('/api/get-avatar', {
         method: 'POST',
@@ -21,12 +21,12 @@ document.querySelector('#change-profilePic-btn').addEventListener('click', () =>
 })
 
 document.querySelector('#register-btn').addEventListener('click', () => {
-    const email = document.querySelector('#register-email').value
-    const password = document.querySelector('#register-password').value
+    const email = DOMPurify.sanitize(document.querySelector('#register-email').value)
+    const password = DOMPurify.sanitize(document.querySelector('#register-password').value)
 
-    const name = document.querySelector('#change-details-name').value
-    const username = document.querySelector('#change-details-username').value
-    const gender = document.querySelector('#change-details-gender option:checked').value
+    const name = DOMPurify.sanitize(document.querySelector('#change-details-name').value)
+    const username = DOMPurify.sanitize(document.querySelector('#change-details-username').value)
+    const gender = DOMPurify.sanitize(document.querySelector('#change-details-gender option:checked').value)
     const avatar = document.querySelector('#change-details-profilePic').src
 
     if (!email || !password) {

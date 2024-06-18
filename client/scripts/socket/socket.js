@@ -57,7 +57,7 @@ const handleHtmlGet = (message) => {
 const handleHtmlOnlineUsers = (users) => {
     const leftPeople = document.querySelectorAll('.chat-child')
     leftPeople.forEach(async (person) => {
-        const personUsername = person.querySelector('.chat-username').textContent
+        const personUsername = person.querySelector('.chat-username').innerText
         let personData = await fetch('/get-conv-api/user-details', {
             method: 'POST',
             headers: {
@@ -69,7 +69,7 @@ const handleHtmlOnlineUsers = (users) => {
         })
             .then((res) => res.json())
             .then((data) => {
-                // console.log('data', data)
+                console.log('handleHtmlOnlineUsers', data)
                 return data
             })
             .catch((error) => {

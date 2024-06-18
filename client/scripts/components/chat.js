@@ -220,6 +220,7 @@ const chatClicked = async (htmlElement) => {
     })
         .then((res) => res.json())
         .then((data) => {
+            console.log('chatClicked: ', data)
             clickedUser = data
         })
         .catch((err) => {
@@ -364,6 +365,7 @@ const addPeopleToChat = async (element) => {
     })
         .then((res) => res.json())
         .then((data) => {
+            console.log('addPeopleToChat: ', data)
             return data
         })
         .catch((err) => {
@@ -444,7 +446,7 @@ const handleHtmlSend = (msgRes) => {
 
     let dates = document.querySelectorAll('.date')
 
-    if (dates.length === 0 || dates[dates.length - 1].textContent !== msgDate) {
+    if (dates.length === 0 || dates[dates.length - 1].innerText !== msgDate) {
         const dayDiv = document.createElement('div')
         dayDiv.classList.add('day')
         const dateDiv = document.createElement('div')
@@ -493,6 +495,7 @@ const handleSendRequest = async (receiverUsername, msg) => {
     })
         .then((res) => res.json())
         .then((data) => {
+            console.log('handleSendRequest: ', data)
             return data._id
         })
         .catch((err) => {
@@ -537,7 +540,7 @@ document.getElementById('send-btn').addEventListener('click', (e) => {
     msgInput.focus()
 
     if (msg.length > 0) {
-        let receiverUsername = document.querySelector('.chat-child.active').children[1].children[1].textContent
+        let receiverUsername = document.querySelector('.chat-child.active').children[1].children[1].innerText
         handleSendRequest(receiverUsername, msg)
     }
 })
@@ -588,6 +591,7 @@ const deleteMessage = async (btn) => {
     })
         .then((res) => res.json())
         .then((data) => {
+            console.log('deleteMessage: ', data)
             return data._id
         })
         .catch((err) => {
@@ -643,7 +647,7 @@ const deleteConversation = async () => {
     let blockDiv = document.querySelector('#chats-end-block')
 
     let receiver = document.querySelector('.chat-child.active')
-    let receiverUsername = receiver.children[1].children[1].textContent
+    let receiverUsername = receiver.children[1].children[1].innerText
     let receiverId = await fetch('/get-conv-api/user-details', {
         method: 'POST',
         headers: {
@@ -653,6 +657,7 @@ const deleteConversation = async () => {
     })
         .then((res) => res.json())
         .then((data) => {
+            console.log('deleteConversation: ', data)
             return data._id
         })
         .catch((err) => {
@@ -754,7 +759,7 @@ const handleUnblockUser = (receiverId, htmlElement) => {
 
 const blockUnblockUser = async (htmlElement) => {
     let receiver = document.querySelector('.chat-child.active')
-    let receiverUsername = receiver.children[1].children[1].textContent
+    let receiverUsername = receiver.children[1].children[1].innerText
     let receiverId = await fetch('/get-conv-api/user-details', {
         method: 'POST',
         headers: {
@@ -764,13 +769,14 @@ const blockUnblockUser = async (htmlElement) => {
     })
         .then((res) => res.json())
         .then((data) => {
+            console.log('blockUnblockUser: ', data)
             return data._id
         })
         .catch((err) => {
             console.log('Error in getting user details: ', err)
         })
 
-    let blockStatus = htmlElement.children[0].textContent
+    let blockStatus = htmlElement.children[0].innerText
 
     if (blockStatus === 'Block') {
         handleBlockUser(receiverId, htmlElement)
@@ -804,7 +810,7 @@ const searchPeople = (event) => {
             .then((data) => {
                 // console.log("data.people: ", data.people);
                 add_people.forEach((person) => {
-                    let personUsername = person.querySelector('.popup-people-username').textContent
+                    let personUsername = person.querySelector('.popup-people-username').innerText
                     let personData = data.people.find((personData) => personData.username === personUsername)
                     if (personData) {
                         person.classList.remove('hidden')
@@ -828,7 +834,7 @@ document.querySelector('#from-user-modal-img').addEventListener('click', () => {
 document.querySelector('#change-profilePic-btn').addEventListener('click', () => {
     const modalProfilePic = document.querySelector('#change-details-profilePic')
 
-    const gender = document.querySelector('#change-details-gender option:checked').textContent
+    const gender = document.querySelector('#change-details-gender option:checked').value
     // console.log(gender)
 
     fetch('/api/get-avatar', {
@@ -850,11 +856,11 @@ document.querySelector('#change-profilePic-btn').addEventListener('click', () =>
 })
 
 document.querySelector('#chat-change-details-done-btn').addEventListener('click', () => {
-    let name = document.querySelector('#change-details-name')
-    let username = document.querySelector('#change-details-username')
-    const gender = document.querySelector('#change-details-gender option:checked')
-    let avatar = document.querySelector('#change-details-profilePic')
-    const csrfToken = document.querySelector('input[name="CSRFToken"]').textContent
+    let name = DOMPurify.sanitize(document.querySelector('#change-details-name').value)
+    let username = DOMPurify.sanitize(document.querySelector('#change-details-username').value)
+    const gender = DOMPurify.sanitize(document.querySelector('#change-details-gender option:checked').value)
+    let avatar = document.querySelector('#change-details-profilePic').src
+    const csrfToken = DOMPurify.sanitize(document.querySelector('input[name="CSRFToken"]').value)
 
     fetch('/api/change-details', {
         method: 'POST',
@@ -863,10 +869,10 @@ document.querySelector('#chat-change-details-done-btn').addEventListener('click'
             'x-csrf-token': csrfToken,
         },
         body: JSON.stringify({
-            name: name.textContent,
-            username: username.textContent,
-            gender: gender.textContent,
-            avatar: avatar.src,
+            name,
+            username,
+            gender,
+            avatar,
         }),
     })
         .then((res) => res.json())
