@@ -11,13 +11,18 @@ const getConversation = async (messages) => {
         const conversation = await Promise.all(promises)
         return conversation
     } catch (error) {
-        console.log('Error getting conversation inside getConversation: ', error.message)
+        console.log(
+            'Error getting conversation inside getConversation: ',
+            error.message
+        )
     }
 }
 
 const updateUnreadCount = async (senderId, receiverId) => {
     try {
-        const conv = await Conversation.findOne({ participants: { $all: [senderId, receiverId] } })
+        const conv = await Conversation.findOne({
+            participants: { $all: [senderId, receiverId] },
+        })
         if (conv) {
             const unreadMsgCount = conv.unreadMsgCount.find((obj) => {
                 return obj.senderId.toString() === senderId.toString()
@@ -50,7 +55,10 @@ const updateUnreadCount = async (senderId, receiverId) => {
             message: 'Updated unread count successfully',
         }
     } catch (error) {
-        console.log('Error updating unread count inside updateUnreadCount: ', error.message)
+        console.log(
+            'Error updating unread count inside updateUnreadCount: ',
+            error.message
+        )
         return {
             success: false,
             error: 'Error updating unread count',

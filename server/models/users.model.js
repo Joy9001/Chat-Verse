@@ -1,5 +1,10 @@
 import { Schema, model } from 'mongoose'
-import { nameValidator, usernameValidator, emailValidator, passwordValidator } from './validator.js'
+import {
+    nameValidator,
+    usernameValidator,
+    emailValidator,
+    passwordValidator,
+} from './validator.js'
 import { generateAvatar } from '../helpers/generateAvatar.helper.js'
 import crypto from 'crypto'
 

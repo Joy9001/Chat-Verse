@@ -18,15 +18,19 @@ const messageController = async (req, res) => {
         const currentUserId = req.user._id
 
         const currentUser = await User.findById(currentUserId)
-        if (!currentUser) return res.status(404).json({ message: 'User not found' })
+        if (!currentUser)
+            return res.status(404).json({ message: 'User not found' })
 
         let unreadMessages = []
         const peopleToAdd = await addPeople(currentUserId)
-        const currentUserAddedPeopleToChat = await getPeopleToChat(currentUserId)
+        const currentUserAddedPeopleToChat =
+            await getPeopleToChat(currentUserId)
 
         let currentChatPeople = []
         if (currentUserAddedPeopleToChat) {
-            currentChatPeople = await getCurrentChatPeople(currentUserAddedPeopleToChat.recivers)
+            currentChatPeople = await getCurrentChatPeople(
+                currentUserAddedPeopleToChat.recivers
+            )
         }
 
         // Get unread messages
@@ -62,7 +66,10 @@ const messageController = async (req, res) => {
 
         // Refresh the access token if expired
         if (req.user.accessToken) {
-            console.log('Set the accessToken in cookie inside messageController', req.user.accessToken)
+            console.log(
+                'Set the accessToken in cookie inside messageController',
+                req.user.accessToken
+            )
             res.cookie('accessToken', req.user.accessToken, {
                 httpOnly: true,
                 secure: true,
@@ -99,7 +106,10 @@ const sendMessageController = async (req, res) => {
         })
 
         const savedMsg = await msg.save()
-        let senderUsername = await User.findOne({ _id: senderId }, { _id: 0, username: 1 })
+        let senderUsername = await User.findOne(
+            { _id: senderId },
+            { _id: 0, username: 1 }
+        )
 
         // Socket functionality
         const receiverSocketId = getReceiverSocketId(receiverId)
@@ -107,27 +117,50 @@ const sendMessageController = async (req, res) => {
         if (receiverSocketId) {
             io.to(receiverSocketId)
                 .timeout(2000)
-                .emit('newMessage', savedMsg, senderUsername['username'], async (err, responses) => {
-                    // console.log('response: ', responses)
-                    if (err) {
-                        console.log('Error sending message to receiver: ', err)
-                        throw new Error(err)
-                    }
-                    if (responses[0].status === 'success') {
-                        console.log('Message sent to receiver', receiverSocketId)
-                    } else if (responses[0].status === 'failure') {
-                        console.log('Error sending message to receiver: ', response.error)
-                    } else {
-                        console.log(responses)
-                        const result = await updateUnreadCount(senderId, receiverId)
-                        if (result.success) {
-                            console.log('Inside sendMessageController: ', result.message)
+                .emit(
+                    'newMessage',
+                    savedMsg,
+                    senderUsername['username'],
+                    async (err, responses) => {
+                        // console.log('response: ', responses)
+                        if (err) {
+                            console.log(
+                                'Error sending message to receiver: ',
+                                err
+                            )
+                            throw new Error(err)
+                        }
+                        if (responses[0].status === 'success') {
+                            console.log(
+                                'Message sent to receiver',
+                                receiverSocketId
+                            )
+                        } else if (responses[0].status === 'failure') {
+                            console.log(
+                                'Error sending message to receiver: ',
+                                response.error
+                            )
                         } else {
-                            console.log('Inside sendMessageController: ', result.error)
-                            throw new Error(result.error)
+                            console.log(responses)
+                            const result = await updateUnreadCount(
+                                senderId,
+                                receiverId
+                            )
+                            if (result.success) {
+                                console.log(
+                                    'Inside sendMessageController: ',
+                                    result.message
+                                )
+                            } else {
+                                console.log(
+                                    'Inside sendMessageController: ',
+                                    result.error
+                                )
+                                throw new Error(result.error)
+                            }
                         }
                     }
-                })
+                )
         } else {
             const result = await updateUnreadCount(senderId, receiverId)
             if (result.success) {
@@ -148,7 +181,10 @@ const sendMessageController = async (req, res) => {
 const deleteMessageController = async (req, res) => {
     const senderId = req.user._id
     const { receiverId, msgId } = req.body
-    let senderUsername = await User.findOne({ _id: senderId }, { _id: 0, username: 1 })
+    let senderUsername = await User.findOne(
+        { _id: senderId },
+        { _id: 0, username: 1 }
+    )
     try {
         const findMsg = await Message.findOne({
             _id: msgId,
@@ -161,8 +197,15 @@ const deleteMessageController = async (req, res) => {
                     // Socket functionality
                     const receiverSocketId = getReceiverSocketId(receiverId)
                     if (receiverSocketId) {
-                        io.to(receiverSocketId).emit('deleteMessage', msgId, senderUsername.username)
-                        console.log('Deleted Message Id sent to receiver', receiverSocketId)
+                        io.to(receiverSocketId).emit(
+                            'deleteMessage',
+                            msgId,
+                            senderUsername.username
+                        )
+                        console.log(
+                            'Deleted Message Id sent to receiver',
+                            receiverSocketId
+                        )
                     }
                     return res.status(200).json({ message: 'Message deleted' })
                 }
@@ -183,7 +226,10 @@ const unreadMessageController = async (req, res) => {
     const { senderUsername, unreadMsgCount } = req.body
     const receiverId = req.user._id
     try {
-        const senderId = await User.findOne({ username: senderUsername }, { _id: 1 })
+        const senderId = await User.findOne(
+            { username: senderUsername },
+            { _id: 1 }
+        )
         console.log('inside unreadMessageController:', senderId)
         let findConversation = await Conversation.findOne({
             participants: { $all: [senderId, receiverId] },
@@ -259,10 +305,19 @@ const deleteConversationController = async (req, res) => {
 
         // Socket functionality
         const receiverSocketId = getReceiverSocketId(receiverId)
-        let senderUsername = await User.findOne({ _id: senderId }, { _id: 0, username: 1 })
+        let senderUsername = await User.findOne(
+            { _id: senderId },
+            { _id: 0, username: 1 }
+        )
         if (receiverSocketId) {
-            io.to(receiverSocketId).emit('deleteConversation', senderUsername.username)
-            console.log('Deleted Conversation sent to receiver', receiverSocketId)
+            io.to(receiverSocketId).emit(
+                'deleteConversation',
+                senderUsername.username
+            )
+            console.log(
+                'Deleted Conversation sent to receiver',
+                receiverSocketId
+            )
         }
         return res.status(200).json({ message: 'Conversation deleted' })
     } catch (error) {
@@ -324,7 +379,10 @@ const unblockUserController = async (req, res) => {
                 const receiverSocketId = getReceiverSocketId(receiverId)
                 if (receiverSocketId) {
                     io.to(receiverSocketId).emit('unblockUser', senderId)
-                    console.log('Unblocked User sent to receiver', receiverSocketId)
+                    console.log(
+                        'Unblocked User sent to receiver',
+                        receiverSocketId
+                    )
                 }
             } else {
                 return res.status(400).json({

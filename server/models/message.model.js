@@ -24,50 +24,56 @@ const messageSchema = new Schema(
 )
 
 // Pre Hooks
-messageSchema.pre('deleteOne', { document: true, query: false }, async function (next) {
-    try {
-        let conversation = await Conversation.findOne({
-            participants: { $all: [this.senderId, this.receiverId] },
-        })
+messageSchema.pre(
+    'deleteOne',
+    { document: true, query: false },
+    async function (next) {
+        try {
+            let conversation = await Conversation.findOne({
+                participants: { $all: [this.senderId, this.receiverId] },
+            })
 
-        if (!conversation) {
-            console.log('Conversation not found')
-            next(new Error('Conversation not found'))
-        }
+            if (!conversation) {
+                console.log('Conversation not found')
+                next(new Error('Conversation not found'))
+            }
 
-        conversation.messages = conversation.messages.filter((message) => message.toString() !== this._id.toString())
-
-        if (conversation.messages.length === 0) {
-            await conversation.deleteOne()
-
-            // Delete the added people to chat
-            await AddedPeopleToChat.findOneAndUpdate(
-                {
-                    senderId: this.senderId,
-                },
-                {
-                    $pull: { recivers: this.receiverId },
-                }
+            conversation.messages = conversation.messages.filter(
+                (message) => message.toString() !== this._id.toString()
             )
 
-            // Delete the sender from AddedPeopleToChat
-            await AddedPeopleToChat.findOneAndUpdate(
-                {
-                    senderId: this.receiverId,
-                },
-                {
-                    $pull: { recivers: this.senderId },
-                }
-            )
-        } else {
-            await conversation.save()
+            if (conversation.messages.length === 0) {
+                await conversation.deleteOne()
+
+                // Delete the added people to chat
+                await AddedPeopleToChat.findOneAndUpdate(
+                    {
+                        senderId: this.senderId,
+                    },
+                    {
+                        $pull: { recivers: this.receiverId },
+                    }
+                )
+
+                // Delete the sender from AddedPeopleToChat
+                await AddedPeopleToChat.findOneAndUpdate(
+                    {
+                        senderId: this.receiverId,
+                    },
+                    {
+                        $pull: { recivers: this.senderId },
+                    }
+                )
+            } else {
+                await conversation.save()
+            }
+            next()
+        } catch (error) {
+            console.log('Error deleting message: ', error.message)
+            next(error)
         }
-        next()
-    } catch (error) {
-        console.log('Error deleting message: ', error.message)
-        next(error)
     }
-})
+)
 
 // Post hooks
 messageSchema.post('save', async function (doc, next) {
@@ -123,7 +129,10 @@ messageSchema.post('save', async function (doc, next) {
         }
         next()
     } catch (error) {
-        console.log('Error adding people to chat inside message.model: ', error.message)
+        console.log(
+            'Error adding people to chat inside message.model: ',
+            error.message
+        )
         next(error)
     }
 })

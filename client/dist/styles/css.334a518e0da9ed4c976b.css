@@ -545,6 +545,26 @@ html {
   --in: 93.4025% 0 0;
 }
 
+@font-face {
+  font-family: "Operator Mono";
+
+  src: url(/046c7ee1441b47eb6225.OTF);
+}
+
+emoji-picker {
+  position: absolute;
+  height: 16rem;
+  width: 22.2rem;
+  --background: #fadcd5;
+  --border-color: #fadcd5;
+  --button-hover-background: #a66f8d;
+  --button-active-background: #a66f8d;
+}
+
+textarea::-webkit-scrollbar {
+  width: 0rem;
+}
+
 *, ::before, ::after {
   --tw-border-spacing-x: 0;
   --tw-border-spacing-y: 0;
@@ -8610,59 +8630,12 @@ html:has(.drawer-open.drawer-open) {
   --tooltip-text-color: var(--fallback-erc,oklch(var(--erc)/1));
 }
 
-@font-face {
-  font-family: 'Operator Mono';
-
-  src: url(/046c7ee1441b47eb6225.OTF);
-}
-
-body {
-  font-family: 'Operator Mono', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji', 'Apple Color Emoji',
-            sans-serif;
-}
-
-#msg-input {
-  font-family: 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji', 'Apple Color Emoji', sans-serif;
-}
-
-.chat-body,
-    .login_body,
-    .register-body {
-  background-image: url(/dcf826aaf11289e39aad.png);
-  background-size: cover;
-  background-position: center;
-}
-
 .add-chat-btn :hover:not(.active) {
   --tw-scale-x: 1.1;
   --tw-scale-y: 1.1;
   transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
   transition-delay: 200ms;
   transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.add-chat-btn .active {
-  scale: 110%;
-}
-
-.add-chat-btn .\!active {
-  scale: 110% !important;
-}
-
-.to-user-info-btn.active {
-  --tw-scale-x: 1.1;
-  --tw-scale-y: 1.1;
-  transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
-}
-
-.to-user-info-btn.\!active {
-  --tw-scale-x: 1.1;
-  --tw-scale-y: 1.1;
-  transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
-}
-
-.popup {
-  background-color: #fadfd9;
 }
 
 .chat-child {
@@ -8787,20 +8760,6 @@ body {
   padding: 0.25rem;
 }
 
-.popup-people-name {
-  padding-left: 0.5rem;
-  font-size: 1rem;
-  line-height: 1.5rem;
-  font-weight: 600;
-}
-
-.popup-people-username {
-  padding-left: 0.5rem;
-  font-size: 0.875rem;
-  line-height: 1.25rem;
-  font-weight: 500;
-}
-
 .to-user-msg {
   position: relative;
   margin-top: 0.75rem;
@@ -8825,13 +8784,18 @@ body {
 }
 
 .to-user-msg::after {
-  content: '';
+  content: "";
   position: absolute;
   bottom: 0px;
   left: -7.5px;
   width: 15px;
   height: 15px;
-  background: linear-gradient(-45deg, #4b2138 0%, #4b2138 50%, transparent 50%);
+  background: linear-gradient(
+            -45deg,
+            #4b2138 0%,
+            #4b2138 50%,
+            transparent 50%
+        );
 }
 
 .to-user-msg p {
@@ -8883,13 +8847,18 @@ body {
 }
 
 .from-user-msg::after {
-  content: '';
+  content: "";
   position: absolute;
   bottom: 0px;
   right: -7.5px;
   width: 15px;
   height: 15px;
-  background: linear-gradient(45deg, #e9e9e9 0%, #e9e9e9 50%, transparent 50%);
+  background: linear-gradient(
+            45deg,
+            #e9e9e9 0%,
+            #e9e9e9 50%,
+            transparent 50%
+        );
 }
 
 .from-user-msg p {
@@ -8947,50 +8916,6 @@ body {
   line-height: 1.25rem;
   font-weight: 600;
   color: #1BOC1A;
-}
-
-.to-user-profile-sec-img img {
-  height: 100%;
-  width: 100%;
-  border-radius: 9999px;
-}
-
-.to-user-profile-sec-name h1 {
-  font-size: 1.125rem;
-  line-height: 1.75rem;
-  font-weight: 600;
-}
-
-.to-user-profile-sec-name h3 {
-  font-size: 1rem;
-  line-height: 1.5rem;
-  font-weight: 500;
-}
-
-.emoji-popup-btn.active {
-  --tw-scale-x: 1.1;
-  --tw-scale-y: 1.1;
-  transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
-}
-
-.emoji-popup-btn.\!active {
-  --tw-scale-x: 1.1;
-  --tw-scale-y: 1.1;
-  transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
-}
-
-emoji-picker {
-  position: absolute;
-  height: 16rem;
-  width: 22.2rem;
-  --background: #fadcd5;
-  --border-color: #fadcd5;
-  --button-hover-background: #a66f8d;
-  --button-active-background: #a66f8d;
-}
-
-textarea::-webkit-scrollbar {
-  width: 0rem;
 }
 
 .sr-only {
@@ -10774,6 +10699,11 @@ textarea::-webkit-scrollbar {
   background-color: rgb(250 220 213 / var(--tw-bg-opacity));
 }
 
+.bg-\[\#fadfd9\] {
+  --tw-bg-opacity: 1;
+  background-color: rgb(250 223 217 / var(--tw-bg-opacity));
+}
+
 .bg-\[rgb\(255\2c 0\2c 0\)\] {
   --tw-bg-opacity: 1;
   background-color: rgb(255 0 0 / var(--tw-bg-opacity));
@@ -10787,6 +10717,10 @@ textarea::-webkit-scrollbar {
 .bg-white {
   --tw-bg-opacity: 1;
   background-color: rgb(255 255 255 / var(--tw-bg-opacity));
+}
+
+.bg-backImage {
+  background-image: url(/dcf826aaf11289e39aad.png);
 }
 
 .bg-none {
@@ -10811,6 +10745,10 @@ textarea::-webkit-scrollbar {
 .box-decoration-clone {
   -webkit-box-decoration-break: clone;
           box-decoration-break: clone;
+}
+
+.bg-cover {
+  background-size: cover;
 }
 
 .bg-fixed {
@@ -10840,6 +10778,10 @@ textarea::-webkit-scrollbar {
 .bg-clip-text {
   -webkit-background-clip: text;
           background-clip: text;
+}
+
+.bg-center {
+  background-position: center;
 }
 
 .bg-repeat {
@@ -11014,6 +10956,10 @@ textarea::-webkit-scrollbar {
 
 .align-super {
   vertical-align: super;
+}
+
+.font-operatorMono {
+  font-family: Operator Mono, Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji, Apple Color Emoji, sans-serif;
 }
 
 .text-2xl {
@@ -11791,6 +11737,12 @@ textarea::-webkit-scrollbar {
 
 .hover\:focus\:text-center:focus:hover {
   text-align: center;
+}
+
+.active\:scale-110:active {
+  --tw-scale-x: 1.1;
+  --tw-scale-y: 1.1;
+  transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
 }
 
 .group:hover .group-hover\:stroke-\[\#4b2138\] {

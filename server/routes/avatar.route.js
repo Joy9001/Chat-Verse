@@ -6,8 +6,13 @@ import fetch from 'node-fetch' // Node ver>=18 doesn't have fetch by deafult
 router.post('/get-avatar', (req, res) => {
     const { gender } = req.body
 
-    if (typeof gender !== 'string' || !['male', 'female'].includes(gender.toLowerCase())) {
-        return res.status(400).json({ error: 'Invalid gender. Must be "male" or "female".' })
+    if (
+        typeof gender !== 'string' ||
+        !['male', 'female'].includes(gender.toLowerCase())
+    ) {
+        return res
+            .status(400)
+            .json({ error: 'Invalid gender. Must be "male" or "female".' })
     }
 
     fetch(`https://randomuser.me/api/?gender=${gender.toLowerCase()}`)

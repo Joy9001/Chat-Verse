@@ -50,14 +50,18 @@ const conversationSchema = new Schema(
 )
 
 // Pre Hooks
-conversationSchema.pre('deleteOne', { document: true, query: false }, async function (next) {
-    try {
-        await Message.deleteMany({ _id: { $in: this.messages } })
-    } catch (error) {
-        console.log('Error deleting conversation: ', error.message)
-        next(error)
+conversationSchema.pre(
+    'deleteOne',
+    { document: true, query: false },
+    async function (next) {
+        try {
+            await Message.deleteMany({ _id: { $in: this.messages } })
+        } catch (error) {
+            console.log('Error deleting conversation: ', error.message)
+            next(error)
+        }
     }
-})
+)
 
 const Conversation = model('Conversation', conversationSchema)
 

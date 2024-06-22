@@ -4,7 +4,14 @@ export default {
     content: ['./**/*.{html,js,ejs}'],
     theme: {
         fontFamily: {
-            operator: ['Operator Mono'],
+            operatorMono: [
+                'Operator Mono',
+                'Segoe UI Emoji',
+                'Segoe UI Symbol',
+                'Noto Color Emoji',
+                'Apple Color Emoji',
+                'sans-serif',
+            ],
         },
         extend: {
             translate: ['group-hover'],
@@ -15,6 +22,9 @@ export default {
                 22: '5.5rem',
                 58: '14.5rem',
                 100: '25rem',
+            },
+            backgroundImage: {
+                backImage: "url('../public/assets/bg-img.png')",
             },
             borderWidth: {
                 1: '1px',

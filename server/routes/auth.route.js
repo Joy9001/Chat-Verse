@@ -21,13 +21,20 @@ router.get('/jwt/refresh-token', async (req, res) => {
     }
 
     try {
-        let refreshTokenFromDb = await Auth.findOne({ refreshToken: encryptedRefreshToken })
+        let refreshTokenFromDb = await Auth.findOne({
+            refreshToken: encryptedRefreshToken,
+        })
         if (!refreshTokenFromDb) {
             return res.status(404).json({ error: 'Refresh token not found' })
         }
 
-        const refreshToken = CryptoEnc.decryptWithCryptoJS(encryptedRefreshToken)
-        const decoded = jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET)
+        const refreshToken = CryptoEnc.decryptWithCryptoJS(
+            encryptedRefreshToken
+        )
+        const decoded = jwt.verify(
+            refreshToken,
+            process.env.REFRESH_TOKEN_SECRET
+        )
 
         // console.log('refreshtokendb user: ', refreshTokenFromDb.user, 'Decoded user: ', decoded.user)
         if (refreshTokenFromDb.user.toString() !== decoded.user) {
@@ -36,11 +43,19 @@ router.get('/jwt/refresh-token', async (req, res) => {
 
         // if the updated refresh token in older than 1 day, then send a new refresh token
         // if (Date.now() - refreshTokenFromDb.updatedAt.getTime() > 1000 * 30) {
-        if (Date.now() - refreshTokenFromDb.updatedAt.getTime() > 1000 * 60 * 60 * 24) {
-            const newRefreshToken = jwt.sign({ user: decoded.user }, process.env.REFRESH_TOKEN_SECRET, {
-                expiresIn: '7d',
-            })
-            const newEncryptedRefreshToken = CryptoEnc.encryptWithCryptoJS(newRefreshToken)
+        if (
+            Date.now() - refreshTokenFromDb.updatedAt.getTime() >
+            1000 * 60 * 60 * 24
+        ) {
+            const newRefreshToken = jwt.sign(
+                { user: decoded.user },
+                process.env.REFRESH_TOKEN_SECRET,
+                {
+                    expiresIn: '7d',
+                }
+            )
+            const newEncryptedRefreshToken =
+                CryptoEnc.encryptWithCryptoJS(newRefreshToken)
 
             refreshTokenFromDb.refreshToken = newEncryptedRefreshToken
             await refreshTokenFromDb.save()
@@ -54,7 +69,11 @@ router.get('/jwt/refresh-token', async (req, res) => {
             })
         }
 
-        const accessToken = jwt.sign({ user: decoded.user }, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '30m' })
+        const accessToken = jwt.sign(
+            { user: decoded.user },
+            process.env.ACCESS_TOKEN_SECRET,
+            { expiresIn: '30m' }
+        )
         const encryptedAccessToken = CryptoEnc.encryptWithCryptoJS(accessToken)
         res.cookie('accessToken', encryptedAccessToken, {
             httpOnly: true,
@@ -93,11 +112,21 @@ router.post('/login', (req, res, next) => {
         })
 
         try {
-            const accessToken = jwt.sign({ user: user._id }, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '30m' })
-            const encryptedAccessToken = CryptoEnc.encryptWithCryptoJS(accessToken)
+            const accessToken = jwt.sign(
+                { user: user._id },
+                process.env.ACCESS_TOKEN_SECRET,
+                { expiresIn: '30m' }
+            )
+            const encryptedAccessToken =
+                CryptoEnc.encryptWithCryptoJS(accessToken)
 
-            const refreshToken = jwt.sign({ user: user._id }, process.env.REFRESH_TOKEN_SECRET, { expiresIn: '7d' })
-            const encryptedRefreshToken = CryptoEnc.encryptWithCryptoJS(refreshToken)
+            const refreshToken = jwt.sign(
+                { user: user._id },
+                process.env.REFRESH_TOKEN_SECRET,
+                { expiresIn: '7d' }
+            )
+            const encryptedRefreshToken =
+                CryptoEnc.encryptWithCryptoJS(refreshToken)
 
             // Save the refresh token in db
             const findAuth = await Auth.findOne({ user: user._id })
@@ -165,11 +194,15 @@ router.post('/register', async (req, res) => {
     const { email, password, name, username, gender, avatar } = req.body
 
     if (!email || !password) {
-        return res.status(400).json({ error: "Email and password can't be empty" })
+        return res
+            .status(400)
+            .json({ error: "Email and password can't be empty" })
     }
 
     if (!name || !username || !gender || !avatar) {
-        return res.status(400).json({ error: 'Please fill all the details in the change details section' })
+        return res.status(400).json({
+            error: 'Please fill all the details in the change details section',
+        })
     }
 
     const hashedPassword = await hashPassword(password)
@@ -189,7 +222,9 @@ router.post('/register', async (req, res) => {
     } catch (error) {
         console.log('Error in register: ', error.message)
         if (error.code === 11000) {
-            return res.status(400).json({ error: 'Email or username already exists' })
+            return res
+                .status(400)
+                .json({ error: 'Email or username already exists' })
         }
         res.status(400).json({ error: error.message })
     }
@@ -220,16 +255,28 @@ router.get('/logout', async (req, res) => {
         // Remove the refresh token from db and clear the cookie
         const encryptedRefreshToken = req.cookies.refreshToken
         if (encryptedRefreshToken) {
-            const authData = await Auth.findOneAndDelete({ refreshToken: encryptedRefreshToken })
+            const authData = await Auth.findOneAndDelete({
+                refreshToken: encryptedRefreshToken,
+            })
             if (!authData) {
-                return res.status(404).json({ error: 'Refresh token not found' })
+                return res
+                    .status(404)
+                    .json({ error: 'Refresh token not found' })
             }
 
-            res.clearCookie('refreshToken', { httpOnly: true, secure: true, sameSite: 'strict' })
+            res.clearCookie('refreshToken', {
+                httpOnly: true,
+                secure: true,
+                sameSite: 'strict',
+            })
         }
 
         // Remove the access token from the cookie
-        res.clearCookie('accessToken', { httpOnly: true, secure: true, sameSite: 'strict' })
+        res.clearCookie('accessToken', {
+            httpOnly: true,
+            secure: true,
+            sameSite: 'strict',
+        })
         return res.redirect('/auth/login')
     } catch (error) {
         return res.status(500).json({ error: 'Internal Server Error' })

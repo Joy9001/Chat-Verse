@@ -31,7 +31,9 @@ router.post('/get-conversation', async (req, res) => {
                         }
                     })
                     await findConversation.save()
-                    const conversation = await getConversation(findConversation.messages)
+                    const conversation = await getConversation(
+                        findConversation.messages
+                    )
 
                     return res.status(200).json({
                         messages: conversation,
@@ -44,7 +46,9 @@ router.post('/get-conversation', async (req, res) => {
                 }
             }
         } else {
-            return res.status(200).json({ messages: [], isBlocked: false, blockedBy: null })
+            return res
+                .status(200)
+                .json({ messages: [], isBlocked: false, blockedBy: null })
         }
     } catch (error) {
         console.log('Error getting conversation: ', error.message)
@@ -68,7 +72,7 @@ router.post('/user-details', async (req, res) => {
         )
 
         if (user) {
-            console.log('inside /user-details', user, username)
+            console.log('inside /user-details', user.username)
             return res.status(200).json(user)
         }
 

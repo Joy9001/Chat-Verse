@@ -28,11 +28,16 @@ router.post('/add-people-to-chat', async (req, res) => {
                 message: 'Already exists in the chat',
             })
         } else if (result === 'Error adding people to chat') {
-            return res.status(404).json({ message: 'Error adding people to chat' })
+            return res
+                .status(404)
+                .json({ message: 'Error adding people to chat' })
         }
         res.json({ message: 'Added people to chat', newPeople: findReceiver })
     } catch (error) {
-        console.log('Error adding people to chat inside addedPeopleToChat.route: ', error.message)
+        console.log(
+            'Error adding people to chat inside addedPeopleToChat.route: ',
+            error.message
+        )
         return res.status(500).json({ message: 'Internal server error' })
     }
 })

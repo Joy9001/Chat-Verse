@@ -1,5 +1,10 @@
-import tailwindcss from 'tailwindcss'
-import postcssPresetEnv from 'postcss-preset-env'
 export default {
-    plugins: [tailwindcss, postcssPresetEnv],
-}
+    plugins: {
+        tailwindcss: {},
+        "postcss-preset-env": {
+            stage: 1,
+        },
+        autoprefixer: {},
+        ...(process.env.NODE_ENV === "production" ? { cssnano: {} } : {}),
+    },
+};

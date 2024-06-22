@@ -15,13 +15,19 @@ router.post('/username-available', async (req, res) => {
         const findUser = await User.findOne({ username })
 
         if (findUser) {
-            return res.json({ success: false, message: 'Username already taken' })
+            return res.json({
+                success: false,
+                message: 'Username already taken',
+            })
         }
 
         return res.json({ success: true, message: 'Username available' })
     } catch (error) {
         console.error(error.message)
-        return res.json({ success: false, message: 'Error checking username availability' })
+        return res.json({
+            success: false,
+            message: 'Error checking username availability',
+        })
     }
 })
 
@@ -49,7 +55,11 @@ router.post('/change-details', csrfSynchronisedProtection, async (req, res) => {
     }
 
     if (findUsername && !findUsername._id.equals(currentUserId)) {
-        return res.json({ success: false, message: 'Username already taken', user: findUser })
+        return res.json({
+            success: false,
+            message: 'Username already taken',
+            user: findUser,
+        })
     }
 
     findUser.name = name
@@ -86,17 +96,22 @@ router.post('/change-details', csrfSynchronisedProtection, async (req, res) => {
             if (senderSocketId) {
                 io.to(senderSocketId)
                     .timeout(2000)
-                    .emit('receiver-changed-details', oldUserDetails, newUserDetails, (err, responses) => {
-                        console.log(responses)
-                        if (err) {
-                            console.error(err)
+                    .emit(
+                        'receiver-changed-details',
+                        oldUserDetails,
+                        newUserDetails,
+                        (err, responses) => {
+                            console.log(responses)
+                            if (err) {
+                                console.error(err)
+                            }
+                            if (responses[0].status === 'success') {
+                                console.log('Changed details send successfully')
+                            } else {
+                                console.error('Error sending changed details')
+                            }
                         }
-                        if (responses[0].status === 'success') {
-                            console.log('Changed details send successfully')
-                        } else {
-                            console.error('Error sending changed details')
-                        }
-                    })
+                    )
             }
         })
         return res.json({
