@@ -69,11 +69,11 @@ const handleHtmlOnlineUsers = (users) => {
         })
             .then((res) => res.json())
             .then((data) => {
-                console.log('handleHtmlOnlineUsers', data)
+                // console.log('handleHtmlOnlineUsers', data)
                 return data
             })
             .catch((error) => {
-                console.log('Error:', error)
+                console.log('Error in handleHtmlOnlineUsers:', error)
             })
 
         let status = person.children[0].children[0]
@@ -97,8 +97,6 @@ const handleHtmlOnlineUsers = (users) => {
 const createLeftsidePeopleR = (data) => {
     let parentDiv = document.createElement('div')
     parentDiv.classList.add('chat-child')
-    // parentDiv.dataset.element = btoa(JSON.stringify(data))
-    // parentDiv.onclick = () => chatClicked(parentDiv)
 
     let imgDiv = document.createElement('div')
     imgDiv.classList.add('chats_img')
@@ -174,11 +172,16 @@ socket.on('newMessage', async (message, senderUsername, callback) => {
         let popupPeople = document.querySelectorAll('.popup-people')
         popupPeople.forEach((person) => {
             // let data = JSON.parse(atob(person.dataset.element))
-            let personUsername = person.querySelector('.popup-people-username').innerText.trim()
+            let personUsername = person
+                .querySelector('.popup-people-username')
+                .innerText.trim()
             // console.log(personUsername)
             if (personUsername === senderUsername) {
-                let personName = person.querySelector('.popup-people-name').innerText
-                let personAvatar = person.querySelector('.popup-people-avatar').src
+                let personName =
+                    person.querySelector('.popup-people-name').innerText
+                let personAvatar = person.querySelector(
+                    '.popup-people-avatar'
+                ).src
                 sender = {
                     name: personName,
                     username: personUsername,
@@ -226,7 +229,9 @@ socket.on('newMessage', async (message, senderUsername, callback) => {
 
         setTimeout(() => {
             document.querySelector('#notification-alert span').textContent = ''
-            document.querySelector('#notification-alert').classList.add('hidden')
+            document
+                .querySelector('#notification-alert')
+                .classList.add('hidden')
         }, 5000)
 
         callback({
@@ -239,7 +244,10 @@ socket.on('deleteMessage', (dltMsgId, senderUsername) => {
     // console.log("Deleted message", dltMsgId);
     let activePerson = document.querySelector('.chat-child.active')
 
-    if (activePerson && activePerson.children[1].children[1].textContent === senderUsername) {
+    if (
+        activePerson &&
+        activePerson.children[1].children[1].textContent === senderUsername
+    ) {
         // console.log('deleting message', dltMsgId)
         let allToUserMsg = document.querySelectorAll('.to-user-msg')
         allToUserMsg.forEach((msg) => {
@@ -268,7 +276,8 @@ socket.on('deleteMessage', (dltMsgId, senderUsername) => {
     } else {
         let leftPeople = document.querySelectorAll('.chat-child')
         leftPeople.forEach((person) => {
-            let personUsername = person.querySelector('.chat-username').innerText
+            let personUsername =
+                person.querySelector('.chat-username').innerText
             if (personUsername === senderUsername) {
                 let unreadMsg = person.children[2]
                 if (unreadMsg.classList.contains('hidden')) {
@@ -333,7 +342,9 @@ socket.on('blockUser', (senderId) => {
             blockInfoDiv.classList.remove('hidden')
         }
 
-        let toUserInfoPopupOptions = document.querySelector('.to-user-info-popup-options')
+        let toUserInfoPopupOptions = document.querySelector(
+            '.to-user-info-popup-options'
+        )
         toUserInfoPopupOptions.appendChild(blockInfoDiv)
     }
 })
@@ -361,61 +372,90 @@ socket.on('unblockUser', (senderId) => {
     }
 })
 
-socket.on('receiver-changed-details', (oldUserDetails, newUserDetails, callback) => {
-    try {
-        // add user popup
-        let popupPeople = document.querySelectorAll('.popup-people')
-        popupPeople.forEach((person) => {
-            let personUsername = person.querySelector('.popup-people-username').innerText.trim()
-            if (personUsername === oldUserDetails.username) {
-                person.querySelector('.popup-people-name').textContent = newUserDetails.name
-                person.querySelector('.popup-people-username').textContent = newUserDetails.username
-                person.querySelector('.popup-people-avatar').src = newUserDetails.avatar
-            }
-        })
-
-        // left side chats list
-        let allLeftSideUser = document.querySelectorAll('.chat-child')
-        allLeftSideUser.forEach((user) => {
-            let username = user.querySelector('.chat-username').innerText.trim()
-            if (username === oldUserDetails.username) {
-                user.querySelector('.chat-name').textContent = newUserDetails.name
-                user.querySelector('.chat-username').textContent = newUserDetails.username
-                user.querySelector('.chats_img img').src = newUserDetails.avatar
-
-                // chat section on right
-                if (user.classList.contains('active')) {
-                    // chat head
-                    let chat_head = document.querySelector('.chats-head')
-                    chat_head.querySelector('.chats_img img').src = newUserDetails.avatar
-                    chat_head.querySelector('#chat-head-name').textContent = newUserDetails.name
-
-                    // chat head popup
-                    document.querySelector('.to-user-info-popup-details img').src = newUserDetails.avatar
-                    document.querySelector('.to-user-info-popup-details h3').textContent = newUserDetails.name
-                    document.querySelector('.to-user-info-popup-details h4').textContent = newUserDetails.username
-
-                    // chat mid
-                    let toUserProfileSec = document.querySelector('.to-user-profile-sec')
-                    toUserProfileSec.querySelector('.to-user-profile-sec-img img').src = newUserDetails.avatar
-                    toUserProfileSec.querySelector('.to-user-profile-sec-name h1').textContent = newUserDetails.name
-                    toUserProfileSec.querySelector('.to-user-profile-sec-name h3').textContent = newUserDetails.username
+socket.on(
+    'receiver-changed-details',
+    (oldUserDetails, newUserDetails, callback) => {
+        try {
+            // add user popup
+            let popupPeople = document.querySelectorAll('.popup-people')
+            popupPeople.forEach((person) => {
+                let personUsername = person
+                    .querySelector('.popup-people-username')
+                    .innerText.trim()
+                if (personUsername === oldUserDetails.username) {
+                    person.querySelector('.popup-people-name').textContent =
+                        newUserDetails.name
+                    person.querySelector('.popup-people-username').textContent =
+                        newUserDetails.username
+                    person.querySelector('.popup-people-avatar').src =
+                        newUserDetails.avatar
                 }
-            }
-        })
+            })
 
-        callback({
-            status: 'success',
-            message: 'details updated',
-        })
-    } catch (error) {
-        console.log('Error:', error)
-        callback({
-            status: 'failure',
-            error: error,
-        })
+            // left side chats list
+            let allLeftSideUser = document.querySelectorAll('.chat-child')
+            allLeftSideUser.forEach((user) => {
+                let username = user
+                    .querySelector('.chat-username')
+                    .innerText.trim()
+                if (username === oldUserDetails.username) {
+                    user.querySelector('.chat-name').textContent =
+                        newUserDetails.name
+                    user.querySelector('.chat-username').textContent =
+                        newUserDetails.username
+                    user.querySelector('.chats_img img').src =
+                        newUserDetails.avatar
+
+                    // chat section on right
+                    if (user.classList.contains('active')) {
+                        // chat head
+                        let chat_head = document.querySelector('.chats-head')
+                        chat_head.querySelector('.chats_img img').src =
+                            newUserDetails.avatar
+                        chat_head.querySelector('#chat-head-name').textContent =
+                            newUserDetails.name
+
+                        // chat head popup
+                        document.querySelector(
+                            '.to-user-info-popup-details img'
+                        ).src = newUserDetails.avatar
+                        document.querySelector(
+                            '.to-user-info-popup-details h3'
+                        ).textContent = newUserDetails.name
+                        document.querySelector(
+                            '.to-user-info-popup-details h4'
+                        ).textContent = newUserDetails.username
+
+                        // chat mid
+                        let toUserProfileSec = document.querySelector(
+                            '.to-user-profile-sec'
+                        )
+                        toUserProfileSec.querySelector(
+                            '.to-user-profile-sec-img img'
+                        ).src = newUserDetails.avatar
+                        toUserProfileSec.querySelector(
+                            '.to-user-profile-sec-name h1'
+                        ).textContent = newUserDetails.name
+                        toUserProfileSec.querySelector(
+                            '.to-user-profile-sec-name h3'
+                        ).textContent = newUserDetails.username
+                    }
+                }
+            })
+
+            callback({
+                status: 'success',
+                message: 'details updated',
+            })
+        } catch (error) {
+            console.log('Error:', error)
+            callback({
+                status: 'failure',
+                error: error,
+            })
+        }
     }
-})
+)
 
 socket.on('connection', () => {
     console.log('Connected to server', socket.id)

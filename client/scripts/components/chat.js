@@ -1,28 +1,82 @@
 import { handleHtmlOnlineUsers, onlineUsers } from '../socket/socket.js'
 
-const getTime = () => {
-    let date = new Date()
-    let hours = date.getHours()
-    let minutes = date.getMinutes()
-
-    hours = hours < 10 ? '0' + hours : hours
-    minutes = minutes < 10 ? '0' + minutes : minutes
-
-    let time = hours + ':' + minutes
-    return time
-}
-
 export const utcToLocal = (utcDate) => {
     const date = new Date(utcDate)
 
     const hours = ('0' + date.getHours()).slice(-2)
     const minutes = ('0' + date.getMinutes()).slice(-2)
     const day = date.getDate().toString()
-    const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+    const monthNames = [
+        'Jan',
+        'Feb',
+        'Mar',
+        'Apr',
+        'May',
+        'Jun',
+        'Jul',
+        'Aug',
+        'Sep',
+        'Oct',
+        'Nov',
+        'Dec',
+    ]
     const month = monthNames[date.getMonth()]
     const year = date.getFullYear()
 
     return `${hours}:${minutes} ${day} ${month}, ${year}`
+}
+
+const chatClicked = async (htmlElement, ...args) => {
+    let all_chats_children = document.getElementById('chat-parent').children
+    let chatSection = document.querySelector('.chat-section')
+
+    let unreadElement = htmlElement.children[2]
+    unreadElement.children[0].textContent = 0
+    unreadElement.classList.contains('hidden')
+        ? null
+        : unreadElement.classList.add('hidden')
+
+    const clickedUserUsername = htmlElement.children[1].children[1].innerText
+    let clickedUser = ''
+
+    if (args[0] && args[0].username === clickedUserUsername) {
+        clickedUser = args[0]
+    } else {
+        await fetch('/get-conv-api/user-details', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ username: clickedUserUsername }),
+        })
+            .then((res) => res.json())
+            .then((data) => {
+                // console.log('chatClicked: ', data)
+                clickedUser = data
+            })
+            .catch((err) => {
+                console.log('Error in getting user details: ', err)
+            })
+    }
+
+    for (let i = 0; i < all_chats_children.length; i++) {
+        if (all_chats_children[i].classList.contains('active')) {
+            all_chats_children[i].classList.remove('active')
+        }
+    }
+
+    let isOnline = false
+    let statusElement = htmlElement.children[0].children[0]
+    if (!statusElement.classList.contains('hidden')) {
+        isOnline = true
+    }
+    handleChatHeadAndEnd(clickedUser, isOnline)
+
+    htmlElement.classList.add('active')
+    if (chatSection.classList.contains('hidden'))
+        chatSection.classList.remove('hidden')
+
+    handleChats(clickedUser)
 }
 
 const handleChatHeadAndEnd = (clickedUser, isOnline) => {
@@ -40,8 +94,10 @@ const handleChatHeadAndEnd = (clickedUser, isOnline) => {
     chat_head_img.src = clickedUser.avatar
         ? clickedUser.avatar
         : `https://avatar.iran.liara.run/username?username=${clickedUser.name.replace(/ /g, '+')}`
-    to_user_info_popup.children[0].children[1].children[0].textContent = clickedUser.name
-    to_user_info_popup.children[0].children[1].children[1].textContent = clickedUser.username
+    to_user_info_popup.children[0].children[1].children[0].textContent =
+        clickedUser.name
+    to_user_info_popup.children[0].children[1].children[1].textContent =
+        clickedUser.username
     to_user_info_popup.children[0].children[0].src = clickedUser.avatar
         ? clickedUser.avatar
         : `https://avatar.iran.liara.run/username?username=${clickedUser.name.replace(/ /g, '+')}`
@@ -51,6 +107,80 @@ const handleChatHeadAndEnd = (clickedUser, isOnline) => {
     } else {
         chat_head.children[0].children[0].children[0].classList.add('hidden')
     }
+}
+
+const handleChats = (clickedUser) => {
+    let toUserProfileSecImgDiv = document.querySelector(
+        '.to-user-profile-sec-img'
+    )
+    let toUserProfileSecImg = toUserProfileSecImgDiv.children[0]
+    toUserProfileSecImg.src = clickedUser.avatar
+        ? clickedUser.avatar
+        : `https://avatar.iran.liara.run/username?username=${clickedUser.name.replace(/ /g, '+')}`
+
+    let toUserProfileSecNameDiv = document.querySelector(
+        '.to-user-profile-sec-name'
+    )
+    let toUserProfileSecName = toUserProfileSecNameDiv.children[0]
+    let toUserProfileSecUsername = toUserProfileSecNameDiv.children[1]
+    toUserProfileSecName.textContent = clickedUser.name
+    toUserProfileSecUsername.textContent = clickedUser.username
+
+    let receiverId = clickedUser._id
+
+    handleConversation(receiverId)
+}
+
+const handleConversation = (receiverId) => {
+    let chat_end = document.getElementById('chats-end')
+
+    fetch('/get-conv-api/get-conversation', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ receiverId }),
+    })
+        .then((res) => res.json())
+        .then((data) => {
+            // console.log('data', data)
+            let isBlocked = data.isBlocked
+            let blockedBy = data.blockedBy
+            let currentUserId = data.senderId
+            if (isBlocked) {
+                chat_end.classList.add('hidden')
+                let blockDiv = document.querySelector('#chats-end-block')
+                blockDiv.classList.remove('hidden')
+            }
+
+            if (blockedBy === currentUserId) {
+                let blockBtnChild =
+                    document.querySelector('#block-to-user').children[0]
+                blockBtnChild.textContent = 'Unblock'
+            } else if (blockedBy !== null) {
+                let blockBtn = document.querySelector('#block-to-user')
+                blockBtn.classList.add('hidden')
+
+                let deleteChatBtn = document.querySelector(
+                    '#delete-chat-to-user'
+                )
+                deleteChatBtn.classList.add('hidden')
+
+                let blockInfoDiv = document.querySelector('.block-info')
+                if (blockInfoDiv.classList.contains('hidden')) {
+                    blockInfoDiv.classList.remove('hidden')
+                }
+
+                let toUserInfoPopupOptions = document.querySelector(
+                    '.to-user-info-popup-options'
+                )
+                toUserInfoPopupOptions.appendChild(blockInfoDiv)
+            }
+            handleHtmlConversation(data)
+        })
+        .catch((err) => {
+            console.log('Error in getting conversation: ', err)
+        })
 }
 
 const handleHtmlConversation = (data) => {
@@ -135,126 +265,11 @@ const handleHtmlConversation = (data) => {
     }
 }
 
-const handleConversation = (receiverId) => {
-    let chat_end = document.getElementById('chats-end')
-
-    fetch('/get-conv-api/get-conversation', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ receiverId }),
-    })
-        .then((res) => res.json())
-        .then((data) => {
-            // console.log('data', data)
-            let isBlocked = data.isBlocked
-            let blockedBy = data.blockedBy
-            let currentUserId = data.senderId
-            if (isBlocked) {
-                chat_end.classList.add('hidden')
-                let blockDiv = document.querySelector('#chats-end-block')
-                blockDiv.classList.remove('hidden')
-            }
-
-            if (blockedBy === currentUserId) {
-                let blockBtnChild = document.querySelector('#block-to-user').children[0]
-                blockBtnChild.textContent = 'Unblock'
-            } else if (blockedBy !== null) {
-                let blockBtn = document.querySelector('#block-to-user')
-                blockBtn.classList.add('hidden')
-
-                let deleteChatBtn = document.querySelector('#delete-chat-to-user')
-                deleteChatBtn.classList.add('hidden')
-
-                let blockInfoDiv = document.querySelector('.block-info')
-                if (blockInfoDiv.classList.contains('hidden')) {
-                    blockInfoDiv.classList.remove('hidden')
-                }
-
-                let toUserInfoPopupOptions = document.querySelector('.to-user-info-popup-options')
-                toUserInfoPopupOptions.appendChild(blockInfoDiv)
-            }
-            handleHtmlConversation(data)
-        })
-        .catch((err) => {
-            console.log('Error in getting conversation: ', err)
-        })
-}
-
-const handleChats = (clickedUser) => {
-    let toUserProfileSecImgDiv = document.querySelector('.to-user-profile-sec-img')
-    let toUserProfileSecImg = toUserProfileSecImgDiv.children[0]
-    toUserProfileSecImg.src = clickedUser.avatar
-        ? clickedUser.avatar
-        : `https://avatar.iran.liara.run/username?username=${clickedUser.name.replace(/ /g, '+')}`
-
-    let toUserProfileSecNameDiv = document.querySelector('.to-user-profile-sec-name')
-    let toUserProfileSecName = toUserProfileSecNameDiv.children[0]
-    let toUserProfileSecUsername = toUserProfileSecNameDiv.children[1]
-    toUserProfileSecName.textContent = clickedUser.name
-    toUserProfileSecUsername.textContent = clickedUser.username
-
-    let receiverId = clickedUser._id
-
-    handleConversation(receiverId)
-}
-
-const chatClicked = async (htmlElement) => {
-    let all_chats_children = document.getElementById('chat-parent').children
-    let chatSection = document.querySelector('.chat-section')
-
-    let unreadElement = htmlElement.children[2]
-    unreadElement.children[0].textContent = 0
-    unreadElement.classList.contains('hidden') ? null : unreadElement.classList.add('hidden')
-
-    const clickedUserUsername = htmlElement.children[1].children[1].innerText
-    let clickedUser = ''
-
-    await fetch('/get-conv-api/user-details', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ username: clickedUserUsername }),
-    })
-        .then((res) => res.json())
-        .then((data) => {
-            console.log('chatClicked: ', data)
-            clickedUser = data
-        })
-        .catch((err) => {
-            console.log('Error in getting user details: ', err)
-        })
-
-    for (let i = 0; i < all_chats_children.length; i++) {
-        if (all_chats_children[i].classList.contains('active')) {
-            all_chats_children[i].classList.remove('active')
-        }
-    }
-
-    let isOnline = false
-    let statusElement = htmlElement.children[0].children[0]
-    if (!statusElement.classList.contains('hidden')) {
-        isOnline = true
-    }
-    handleChatHeadAndEnd(clickedUser, isOnline)
-
-    htmlElement.classList.add('active')
-    if (chatSection.classList.contains('hidden')) chatSection.classList.remove('hidden')
-
-    handleChats(clickedUser)
-}
-
 document.querySelector('.chat-parent').addEventListener('click', (event) => {
     if (event.target.closest('.chat-child')) {
         chatClicked(event.target.closest('.chat-child'))
     }
 })
-
-function addActive(ele) {
-    ele.classList.add('active')
-}
 
 document.querySelector('#transparent-modal').addEventListener('click', () => {
     let add_people_btn = document.getElementById('add-chat-btn')
@@ -301,8 +316,6 @@ document.getElementById('add-chat-btn').addEventListener('click', (event) => {
 const createLeftsidePeople = (data) => {
     let parentDiv = document.createElement('div')
     parentDiv.classList.add('chat-child')
-    // parentDiv.dataset.element = btoa(JSON.stringify(data))
-    // parentDiv.onclick = () => chatClicked(parentDiv)
 
     let imgDiv = document.createElement('div')
     imgDiv.classList.add('chats_img')
@@ -345,7 +358,7 @@ const createLeftsidePeople = (data) => {
     let all_chats = document.getElementById('chat-parent')
     all_chats.appendChild(parentDiv)
 
-    chatClicked(parentDiv)
+    chatClicked(parentDiv, data)
     handleHtmlOnlineUsers(onlineUsers)
 }
 
@@ -365,7 +378,7 @@ const addPeopleToChat = async (element) => {
     })
         .then((res) => res.json())
         .then((data) => {
-            console.log('addPeopleToChat: ', data)
+            // console.log('addPeopleToChat: ', data)
             return data
         })
         .catch((err) => {
@@ -407,18 +420,20 @@ const addPeopleToChat = async (element) => {
             })
     } else {
         // console.log('clickedPerson', clickedPerson)
-        chatClicked(clickedPerson)
+        chatClicked(clickedPerson, eleData)
         // console.log("Online users here", atob(onlineUsers));
     }
 
     document.querySelector('#transparent-modal').click()
 }
 
-document.querySelector('.popup-people-all').addEventListener('click', (event) => {
-    if (event.target.closest('.popup-people')) {
-        addPeopleToChat(event.target.closest('.popup-people'))
-    }
-})
+document
+    .querySelector('.popup-people-all')
+    .addEventListener('click', (event) => {
+        if (event.target.closest('.popup-people')) {
+            addPeopleToChat(event.target.closest('.popup-people'))
+        }
+    })
 
 document.getElementById('to-user-info-btn').addEventListener('click', () => {
     let overlay = document.querySelector('#transparent-modal')
@@ -540,7 +555,9 @@ document.getElementById('send-btn').addEventListener('click', (e) => {
     msgInput.focus()
 
     if (msg.length > 0) {
-        let receiverUsername = document.querySelector('.chat-child.active').children[1].children[1].innerText
+        let receiverUsername =
+            document.querySelector('.chat-child.active').children[1].children[1]
+                .innerText
         handleSendRequest(receiverUsername, msg)
     }
 })
@@ -556,7 +573,9 @@ document.getElementById('msg-input').addEventListener('keydown', (event) => {
         msgInput.focus()
 
         if (msg.length > 0) {
-            let receiverUsername = document.querySelector('.chat-child.active').children[1].children[1].innerText
+            let receiverUsername =
+                document.querySelector('.chat-child.active').children[1]
+                    .children[1].innerText
             handleSendRequest(receiverUsername, msg)
         }
     } else if (event.shiftKey && event.key === 'Enter') {
@@ -580,7 +599,9 @@ const deleteMessage = async (btn) => {
     }
     let msgId = parent.dataset.id
     // console.log('msgId', msgId)
-    let receiverUsername = document.querySelector('.chat-child.active').children[1].children[1].innerText
+    let receiverUsername =
+        document.querySelector('.chat-child.active').children[1].children[1]
+            .innerText
 
     let receiverId = await fetch('/get-conv-api/user-details', {
         method: 'POST',
@@ -632,13 +653,15 @@ const deleteMessage = async (btn) => {
         })
 }
 
-document.querySelector('.message-container').addEventListener('click', (event) => {
-    // console.log('event.target', event.target)
-    if (event.target.closest('.delete-msg-btn')) {
-        const deleteMsgBtn = event.target.closest('.delete-msg-btn')
-        deleteMessage(deleteMsgBtn)
-    }
-})
+document
+    .querySelector('.message-container')
+    .addEventListener('click', (event) => {
+        // console.log('event.target', event.target)
+        if (event.target.closest('.delete-msg-btn')) {
+            const deleteMsgBtn = event.target.closest('.delete-msg-btn')
+            deleteMessage(deleteMsgBtn)
+        }
+    })
 
 const deleteConversation = async () => {
     let chat_mid = document.getElementById('all-chats')
@@ -810,8 +833,12 @@ const searchPeople = (event) => {
             .then((data) => {
                 // console.log("data.people: ", data.people);
                 add_people.forEach((person) => {
-                    let personUsername = person.querySelector('.popup-people-username').innerText
-                    let personData = data.people.find((personData) => personData.username === personUsername)
+                    let personUsername = person.querySelector(
+                        '.popup-people-username'
+                    ).innerText
+                    let personData = data.people.find(
+                        (personData) => personData.username === personUsername
+                    )
                     if (personData) {
                         person.classList.remove('hidden')
                     } else {
@@ -825,79 +852,106 @@ const searchPeople = (event) => {
     }
 }
 
-document.getElementById('popup-search').addEventListener('keyup', (event) => searchPeople(event))
+document
+    .getElementById('popup-search')
+    .addEventListener('keyup', (event) => searchPeople(event))
 
 document.querySelector('#from-user-modal-img').addEventListener('click', () => {
     my_modal_2.showModal()
 })
 
-document.querySelector('#change-profilePic-btn').addEventListener('click', () => {
-    const modalProfilePic = document.querySelector('#change-details-profilePic')
+document
+    .querySelector('#change-profilePic-btn')
+    .addEventListener('click', () => {
+        const modalProfilePic = document.querySelector(
+            '#change-details-profilePic'
+        )
 
-    const gender = document.querySelector('#change-details-gender option:checked').value
-    // console.log(gender)
+        const gender = document.querySelector(
+            '#change-details-gender option:checked'
+        ).value
+        // console.log(gender)
 
-    fetch('/api/get-avatar', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ gender }),
+        fetch('/api/get-avatar', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ gender }),
+        })
+            .then((res) => res.json())
+            .then((data) => {
+                // console.log(data.avatar)
+                // console.log(modalProfilePic.src);
+                modalProfilePic.src = data.avatar
+            })
+            .catch((err) => {
+                console.log('Error in getting avatar: ', err)
+            })
     })
-        .then((res) => res.json())
-        .then((data) => {
-            // console.log(data.avatar)
-            // console.log(modalProfilePic.src);
-            modalProfilePic.src = data.avatar
-        })
-        .catch((err) => {
-            console.log('Error in getting avatar: ', err)
-        })
-})
 
-document.querySelector('#chat-change-details-done-btn').addEventListener('click', () => {
-    let name = DOMPurify.sanitize(document.querySelector('#change-details-name').value)
-    let username = DOMPurify.sanitize(document.querySelector('#change-details-username').value)
-    const gender = DOMPurify.sanitize(document.querySelector('#change-details-gender option:checked').value)
-    let avatar = document.querySelector('#change-details-profilePic').src
-    const csrfToken = DOMPurify.sanitize(document.querySelector('input[name="CSRFToken"]').value)
+document
+    .querySelector('#chat-change-details-done-btn')
+    .addEventListener('click', () => {
+        let name = DOMPurify.sanitize(
+            document.querySelector('#change-details-name').value
+        )
+        let username = DOMPurify.sanitize(
+            document.querySelector('#change-details-username').value
+        )
+        const gender = DOMPurify.sanitize(
+            document.querySelector('#change-details-gender option:checked')
+                .value
+        )
+        let avatar = document.querySelector('#change-details-profilePic').src
+        const csrfToken = DOMPurify.sanitize(
+            document.querySelector('input[name="CSRFToken"]').value
+        )
 
-    fetch('/api/change-details', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'x-csrf-token': csrfToken,
-        },
-        body: JSON.stringify({
-            name,
-            username,
-            gender,
-            avatar,
-        }),
+        fetch('/api/change-details', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'x-csrf-token': csrfToken,
+            },
+            body: JSON.stringify({
+                name,
+                username,
+                gender,
+                avatar,
+            }),
+        })
+            .then((res) => res.json())
+            .then((data) => {
+                document
+                    .querySelector('#notification-alert')
+                    .classList.remove('hidden')
+                document.querySelector('#notification-alert span').textContent =
+                    data.message
+                if (data.success) {
+                    document.querySelector('#from-user-modal-img').src =
+                        data.user.avatar
+                }
+
+                if (data.message === 'Username already taken') {
+                    username.textContent = data.user.username
+                }
+                setTimeout(() => {
+                    document.querySelector(
+                        '#notification-alert span'
+                    ).textContent = ''
+                    document
+                        .querySelector('#notification-alert')
+                        .classList.add('hidden')
+                }, 5000)
+            })
+            .catch((err) => {
+                console.log('Error in changing details: ', err)
+            })
     })
-        .then((res) => res.json())
-        .then((data) => {
-            document.querySelector('#notification-alert').classList.remove('hidden')
-            document.querySelector('#notification-alert span').textContent = data.message
-            if (data.success) {
-                document.querySelector('#from-user-modal-img').src = data.user.avatar
-            }
-
-            if (data.message === 'Username already taken') {
-                username.textContent = data.user.username
-            }
-            setTimeout(() => {
-                document.querySelector('#notification-alert span').textContent = ''
-                document.querySelector('#notification-alert').classList.add('hidden')
-            }, 5000)
-        })
-        .catch((err) => {
-            console.log('Error in changing details: ', err)
-        })
-})
 
 // Refresh access token every 10 minutes
-setInterval(
+const setIntervalId = setInterval(
     () => {
         fetch('/auth/jwt/refresh-token', {
             method: 'GET',
@@ -908,6 +962,7 @@ setInterval(
             .then((res) => res.json())
             .then((data) => {
                 console.log(data)
+                if (data.error) clearInterval(setIntervalId)
             })
             .catch((error) => console.log(error.message))
     },
