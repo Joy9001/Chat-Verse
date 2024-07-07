@@ -831,15 +831,16 @@ const searchPeople = (event) => {
         })
             .then((res) => res.json())
             .then((data) => {
-                // console.log("data.people: ", data.people);
-                add_people.forEach((person) => {
-                    let personUsername = person.querySelector(
-                        '.popup-people-username'
-                    ).innerText
-                    let personData = data.people.find(
-                        (personData) => personData.username === personUsername
-                    )
-                    if (personData) {
+                const foundPeopleUsernames = data.people.map(
+                    (person) => person.username
+                )
+                const popupPeople = document.querySelectorAll('.popup-people')
+                popupPeople.forEach((person) => {
+                    const personUsername = person
+                        .querySelector('.popup-people-username')
+                        .innerText.trim()
+                    console.log('personUsername: ', personUsername)
+                    if (foundPeopleUsernames.includes(personUsername)) {
                         person.classList.remove('hidden')
                     } else {
                         person.classList.add('hidden')
