@@ -57,30 +57,13 @@ const handleHtmlGet = (message) => {
 const handleHtmlOnlineUsers = (users) => {
     const leftPeople = document.querySelectorAll('.chat-child')
     leftPeople.forEach(async (person) => {
-        const personUsername = person.querySelector('.chat-username').innerText
-        let personData = await fetch('/get-conv-api/user-details', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                username: personUsername,
-            }),
-        })
-            .then((res) => res.json())
-            .then((data) => {
-                // console.log('handleHtmlOnlineUsers', data)
-                return data
-            })
-            .catch((error) => {
-                console.log('Error in handleHtmlOnlineUsers:', error)
-            })
-
+        let personUsername = person.querySelector('.chat-username').innerText
         let status = person.children[0].children[0]
         let toUserProfile = document.querySelector('.to-user-profile')
         let toUserStatus = toUserProfile.children[0].children[0]
 
-        if (users.includes(personData._id)) {
+        // console.log('users', users)
+        if (users && users.includes(personUsername)) {
             if (status.classList.contains('hidden')) {
                 status.classList.remove('hidden')
                 toUserStatus.classList.remove('hidden')

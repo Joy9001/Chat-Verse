@@ -100,7 +100,9 @@ app.use(
         passport.authenticate('jwt', async (err, user, info) => {
             if (err) {
                 console.error('Error in /admin: ', err.message)
-                return res.status(401).json({ error: 'Unauthorized! Only admin can access this page!' })
+                return res.status(401).json({
+                    error: 'Unauthorized! Only admin can access this page!',
+                })
             }
             if (user) {
                 const userId = user._id
@@ -113,7 +115,9 @@ app.use(
 
                 if (findUser.role !== 'admin') {
                     console.log('User is not an admin')
-                    return res.status(401).json({ error: 'Unauthorized! Only admin can access this page!' })
+                    return res.status(401).json({
+                        error: 'Unauthorized! Only admin can access this page!',
+                    })
                 }
 
                 const userSession = {
@@ -123,7 +127,9 @@ app.use(
                 return next()
             }
             console.log('Info in /admin: ', info.message)
-            return res.status(401).json({ error: 'Unauthorized! Only admin can access this page!' })
+            return res.status(401).json({
+                error: 'Unauthorized! Only admin can access this page!',
+            })
         })(req, res, next)
     },
     express.static(path.resolve('./client/admin-ui/dist'))
@@ -154,21 +160,52 @@ io.engine.use(
 )
 
 // All users connected to the server
-const userSockets = {}
+let userSockets = {}
 
-io.on('connection', (socket) => {
+const getOnlineUsers = async (userSockets) => {
+    let findUserPromises = []
+    for (let userId in userSockets) {
+        findUserPromises.push(
+            User.findById(userId, {
+                _id: 1,
+                username: 1,
+            })
+        )
+    }
+
+    let onlineUsers = []
+    await Promise.all(findUserPromises)
+        .then((users) => {
+            users.forEach((user) => {
+                if (user) {
+                    onlineUsers.push(user.username)
+                }
+            })
+        })
+        .catch((err) => {
+            console.error('Error getting online users: ', err.message)
+        })
+
+    return onlineUsers
+}
+
+io.on('connection', async (socket) => {
     // console.log('user in socket', socket.request.user)
     const userId = socket.request.user._id
     if (userId) {
         userSockets[userId] = socket.id
     }
     console.log('A user connected', socket.id)
-    io.emit('getOnlineUsers', Object.keys(userSockets))
 
-    socket.on('disconnect', () => {
+    let onlineUsers = await getOnlineUsers(userSockets)
+    io.emit('getOnlineUsers', onlineUsers)
+
+    socket.on('disconnect', async () => {
         console.log('A user disconnected', socket.id)
         delete userSockets[userId]
-        io.emit('getOnlineUsers', Object.keys(userSockets))
+
+        let onlineUsers = await getOnlineUsers(userSockets)
+        io.emit('getOnlineUsers', onlineUsers)
     })
 })
 

@@ -3,11 +3,14 @@ const router = Router()
 import Conversation from '../models/conversation.model.js'
 import { getConversation } from '../helpers/conversation.helper.js'
 import User from '../models/users.model.js'
+import { decryptWithCryptoJS } from '../helpers/crypto.helper.js'
 
 router.post('/get-conversation', async (req, res) => {
     const senderId = req.user._id
-    const { receiverId } = req.body
-    // console.log(senderId, receiverId);
+    let { receiverId } = req.body
+
+    receiverId = decryptWithCryptoJS(receiverId)
+    console.log(senderId, receiverId)
     // console.log('type of receiverId: ', typeof receiverId)
 
     try {

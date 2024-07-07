@@ -9,6 +9,10 @@ import { io } from '../server.js'
 import { getReceiverSocketId } from '../helpers/socket.helper.js'
 import { csrfSync } from 'csrf-sync'
 import { updateUnreadCount } from '../helpers/conversation.helper.js'
+import {
+    decryptWithCryptoJS,
+    encryptWithCryptoJS,
+} from '../helpers/crypto.helper.js'
 
 // csrf sync
 const { generateToken } = csrfSync()
@@ -21,11 +25,12 @@ const messageController = async (req, res) => {
         if (!currentUser)
             return res.status(404).json({ message: 'User not found' })
 
-        let unreadMessages = []
+        // Get people to add
         const peopleToAdd = await addPeople(currentUserId)
         const currentUserAddedPeopleToChat =
             await getPeopleToChat(currentUserId)
 
+        // Get current chat people
         let currentChatPeople = []
         if (currentUserAddedPeopleToChat) {
             currentChatPeople = await getCurrentChatPeople(
@@ -34,6 +39,7 @@ const messageController = async (req, res) => {
         }
 
         // Get unread messages
+        let unreadMessages = []
         const unreadMessagePromises = currentChatPeople.map(async (person) => {
             let findConversation = await Conversation.findOne({
                 participants: { $all: [currentUserId, person._id] },
@@ -63,6 +69,16 @@ const messageController = async (req, res) => {
         })
 
         await Promise.all(unreadMessagePromises)
+
+        // encrypt the _ids of people to chat
+        currentChatPeople = currentChatPeople.map((person) => {
+            return {
+                _id: encryptWithCryptoJS(person._id.toString()),
+                name: person.name,
+                username: person.username,
+                avatar: person.avatar,
+            }
+        })
 
         // Refresh the access token if expired
         if (req.user.accessToken) {
@@ -96,7 +112,8 @@ const messageController = async (req, res) => {
 
 const sendMessageController = async (req, res) => {
     const senderId = req.user._id
-    const { receiverId, message } = req.body
+    let { receiverId, message } = req.body
+    receiverId = decryptWithCryptoJS(receiverId)
 
     try {
         const msg = new Message({
@@ -180,7 +197,9 @@ const sendMessageController = async (req, res) => {
 
 const deleteMessageController = async (req, res) => {
     const senderId = req.user._id
-    const { receiverId, msgId } = req.body
+    let { receiverId, msgId } = req.body
+    receiverId = decryptWithCryptoJS(receiverId)
+
     let senderUsername = await User.findOne(
         { _id: senderId },
         { _id: 0, username: 1 }
@@ -271,7 +290,9 @@ const unreadMessageController = async (req, res) => {
 
 const deleteConversationController = async (req, res) => {
     const senderId = req.user._id
-    const { receiverId } = req.body
+    let { receiverId } = req.body
+    receiverId = decryptWithCryptoJS(receiverId)
+
     try {
         const findConversation = await Conversation.findOne({
             participants: { $all: [senderId, receiverId] },
@@ -328,7 +349,9 @@ const deleteConversationController = async (req, res) => {
 
 const blockUserController = async (req, res) => {
     const senderId = req.user._id
-    const { receiverId } = req.body
+    let { receiverId } = req.body
+    receiverId = decryptWithCryptoJS(receiverId)
+
     try {
         let conversation = await Conversation.findOne({
             participants: { $all: [senderId, receiverId] },
@@ -362,7 +385,8 @@ const blockUserController = async (req, res) => {
 
 const unblockUserController = async (req, res) => {
     const senderId = req.user._id
-    const { receiverId } = req.body
+    let { receiverId } = req.body
+    receiverId = decryptWithCryptoJS(receiverId)
 
     try {
         let conversation = await Conversation.findOne({

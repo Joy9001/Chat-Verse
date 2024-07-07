@@ -76,7 +76,10 @@
                                     class="popup-people-all no-scrollbar mt-2 flex h-[calc(100%-6rem)] grow flex-col overflow-y-scroll"
                                 >
                                     <% peopleToAdd.forEach((element)=> { %>
-                                    <div class="popup-people">
+                                    <div
+                                        class="popup-people"
+                                        data-id="<%= element._id %>"
+                                    >
                                         <% if(element.avatar) { %>
                                         <img
                                             draggable="false"
@@ -273,7 +276,10 @@
                     >
                         <% if (currentChatPeople) { %> <%
                         currentChatPeople.forEach((element)=> { %>
-                        <div class="chat-child group">
+                        <div
+                            class="chat-child group"
+                            data-id="<%= element._id %>"
+                        >
                             <div class="chats_img indicator">
                                 <span
                                     class="status badge indicator-item badge-success hidden h-2 -translate-x-1 translate-y-1 p-[0.4rem]"

@@ -3,12 +3,14 @@ import { Types } from 'mongoose'
 const router = Router()
 import { addPeopleToChat } from '../helpers/addPeopleToChat.helper.js'
 import User from '../models/users.model.js'
+import { decryptWithCryptoJS } from '../helpers/crypto.helper.js'
 
 router.post('/add-people-to-chat', async (req, res) => {
     try {
         // console.log(req.body);
         const senderId = req.user._id
-        const { receiverId } = req.body
+        let { receiverId } = req.body
+        receiverId = decryptWithCryptoJS(receiverId)
         const receiverObjectid = new Types.ObjectId(`${receiverId}`)
         const result = await addPeopleToChat(senderId, receiverId)
         const findReceiver = await User.findOne(

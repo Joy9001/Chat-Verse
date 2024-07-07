@@ -36,27 +36,22 @@ const chatClicked = async (htmlElement, ...args) => {
         ? null
         : unreadElement.classList.add('hidden')
 
-    const clickedUserUsername = htmlElement.children[1].children[1].innerText
-    let clickedUser = ''
+    const clickedUser_Username = htmlElement.children[1].children[1].innerText
+    let clickedUser = {}
 
-    if (args[0] && args[0].username === clickedUserUsername) {
+    if (args[0] && args[0].username === clickedUser_Username) {
         clickedUser = args[0]
     } else {
-        await fetch('/get-conv-api/user-details', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ username: clickedUserUsername }),
-        })
-            .then((res) => res.json())
-            .then((data) => {
-                // console.log('chatClicked: ', data)
-                clickedUser = data
-            })
-            .catch((err) => {
-                console.log('Error in getting user details: ', err)
-            })
+        const clickedUser_Id = htmlElement.dataset.id
+        const clickedUser_Name = htmlElement.children[1].children[0].innerText
+        const clickedUser_Avatar = htmlElement.children[0].children[1].src
+
+        clickedUser = {
+            _id: clickedUser_Id,
+            name: clickedUser_Name,
+            avatar: clickedUser_Avatar,
+            username: clickedUser_Username,
+        }
     }
 
     for (let i = 0; i < all_chats_children.length; i++) {
@@ -368,22 +363,16 @@ const addPeopleToChat = async (element) => {
     let clickedPerson = ''
     // console.log(element.children[1].children)
     const eleUsername = element.children[1].children[1].innerText
+    const eleName = element.children[1].children[0].innerText
+    const eleAvatar = element.children[0].src
+    const eleId = element.dataset.id
 
-    let eleData = await fetch('/get-conv-api/user-details', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ username: eleUsername }),
-    })
-        .then((res) => res.json())
-        .then((data) => {
-            // console.log('addPeopleToChat: ', data)
-            return data
-        })
-        .catch((err) => {
-            console.log('Error in getting user details: ', err)
-        })
+    let eleData = {
+        _id: eleId,
+        name: eleName,
+        username: eleUsername,
+        avatar: eleAvatar,
+    }
 
     leftPeople.forEach((person) => {
         let personUsername = person.children[1].children[1].innerText
@@ -500,23 +489,7 @@ const handleHtmlSend = (msgRes) => {
     msgContainerDiv.scrollTop = msgContainerDiv.scrollHeight
 }
 
-const handleSendRequest = async (receiverUsername, msg) => {
-    let receiverId = await fetch('/get-conv-api/user-details', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ username: receiverUsername }),
-    })
-        .then((res) => res.json())
-        .then((data) => {
-            console.log('handleSendRequest: ', data)
-            return data._id
-        })
-        .catch((err) => {
-            console.log('Error in getting user details: ', err)
-        })
-
+const handleSendRequest = async (receiverId, msg) => {
     fetch('/chat/send-message', {
         method: 'POST',
         headers: {
@@ -555,10 +528,8 @@ document.getElementById('send-btn').addEventListener('click', (e) => {
     msgInput.focus()
 
     if (msg.length > 0) {
-        let receiverUsername =
-            document.querySelector('.chat-child.active').children[1].children[1]
-                .innerText
-        handleSendRequest(receiverUsername, msg)
+        let receiverId = document.querySelector('.chat-child.active').dataset.id
+        handleSendRequest(receiverId, msg)
     }
 })
 
@@ -573,10 +544,9 @@ document.getElementById('msg-input').addEventListener('keydown', (event) => {
         msgInput.focus()
 
         if (msg.length > 0) {
-            let receiverUsername =
-                document.querySelector('.chat-child.active').children[1]
-                    .children[1].innerText
-            handleSendRequest(receiverUsername, msg)
+            let receiverId =
+                document.querySelector('.chat-child.active').dataset.id
+            handleSendRequest(receiverId, msg)
         }
     } else if (event.shiftKey && event.key === 'Enter') {
         event.preventDefault()
@@ -599,25 +569,8 @@ const deleteMessage = async (btn) => {
     }
     let msgId = parent.dataset.id
     // console.log('msgId', msgId)
-    let receiverUsername =
-        document.querySelector('.chat-child.active').children[1].children[1]
-            .innerText
 
-    let receiverId = await fetch('/get-conv-api/user-details', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ username: receiverUsername }),
-    })
-        .then((res) => res.json())
-        .then((data) => {
-            console.log('deleteMessage: ', data)
-            return data._id
-        })
-        .catch((err) => {
-            console.log('Error in getting user details: ', err)
-        })
+    let receiverId = document.querySelector('.chat-child.active').dataset.id
 
     fetch('/chat/delete-message', {
         method: 'POST',
@@ -670,22 +623,7 @@ const deleteConversation = async () => {
     let blockDiv = document.querySelector('#chats-end-block')
 
     let receiver = document.querySelector('.chat-child.active')
-    let receiverUsername = receiver.children[1].children[1].innerText
-    let receiverId = await fetch('/get-conv-api/user-details', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ username: receiverUsername }),
-    })
-        .then((res) => res.json())
-        .then((data) => {
-            console.log('deleteConversation: ', data)
-            return data._id
-        })
-        .catch((err) => {
-            console.log('Error in getting user details: ', err)
-        })
+    let receiverId = receiver.dataset.id
 
     fetch('/chat/delete-conversation', {
         method: 'POST',
@@ -782,22 +720,7 @@ const handleUnblockUser = (receiverId, htmlElement) => {
 
 const blockUnblockUser = async (htmlElement) => {
     let receiver = document.querySelector('.chat-child.active')
-    let receiverUsername = receiver.children[1].children[1].innerText
-    let receiverId = await fetch('/get-conv-api/user-details', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ username: receiverUsername }),
-    })
-        .then((res) => res.json())
-        .then((data) => {
-            console.log('blockUnblockUser: ', data)
-            return data._id
-        })
-        .catch((err) => {
-            console.log('Error in getting user details: ', err)
-        })
+    let receiverId = receiver.dataset.id
 
     let blockStatus = htmlElement.children[0].innerText
 
