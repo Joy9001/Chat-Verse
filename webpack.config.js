@@ -12,7 +12,6 @@ export default {
         chat: './client/index/index-chat.js',
         login: './client/index/index-login.js',
         register: './client/index/index-register.js',
-        css: './client/index/index-css.js',
     },
     output: {
         filename: '[name].[contenthash].js',
@@ -72,21 +71,21 @@ export default {
             template: '!!raw-loader!./client/views/chat.ejs',
             filename: 'views/chat.ejs',
             favicon: './client/public/assets/favicon.ico',
-            chunks: ['chat', 'css'],
+            chunks: ['chat'],
             inject: true,
         }),
         new HtmlWebpackPlugin({
             template: '!!raw-loader!./client/views/login.ejs',
             filename: 'views/login.ejs',
             favicon: './client/public/assets/favicon.ico',
-            chunks: ['login', 'css'],
+            chunks: ['login'],
             inject: true,
         }),
         new HtmlWebpackPlugin({
             template: '!!raw-loader!./client/views/register.ejs',
             filename: 'views/register.ejs',
             favicon: './client/public/assets/favicon.ico',
-            chunks: ['register', 'css'],
+            chunks: ['register'],
             inject: true,
         }),
         new MiniCssExtractPlugin({

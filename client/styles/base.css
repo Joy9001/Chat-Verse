@@ -1,0 +1,32 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+    @font-face {
+        font-family: 'Operator Mono';
+        src: url('../public/assets/OPERATORMONO-BOOKITALIC.OTF');
+    }
+
+    emoji-picker {
+        @apply absolute h-64 w-[22.2rem];
+        --background: #fadcd5;
+        --border-color: #fadcd5;
+        --button-hover-background: #a66f8d;
+        --button-active-background: #a66f8d;
+    }
+
+    textarea::-webkit-scrollbar {
+        width: 0rem;
+    }
+}
+
+@layer utilities {
+    .no-scrollbar::-webkit-scrollbar {
+        display: none; /* Safari and Chrome */
+    }
+    .no-scrollbar {
+        -ms-overflow-style: none; /* IE and Edge */
+        scrollbar-width: none; /* Firefox */
+    }
+}

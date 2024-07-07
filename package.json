@@ -9,9 +9,11 @@
     "scripts": {
         "dev": "nodemon ./server/server.js",
         "start": "node ./server/server.js",
-        "build": "npm-run-all --parallel build:css build:webpack",
-        "build:css": "tailwindcss -i ./client/styles/style.css -o ./client/styles/output.css",
-        "watch:css": "tailwindcss -i ./client/styles/style.css -o ./client/styles/output.css --watch",
+        "build:css": "npm-run-all --parallel build:base build:chat",
+        "build:base": "tailwindcss -i ./client/styles/base.css -o ./client/styles/base-output.css",
+        "build:chat": "tailwindcss -i ./client/styles/chat.css -o ./client/styles/chat-output.css",
+        "watch:chat": "tailwindcss -i ./client/styles/chat.css -o ./client/styles/chat-output.css --watch",
+        "watch:base": "tailwindcss -i ./client/styles/base.css -o ./client/styles/base-output.css --watch",
         "build:webpack": "webpack --config webpack.config.js",
         "build:webpack-with-log": "webpack --config webpack.config.js > webpack-errors.log",
         "format:ejs": "prettier --tab-width=4 --plugin=prettier-plugin-ejs --write ."
