@@ -10,10 +10,7 @@ const decryptWithCryptoJS = (text) => {
 }
 
 const encryptObjectWithCryptoJS = (object) => {
-    return CryptoJS.AES.encrypt(
-        JSON.stringify(object),
-        process.env.CRYPTO_SECRET
-    ).toString()
+    return CryptoJS.AES.encrypt(JSON.stringify(object), process.env.CRYPTO_SECRET).toString()
 }
 
 const decryptObjectWithCryptoJS = (object) => {
@@ -21,9 +18,4 @@ const decryptObjectWithCryptoJS = (object) => {
     return JSON.parse(bytes.toString(CryptoJS.enc.Utf8))
 }
 
-export {
-    encryptWithCryptoJS,
-    decryptWithCryptoJS,
-    encryptObjectWithCryptoJS,
-    decryptObjectWithCryptoJS,
-}
+export { encryptWithCryptoJS, decryptWithCryptoJS, encryptObjectWithCryptoJS, decryptObjectWithCryptoJS }

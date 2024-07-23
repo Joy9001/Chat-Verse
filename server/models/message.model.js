@@ -1,5 +1,5 @@
 import { Schema, model } from 'mongoose'
-import Conversation from './conversation.model.js'
+import { Conversation } from './conversation.model.js'
 import { addPeopleToChat } from '../helpers/addPeopleToChat.helper.js'
 import AddedPeopleToChat from './addedPeopleToChat.model.js'
 
@@ -24,63 +24,66 @@ const messageSchema = new Schema(
 )
 
 // Pre Hooks
-messageSchema.pre(
-    'deleteOne',
-    { document: true, query: false },
-    async function (next) {
-        try {
-            let conversation = await Conversation.findOne({
-                participants: { $all: [this.senderId, this.receiverId] },
-            })
+messageSchema.pre('deleteOne', { document: true, query: false }, async function (next) {
+    try {
+        let conversation = await Conversation.findOne({
+            participants: { $all: [this.senderId, this.receiverId] },
+            isGroup: false,
+        })
 
-            if (!conversation) {
-                console.log('Conversation not found')
-                next(new Error('Conversation not found'))
-            }
+        if (!conversation) {
+            console.log('Conversation not found')
+            next(new Error('Conversation not found'))
+        }
 
-            conversation.messages = conversation.messages.filter(
-                (message) => message.toString() !== this._id.toString()
+        conversation.messages = conversation.messages.filter((message) => message.toString() !== this._id.toString())
+
+        // console.log('conversation in msgSchema: ', conversation)
+
+        if (conversation.messages.length === 0) {
+            console.log('Deleting conversation...')
+            await Conversation.deleteOne({ _id: conversation._id, isGroup: false })
+
+            // Delete the added people to chat
+            console.log('Deleting added people to chat...')
+            await AddedPeopleToChat.findOneAndUpdate(
+                {
+                    senderId: this.senderId,
+                },
+                {
+                    $pull: { recivers: this.receiverId },
+                }
             )
 
-            if (conversation.messages.length === 0) {
-                await conversation.deleteOne()
-
-                // Delete the added people to chat
-                await AddedPeopleToChat.findOneAndUpdate(
-                    {
-                        senderId: this.senderId,
-                    },
-                    {
-                        $pull: { recivers: this.receiverId },
-                    }
-                )
-
-                // Delete the sender from AddedPeopleToChat
-                await AddedPeopleToChat.findOneAndUpdate(
-                    {
-                        senderId: this.receiverId,
-                    },
-                    {
-                        $pull: { recivers: this.senderId },
-                    }
-                )
-            } else {
-                await conversation.save()
-            }
-            next()
-        } catch (error) {
-            console.log('Error deleting message: ', error.message)
-            next(error)
+            // Delete the sender from AddedPeopleToChat
+            console.log('Deleting sender from added people to chat...')
+            await AddedPeopleToChat.findOneAndUpdate(
+                {
+                    senderId: this.receiverId,
+                },
+                {
+                    $pull: { recivers: this.senderId },
+                }
+            )
+        } else {
+            console.log('Saving conversation...')
+            await conversation.save()
         }
+        next()
+    } catch (error) {
+        console.log('Error deleting message: ', error.message)
+        next(error)
     }
-)
+})
 
 // Post hooks
 messageSchema.post('save', async function (doc, next) {
     try {
+        // console.log('doc in message.model: ', doc)
         // Find or create a conversation
         let conversation = await Conversation.findOne({
             participants: { $all: [doc.senderId, doc.receiverId] },
+            isGroup: false,
         })
 
         if (!conversation) {
@@ -90,7 +93,7 @@ messageSchema.post('save', async function (doc, next) {
                 isBlocked: false,
                 unreadMsgCount: {
                     senderId: doc.senderId,
-                    receiverId: doc.receiverId,
+                    receivers: [doc.receiverId],
                     unreadCount: 0,
                 },
             })
@@ -129,10 +132,7 @@ messageSchema.post('save', async function (doc, next) {
         }
         next()
     } catch (error) {
-        console.log(
-            'Error adding people to chat inside message.model: ',
-            error.message
-        )
+        console.log('Error adding people to chat inside message.model: ', error.message)
         next(error)
     }
 })

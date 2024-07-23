@@ -4,14 +4,10 @@ export default {
     content: ['./client/**/*.{js,ejs}'],
     theme: {
         fontFamily: {
-            operatorMono: [
-                'Operator Mono',
-                'Segoe UI Emoji',
-                'Segoe UI Symbol',
-                'Noto Color Emoji',
-                'Apple Color Emoji',
-                'sans-serif',
-            ],
+            operatorMono: ['Operator Mono', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji', 'Apple Color Emoji', 'sans-serif'],
+            roboto: ['Roboto', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji', 'Apple Color Emoji', 'sans-serif'],
+            rubik: ['Rubik', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji', 'Apple Color Emoji', 'sans-serif'],
+            dm: ['DM Sans', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji', 'Apple Color Emoji', 'sans-serif'],
         },
         extend: {
             translate: ['group-hover'],
@@ -20,11 +16,12 @@ export default {
                 18: '4.5rem',
                 19: '4.75rem',
                 22: '5.5rem',
+                46: '11.5rem',
                 58: '14.5rem',
                 100: '25rem',
             },
             backgroundImage: {
-                backImage: "url('../public/assets/bg-img.png')",
+                backImage: "url('../public/assets/pexel1.jpg')",
             },
             borderWidth: {
                 1: '1px',
@@ -40,9 +37,13 @@ export default {
     daisyui: {
         themes: [
             {
-                cupcake: {
+                themeLilac: {
                     ...require('daisyui/src/theming/themes')['cupcake'],
-                    info: '#e9e9e9',
+                    primary: '#6f87af',
+                    secondary: '#ce83a3',
+                    accent: '#dde3da',
+                    neutral: '#c297ce',
+                    'base-100': '#ffffff',
                 },
             },
         ],

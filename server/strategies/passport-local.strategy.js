@@ -37,10 +37,7 @@ export default passport.use(
             try {
                 const findUser = await User.findOne({ email: username })
                 if (!findUser) throw new Error('User not found')
-                const isPasswordMatch = await comparePassword(
-                    password,
-                    findUser.password
-                )
+                const isPasswordMatch = await comparePassword(password, findUser.password)
                 if (!isPasswordMatch) throw new Error('Invalid credentials')
 
                 const userSession = {

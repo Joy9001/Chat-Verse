@@ -1,18 +1,15 @@
 import addPeople from '../helpers/addPeople.helper.js'
 import { getPeopleToChat } from '../helpers/addPeopleToChat.helper.js'
-import getCurrentChatPeople from '../helpers/getCurrentChatPeople.helper.js'
+import { getCurrentChatPeople, getCurrentGroups } from '../helpers/getCurrentChats.helper.js'
 import Message from '../models/message.model.js'
-import Conversation from '../models/conversation.model.js'
+import { Conversation } from '../models/conversation.model.js'
 import AddedPeopleToChat from '../models/addedPeopleToChat.model.js'
 import User from '../models/users.model.js'
 import { io } from '../server.js'
 import { getReceiverSocketId } from '../helpers/socket.helper.js'
 import { csrfSync } from 'csrf-sync'
 import { updateUnreadCount } from '../helpers/conversation.helper.js'
-import {
-    decryptWithCryptoJS,
-    encryptWithCryptoJS,
-} from '../helpers/crypto.helper.js'
+import { decryptWithCryptoJS } from '../helpers/crypto.helper.js'
 
 // csrf sync
 const { generateToken } = csrfSync()
@@ -21,21 +18,23 @@ const messageController = async (req, res) => {
     try {
         const currentUserId = req.user._id
 
-        const currentUser = await User.findById(currentUserId)
-        if (!currentUser)
-            return res.status(404).json({ message: 'User not found' })
+        // Get current user
+        const currentUser = await User.findById(currentUserId, {
+            name: 1,
+            username: 1,
+            avatar: 1,
+            gender: 1,
+        }).lean()
+        if (!currentUser) return res.status(404).json({ message: 'User not found' })
 
         // Get people to add
         const peopleToAdd = await addPeople(currentUserId)
-        const currentUserAddedPeopleToChat =
-            await getPeopleToChat(currentUserId)
+        const currentUserAddedPeopleToChat = await getPeopleToChat(currentUserId)
 
         // Get current chat people
         let currentChatPeople = []
         if (currentUserAddedPeopleToChat) {
-            currentChatPeople = await getCurrentChatPeople(
-                currentUserAddedPeopleToChat.recivers
-            )
+            currentChatPeople = await getCurrentChatPeople(currentUserAddedPeopleToChat.recivers)
         }
 
         // Get unread messages
@@ -43,26 +42,26 @@ const messageController = async (req, res) => {
         const unreadMessagePromises = currentChatPeople.map(async (person) => {
             let findConversation = await Conversation.findOne({
                 participants: { $all: [currentUserId, person._id] },
-            })
+                isGroup: false,
+            }).lean()
 
+            // console.log('findConversation: ', findConversation)
             if (findConversation) {
-                let findUnreadMsgCount = findConversation.unreadMsgCount.find(
-                    (obj) => obj.senderId.toString() === person._id.toString()
-                )
+                let findUnreadMsgCount = findConversation.unreadMsgCount.find((obj) => obj.senderId.toString() === person._id.toString())
 
                 if (findUnreadMsgCount) {
                     unreadMessages.push(findUnreadMsgCount)
                 } else {
                     unreadMessages.push({
                         senderId: person._id,
-                        receiverId: currentUserId,
+                        receivers: [currentUserId],
                         unreadCount: 0,
                     })
                 }
             } else {
                 unreadMessages.push({
                     senderId: person._id,
-                    receiverId: currentUserId,
+                    receivers: [currentUserId],
                     unreadCount: 0,
                 })
             }
@@ -70,22 +69,63 @@ const messageController = async (req, res) => {
 
         await Promise.all(unreadMessagePromises)
 
-        // encrypt the _ids of people to chat
+        // Determine the total unread messages for each user
         currentChatPeople = currentChatPeople.map((person) => {
+            let unreadMsg = unreadMessages.find(
+                (msg) =>
+                    msg.senderId.toString() === person._id.toString() &&
+                    msg.receivers.some((receiver) => receiver.toString() === currentUserId.toString())
+            )
+            let totalUnreadMsgCount = 0
+            if (unreadMsg) {
+                totalUnreadMsgCount = unreadMsg.unreadCount
+            }
             return {
-                _id: encryptWithCryptoJS(person._id.toString()),
-                name: person.name,
-                username: person.username,
-                avatar: person.avatar,
+                ...person,
+                totalUnreadMsgCount,
+                unreadMsg,
             }
         })
+        // console.log('currentChatPeople: ', currentChatPeople)
+
+        // Get Group Chats
+        let currentGroups = await AddedPeopleToChat.findOne(
+            {
+                senderId: currentUserId,
+            },
+            { groups: 1 }
+        ).lean()
+
+        if (currentGroups) {
+            currentGroups = await getCurrentGroups(currentGroups.groups)
+
+            // console.log('currentGroups: ', currentGroups)
+            if (currentGroups) {
+                // Get unread message count for group chats
+                currentGroups = currentGroups.map((group) => {
+                    // console.log('group: ', group)
+                    let unreadGroupMsgs = group.unreadMsgCount.filter((msg) =>
+                        msg.receivers.some((receiver) => receiver.toString() === currentUserId.toString())
+                    )
+                    let unreadMsgCount = 0
+                    if (unreadGroupMsgs) {
+                        unreadGroupMsgs.forEach((msg) => {
+                            unreadMsgCount += msg.unreadCount
+                        })
+                    }
+                    return {
+                        ...group,
+                        totalUnreadMsgCount: unreadMsgCount,
+                    }
+                })
+            }
+        }
+
+        // console.log('currentGroups: ', currentGroups)
 
         // Refresh the access token if expired
         if (req.user.accessToken) {
-            console.log(
-                'Set the accessToken in cookie inside messageController',
-                req.user.accessToken
-            )
+            // console.log('Set the accessToken in cookie inside messageController', req.user.accessToken)
             res.cookie('accessToken', req.user.accessToken, {
                 httpOnly: true,
                 secure: true,
@@ -101,9 +141,14 @@ const messageController = async (req, res) => {
             peopleToAdd,
             currentChatPeople,
             unreadMessages,
+            currentGroups,
             currentUser,
             csrfToken,
         }
+
+        // console.log('currentChatPeople: ', renderData.currentChatPeople)
+        // console.log('currentGroups: ', renderData.currentGroups)
+        // console.log(renderData.unreadMessages)
         return res.render('chat', renderData)
     } catch (error) {
         console.log('Error getting people inside messageController: ', error)
@@ -114,6 +159,7 @@ const sendMessageController = async (req, res) => {
     const senderId = req.user._id
     let { receiverId, message } = req.body
     receiverId = decryptWithCryptoJS(receiverId)
+    // console.log('receiverId', receiverId)
 
     try {
         const msg = new Message({
@@ -122,64 +168,38 @@ const sendMessageController = async (req, res) => {
             message,
         })
 
-        const savedMsg = await msg.save()
-        let senderUsername = await User.findOne(
-            { _id: senderId },
-            { _id: 0, username: 1 }
-        )
+        await msg.save()
+        let senderUsername = await User.findOne({ _id: senderId }, { _id: 0, username: 1 }).lean()
 
         // Socket functionality
         const receiverSocketId = getReceiverSocketId(receiverId)
-        console.log('receiverSocketId: ', receiverSocketId)
+        // console.log('receiverSocketId: ', receiverSocketId)
         if (receiverSocketId) {
             io.to(receiverSocketId)
                 .timeout(2000)
-                .emit(
-                    'newMessage',
-                    savedMsg,
-                    senderUsername['username'],
-                    async (err, responses) => {
-                        // console.log('response: ', responses)
-                        if (err) {
-                            console.log(
-                                'Error sending message to receiver: ',
-                                err
-                            )
-                            throw new Error(err)
-                        }
-                        if (responses[0].status === 'success') {
-                            console.log(
-                                'Message sent to receiver',
-                                receiverSocketId
-                            )
-                        } else if (responses[0].status === 'failure') {
-                            console.log(
-                                'Error sending message to receiver: ',
-                                response.error
-                            )
+                .emit('newMessage', msg, senderUsername.username, async (err, responses) => {
+                    // console.log('response: ', responses)
+                    if (err) {
+                        console.log('Error sending message to receiver: ', err)
+                        throw new Error(err)
+                    }
+                    if (responses[0].status === 'success') {
+                        console.log('Message sent to receiver', receiverSocketId)
+                    } else if (responses[0].status === 'failure') {
+                        console.log('Error sending message to receiver: ', responses[0].error)
+                    } else {
+                        // console.log(responses)
+                        const result = await updateUnreadCount(senderId, receiverId, false)
+                        if (result.success) {
+                            console.log('Inside sendMessageController: ', result.message)
                         } else {
-                            console.log(responses)
-                            const result = await updateUnreadCount(
-                                senderId,
-                                receiverId
-                            )
-                            if (result.success) {
-                                console.log(
-                                    'Inside sendMessageController: ',
-                                    result.message
-                                )
-                            } else {
-                                console.log(
-                                    'Inside sendMessageController: ',
-                                    result.error
-                                )
-                                throw new Error(result.error)
-                            }
+                            console.log('Inside sendMessageController: ', result.error)
+                            throw new Error(result.error)
                         }
                     }
-                )
+                })
         } else {
-            const result = await updateUnreadCount(senderId, receiverId)
+            const result = await updateUnreadCount(senderId, receiverId, false)
             if (result.success) {
                 console.log('Inside sendMessageController: ', result.message)
             } else {
@@ -188,7 +208,7 @@ const sendMessageController = async (req, res) => {
             }
         }
 
-        res.status(201).json(savedMsg)
+        res.status(201).json(msg)
     } catch (error) {
         console.log('Error sending message: ', error.message)
         return res.status(400).json({ message: error.message })
@@ -200,14 +220,14 @@ const deleteMessageController = async (req, res) => {
     let { receiverId, msgId } = req.body
     receiverId = decryptWithCryptoJS(receiverId)
 
-    let senderUsername = await User.findOne(
-        { _id: senderId },
-        { _id: 0, username: 1 }
-    )
+    let senderUsername = await User.findOne({ _id: senderId }, { _id: 0, username: 1 })
     try {
+        // console.log('msgId: ', msgId)
         const findMsg = await Message.findOne({
             _id: msgId,
         })
+
+        // console.log('findMsg: ', findMsg)
         if (findMsg) {
             try {
                 let deleteRes = await findMsg.deleteOne()
@@ -216,17 +236,13 @@ const deleteMessageController = async (req, res) => {
                     // Socket functionality
                     const receiverSocketId = getReceiverSocketId(receiverId)
                     if (receiverSocketId) {
-                        io.to(receiverSocketId).emit(
-                            'deleteMessage',
-                            msgId,
-                            senderUsername.username
-                        )
-                        console.log(
-                            'Deleted Message Id sent to receiver',
-                            receiverSocketId
-                        )
+                        io.to(receiverSocketId).emit('deleteMessage', msgId, senderUsername.username)
+                        // console.log('Deleted Message Id sent to receiver', receiverSocketId)
                     }
                     return res.status(200).json({ message: 'Message deleted' })
+                } else {
+                    console.log('Error deleting message')
+                    return res.json({ message: 'Error deleting message' })
                 }
             } catch (error) {
                 console.log('Error deleting message: ', error.message)
@@ -241,52 +257,48 @@ const deleteMessageController = async (req, res) => {
     }
 }
 
-const unreadMessageController = async (req, res) => {
-    const { senderUsername, unreadMsgCount } = req.body
-    const receiverId = req.user._id
-    try {
-        const senderId = await User.findOne(
-            { username: senderUsername },
-            { _id: 1 }
-        )
-        console.log('inside unreadMessageController:', senderId)
-        let findConversation = await Conversation.findOne({
-            participants: { $all: [senderId, receiverId] },
-        })
+// const unreadMessageController = async (req, res) => {
+//     const { senderUsername, unreadMsgCount } = req.body
+//     const receiverId = req.user._id
+//     try {
+//         const senderId = await User.findOne({ username: senderUsername }, { _id: 1 })
+//         // console.log('inside unreadMessageController:', senderId)
+//         let findConversation = await Conversation.findOne({
+//             participants: { $all: [senderId, receiverId] },
+//         })
 
-        if (findConversation) {
-            let findUnreadMsgCount = findConversation.unreadMsgCount.find(
-                (obj) => obj.senderId.toString() === senderId._id.toString()
-            )
+//         if (findConversation) {
+//             let findUnreadMsgCount = findConversation.unreadMsgCount.find((obj) => obj.senderId.toString() === senderId._id.toString())
 
-            if (findUnreadMsgCount) {
-                findUnreadMsgCount.unreadCount = unreadMsgCount
-            } else {
-                findConversation.unreadMsgCount.push({
-                    senderId: senderId,
-                    receiverId: receiverId,
-                    unreadCount: unreadMsgCount,
-                })
-            }
-            await findConversation.save()
-        } else {
-            let newConversation = new Conversation({
-                participants: [senderId, receiverId],
-                unreadMsgCount: [
-                    {
-                        senderId: senderId,
-                        receiverId: receiverId,
-                        unreadCount: unreadMsgCount,
-                    },
-                ],
-            })
-            await newConversation.save()
-        }
-        return res.status(200).json({ message: 'Unread message count updated' })
-    } catch (error) {
-        console.log('Error updating unread message count: ', error)
-    }
-}
+//             if (findUnreadMsgCount) {
+//                 findUnreadMsgCount.unreadCount = unreadMsgCount
+//             } else {
+//                 let unreadMsgCount = {
+//                     senderId: senderId,
+//                     receivers: [receiverId],
+//                     unreadCount: unreadMsgCount,
+//                 }
+//                 findConversation.unreadMsgCount.push(unreadMsgCount)
+//             }
+//             await findConversation.save()
+//         } else {
+//             let newConversation = new Conversation({
+//                 participants: [senderId, receiverId],
+//                 unreadMsgCount: [
+//                     {
+//                         senderId: senderId,
+//                         receivers: [receiverId],
+//                         unreadCount: unreadMsgCount,
+//                     },
+//                 ],
+//             })
+//             await newConversation.save()
+//         }
+//         return res.status(200).json({ message: 'Unread message count updated' })
+//     } catch (error) {
+//         console.log('Error updating unread message count: ', error)
+//     }
+// }
 
 const deleteConversationController = async (req, res) => {
     const senderId = req.user._id
@@ -296,6 +308,7 @@ const deleteConversationController = async (req, res) => {
     try {
         const findConversation = await Conversation.findOne({
             participants: { $all: [senderId, receiverId] },
+            isGroup: false,
         })
 
         if (findConversation) {
@@ -326,19 +339,10 @@ const deleteConversationController = async (req, res) => {
 
         // Socket functionality
         const receiverSocketId = getReceiverSocketId(receiverId)
-        let senderUsername = await User.findOne(
-            { _id: senderId },
-            { _id: 0, username: 1 }
-        )
+        let senderUsername = await User.findOne({ _id: senderId }, { _id: 0, username: 1 })
         if (receiverSocketId) {
-            io.to(receiverSocketId).emit(
-                'deleteConversation',
-                senderUsername.username
-            )
-            console.log(
-                'Deleted Conversation sent to receiver',
-                receiverSocketId
-            )
+            io.to(receiverSocketId).emit('deleteConversation', senderUsername.username)
+            console.log('Deleted Conversation sent to receiver', receiverSocketId)
         }
         return res.status(200).json({ message: 'Conversation deleted' })
     } catch (error) {
@@ -355,6 +359,7 @@ const blockUserController = async (req, res) => {
     try {
         let conversation = await Conversation.findOne({
             participants: { $all: [senderId, receiverId] },
+            isGroup: false,
         })
 
         if (conversation) {
@@ -391,10 +396,12 @@ const unblockUserController = async (req, res) => {
     try {
         let conversation = await Conversation.findOne({
             participants: { $all: [senderId, receiverId] },
+            isGroup: false,
         })
 
         if (conversation) {
-            if (conversation.blockedBy.equals(senderId)) {
+            console.log('conversation: ', conversation)
+            if (conversation.blockedBy && conversation.blockedBy.equals(senderId)) {
                 conversation.isBlocked = false
                 conversation.blockedBy = null
                 await conversation.save()
@@ -403,10 +410,7 @@ const unblockUserController = async (req, res) => {
                 const receiverSocketId = getReceiverSocketId(receiverId)
                 if (receiverSocketId) {
                     io.to(receiverSocketId).emit('unblockUser', senderId)
-                    console.log(
-                        'Unblocked User sent to receiver',
-                        receiverSocketId
-                    )
+                    console.log('Unblocked User sent to receiver', receiverSocketId)
                 }
             } else {
                 return res.status(400).json({
@@ -424,25 +428,25 @@ const unblockUserController = async (req, res) => {
     }
 }
 
-const getPeopleToAddController = async (req, res) => {
-    const { currentUserId } = req.body
+// const getPeopleToAddController = async (req, res) => {
+//     const { currentUserId } = req.body
 
-    try {
-        const people = await addPeople(currentUserId)
-        return res.status(200).json({ people })
-    } catch (error) {
-        console.log('Error getting people to add: ', error.message)
-        return res.status(400).json({ message: 'Error getting people to add' })
-    }
-}
+//     try {
+//         const people = await addPeople(currentUserId)
+//         return res.status(200).json({ people })
+//     } catch (error) {
+//         console.log('Error getting people to add: ', error.message)
+//         return res.status(400).json({ message: 'Error getting people to add' })
+//     }
+// }
 
 export {
     messageController,
     sendMessageController,
     deleteMessageController,
-    unreadMessageController,
+    // unreadMessageController,
     deleteConversationController,
     blockUserController,
     unblockUserController,
-    getPeopleToAddController,
+    // getPeopleToAddController,
 }

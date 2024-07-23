@@ -4,8 +4,7 @@ const nameValidator = [
     {
         validator: validator.isLength,
         arguments: [3, 50],
-        message: (min, max) =>
-            `Name should be between ${min} and ${max} characters`,
+        message: (min, max) => `Name should be between ${min} and ${max} characters`,
     },
 ]
 
@@ -13,8 +12,7 @@ const usernameValidator = [
     {
         validator: validator.isLength,
         arguments: [5, 25],
-        message: (min, max) =>
-            `Username should be between ${min} and ${max} characters`,
+        message: (min, max) => `Username should be between ${min} and ${max} characters`,
     },
 ]
 
@@ -26,8 +24,7 @@ const emailValidator = [
     {
         validator: validator.isLength,
         arguments: [5, 50],
-        message: (min, max) =>
-            `Email should be between ${min} and ${max} characters`,
+        message: (min, max) => `Email should be between ${min} and ${max} characters`,
     },
 ]
 

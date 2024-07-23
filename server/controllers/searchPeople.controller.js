@@ -4,10 +4,7 @@ const searchPeopleController = async (req, res) => {
     const { queryText } = req.body
 
     const query = {
-        $or: [
-            { name: { $regex: queryText, $options: 'i' } },
-            { username: { $regex: queryText, $options: 'i' } },
-        ],
+        $or: [{ name: { $regex: queryText, $options: 'i' } }, { username: { $regex: queryText, $options: 'i' } }],
     }
 
     const projection = {

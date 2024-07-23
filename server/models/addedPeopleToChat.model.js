@@ -11,7 +11,15 @@ const addedPeopleToChatSchema = new Schema({
         {
             type: Schema.Types.ObjectId,
             ref: 'User',
-            required: [true, 'recivers are required'],
+            default: [],
+        },
+    ],
+
+    groups: [
+        {
+            type: Schema.Types.ObjectId,
+            ref: 'Conversation',
+            default: [],
         },
     ],
 })

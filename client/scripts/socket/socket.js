@@ -1,12 +1,14 @@
 import io from 'socket.io-client'
-import { utcToLocal } from '../components/chat.js'
+import { toUserMsgComponent, leftSidePersonComponent, utcToLocal, showNotification } from '../components/chat.js'
+import { toUserGroupMsgComponent, createLeftsideGroup } from '../components/groupChat.js'
 
+// show the message in the chat section
 const handleHtmlGet = (message) => {
     let date = utcToLocal(message.createdAt)
     let msgDate = date.slice(6)
     let msgTime = date.slice(0, 5)
 
-    let dates = document.querySelectorAll('.date')
+    let dates = Array.from(document.querySelectorAll('.date'))
     let msgContainerDiv = document.querySelector('.message-container')
 
     if (dates.length === 0 || dates[dates.length - 1].textContent !== msgDate) {
@@ -22,129 +24,61 @@ const handleHtmlGet = (message) => {
         msgContainerDiv.appendChild(dayDiv)
     }
 
-    let msg_div = document.createElement('div')
-    msg_div.classList.add('to-user-msg')
-    msg_div.dataset.id = message._id
-    // console.log('message id', message._id)
+    let toUserMsg = toUserMsgComponent(message.message, message._id, msgTime)
 
-    //Message
-    let msgTextDiv = document.createElement('div')
-    msgTextDiv.classList.add('msg-container')
-    let msgP = document.createElement('p')
-    msgP.textContent = message.message
-    let msgTimeP = document.createElement('p')
-    msgTimeP.textContent = msgTime
-    msgTextDiv.appendChild(msgP)
-    msgTextDiv.appendChild(msgTimeP)
-
-    // Delete Button
-    const deleteMsgBtnDiv = document.createElement('div')
-    deleteMsgBtnDiv.classList.add('delete-msg-btn', 'pl-2', 'hidden')
-    // deleteMsgBtnDiv.setAttribute('onclick', 'deleteMessage(this)')
-
-    deleteMsgBtnDiv.innerHTML = DOMPurify.sanitize(`
-        <button class="btn btn-circle btn-outline border-[#E9E9E9] bg-[#4b2138] hover:bg-[#E9E9E9] hover:border-[#4b2138] h-6 w-6 min-h-4 group">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 group-hover:stroke-[#4b2138] stroke-[#E9E9E9]" fill="none" viewBox="0 0 24 24" stroke="#4B2138"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
-        </button>
-    `)
-    msg_div.appendChild(msgTextDiv)
-    msg_div.appendChild(deleteMsgBtnDiv)
-
-    msgContainerDiv.appendChild(msg_div)
+    msgContainerDiv.appendChild(toUserMsg)
     msgContainerDiv.scrollTop = msgContainerDiv.scrollHeight
 }
 
+// update the online users status in the left side chat list
 const handleHtmlOnlineUsers = (users) => {
     const leftPeople = document.querySelectorAll('.chat-child')
     leftPeople.forEach(async (person) => {
         let personUsername = person.querySelector('.chat-username').innerText
-        let status = person.children[0].children[0]
-        let toUserProfile = document.querySelector('.to-user-profile')
-        let toUserStatus = toUserProfile.children[0].children[0]
+        let status = person.querySelector('.avatar')
 
-        // console.log('users', users)
         if (users && users.includes(personUsername)) {
-            if (status.classList.contains('hidden')) {
-                status.classList.remove('hidden')
-                toUserStatus.classList.remove('hidden')
+            status.classList.contains('online') ? null : status.classList.add('online')
+            if (person.classList.contains('active')) {
+                let chat_head = document.querySelector('.chats-head')
+                let chat_head_status = chat_head.querySelector('.avatar')
+                chat_head_status.classList.contains('online') ? null : chat_head_status.classList.add('online')
             }
         } else {
-            if (!status.classList.contains('hidden')) {
-                status.classList.add('hidden')
-                toUserStatus.classList.add('hidden')
-            }
+            status.classList.contains('online') ? status.classList.remove('online') : null
         }
     })
 }
 
+// create the left side chat list for the new user
 const createLeftsidePeopleR = (data) => {
-    let parentDiv = document.createElement('div')
-    parentDiv.classList.add('chat-child')
+    let parentDiv = leftSidePersonComponent(data)
 
-    let imgDiv = document.createElement('div')
-    imgDiv.classList.add('chats_img')
-    imgDiv.classList.add('indicator')
-
-    let statusDiv = `<span class="indicator-item badge badge-success h-2 p-[0.4rem] translate-x-[5%] translate-y-[10%] status"></span>`
-
-    let img = document.createElement('img')
-    img.src = data.avatar
-        ? data.avatar
-        : `https://avatar.iran.liara.run/username?username=${data.name.replace(/ /g, '+')}`
-    img.alt = data.name
-
-    imgDiv.innerHTML = DOMPurify.sanitize(statusDiv)
-    imgDiv.appendChild(img)
-    parentDiv.appendChild(imgDiv)
-
-    let nameDiv = document.createElement('div')
-    nameDiv.classList.add('chat-name-parent')
-
-    let name = document.createElement('h4')
-    name.classList.add('chat-name')
-    name.textContent = data.name.trim()
-
-    let username = document.createElement('h4')
-    username.classList.add('chat-username')
-    username.textContent = data.username.trim()
-
-    nameDiv.appendChild(name)
-    nameDiv.appendChild(username)
-    parentDiv.appendChild(nameDiv)
-
-    let badgeDiv = `
-	<div class="unread-badge absolute right-8 hidden">
-        <div class="badge bg-[#6D3C52] text-white">0</div>
-    </div>`
-
-    parentDiv.innerHTML += DOMPurify.sanitize(badgeDiv)
-
-    let all_chats = document.getElementById('chat-parent')
-    all_chats.appendChild(parentDiv)
+    let allPrivateChats = document.querySelector('.private-chats')
+    allPrivateChats.appendChild(parentDiv)
     return parentDiv
 }
 
-const socket = io(process.env.SITE_URL, {
+const socket = io(process.env.DOMAIN, {
     withCredentials: true,
 })
 
 let onlineUsers = []
+
+// listen for online users
 socket.on('getOnlineUsers', (users) => {
-    // console.log('Online users', users)
     onlineUsers = users
     handleHtmlOnlineUsers(users)
 })
 
+// listen for new message
 socket.on('newMessage', async (message, senderUsername, callback) => {
-    // console.log('New message', message)
     let sender = ''
 
     // Find Sender in the active chat
     let leftPeople = document.querySelectorAll('.chat-child')
     leftPeople.forEach((person) => {
-        // let data = JSON.parse(atob(person.dataset.element))
         let personUsername = person.querySelector('.chat-username').innerText
-
         if (personUsername === senderUsername) {
             sender = person
         }
@@ -152,41 +86,36 @@ socket.on('newMessage', async (message, senderUsername, callback) => {
 
     // Find Sender in the people popup
     if (sender === '') {
-        let popupPeople = document.querySelectorAll('.popup-people')
+        let popupPeople = document.querySelectorAll('.new-chat-people')
         popupPeople.forEach((person) => {
-            // let data = JSON.parse(atob(person.dataset.element))
-            let personUsername = person
-                .querySelector('.popup-people-username')
-                .innerText.trim()
-            // console.log(personUsername)
+            let personUsername = person.querySelector('.new-chat-people-username').innerText.trim()
+
             if (personUsername === senderUsername) {
-                let personName =
-                    person.querySelector('.popup-people-name').innerText
-                let personAvatar = person.querySelector(
-                    '.popup-people-avatar'
-                ).src
+                let personName = person.querySelector('.new-chat-people-name').innerText
+                let personAvatar = person.querySelector('.new-chat-people-avatar').src
+                let personId = person.dataset.id
                 sender = {
                     name: personName,
                     username: personUsername,
                     avatar: personAvatar,
+                    encryptedId: personId,
+                    isOnline: true,
                 }
             }
         })
 
         if (sender === '') {
-            console.log('Sender not found', senderUsername)
+            // console.log('Sender not found', senderUsername)
             callback({
                 status: 'failure',
                 error: 'Sender not found',
             })
             return
         } else {
-            console.log('creating')
             sender = createLeftsidePeopleR(sender)
         }
     }
 
-    // console.log('sender', sender.children[2])
     if (sender.classList.contains('active')) {
         handleHtmlGet(message)
         callback({
@@ -194,28 +123,16 @@ socket.on('newMessage', async (message, senderUsername, callback) => {
         })
     } else {
         let unreadMsg = sender.children[2]
-        // console.log("sender", sender);
-        // console.log('unreadMsg', unreadMsg)
+
         let unreadMsgCount = parseInt(unreadMsg.innerText) + 1
         unreadMsg.children[0].textContent = unreadMsgCount
         unreadMsg.classList.remove('hidden')
 
-        document.querySelector('#notification-alert').classList.remove('hidden')
-
         if (unreadMsgCount === 1) {
-            document.querySelector('#notification-alert span').textContent =
-                `You have a new message from ${senderUsername}`
+            showNotification(`You have a new message from "${senderUsername}"`)
         } else {
-            document.querySelector('#notification-alert span').textContent =
-                `You have ${unreadMsgCount} new messages from ${senderUsername}`
+            showNotification(`You have ${unreadMsgCount} new messages from "${senderUsername}"`)
         }
-
-        setTimeout(() => {
-            document.querySelector('#notification-alert span').textContent = ''
-            document
-                .querySelector('#notification-alert')
-                .classList.add('hidden')
-        }, 5000)
 
         callback({
             status: 'unread',
@@ -223,44 +140,44 @@ socket.on('newMessage', async (message, senderUsername, callback) => {
     }
 })
 
+// listen for deleted message
 socket.on('deleteMessage', (dltMsgId, senderUsername) => {
     // console.log("Deleted message", dltMsgId);
     let activePerson = document.querySelector('.chat-child.active')
 
-    if (
-        activePerson &&
-        activePerson.children[1].children[1].textContent === senderUsername
-    ) {
-        // console.log('deleting message', dltMsgId)
-        let allToUserMsg = document.querySelectorAll('.to-user-msg')
-        allToUserMsg.forEach((msg) => {
-            let msgId = msg.dataset.id
-            // console.log('msgId', msgId, 'dltMsgId', dltMsgId)
-            if (msgId === dltMsgId) {
-                msg.remove()
-            }
-        })
+    if (activePerson) {
+        let personUnsername = activePerson.querySelector('.chat-username').innerText
 
-        let allFromuserMsg = document.querySelectorAll('.from-user-msg')
-        allFromuserMsg.forEach((msg) => {
-            let msgId = msg.dataset.id
-            // console.log('msgId', msgId, 'dltMsgId', dltMsgId)
-            if (msgId === dltMsgId) {
-                msg.remove()
-            }
-        })
+        if (personUnsername === senderUsername) {
+            let allToUserMsg = document.querySelectorAll('.to-user-msg')
+            allToUserMsg.forEach((msg) => {
+                let msgId = msg.dataset.id
+                // console.log('msgId', msgId, 'dltMsgId', dltMsgId)
+                if (msgId === dltMsgId) {
+                    msg.remove()
+                }
+            })
 
-        let days = document.querySelectorAll('.day')
-        days.forEach((day) => {
-            if (day.nextElementSibling === null) {
-                day.remove()
-            }
-        })
+            let allFromuserMsg = document.querySelectorAll('.from-user-msg')
+            allFromuserMsg.forEach((msg) => {
+                let msgId = msg.dataset.id
+                // console.log('msgId', msgId, 'dltMsgId', dltMsgId)
+                if (msgId === dltMsgId) {
+                    msg.remove()
+                }
+            })
+
+            let days = document.querySelectorAll('.day')
+            days.forEach((day) => {
+                if (day.nextElementSibling === null || day.nextElementSibling.classList.contains('day')) {
+                    day.remove()
+                }
+            })
+        }
     } else {
         let leftPeople = document.querySelectorAll('.chat-child')
         leftPeople.forEach((person) => {
-            let personUsername =
-                person.querySelector('.chat-username').innerText
+            let personUsername = person.querySelector('.chat-username').innerText
             if (personUsername === senderUsername) {
                 let unreadMsg = person.children[2]
                 if (unreadMsg.classList.contains('hidden')) {
@@ -276,6 +193,7 @@ socket.on('deleteMessage', (dltMsgId, senderUsername) => {
     }
 })
 
+// listen for deleted conversation
 socket.on('deleteConversation', (senderUsername) => {
     let leftPeople = document.querySelectorAll('.chat-child')
     leftPeople.forEach((person) => {
@@ -304,6 +222,7 @@ socket.on('deleteConversation', (senderUsername) => {
     deleteChatBtn.classList.remove('hidden')
 })
 
+// listen for blocked user
 socket.on('blockUser', (senderId) => {
     // console.log('Blocked user', senderId)
 
@@ -325,13 +244,13 @@ socket.on('blockUser', (senderId) => {
             blockInfoDiv.classList.remove('hidden')
         }
 
-        let toUserInfoPopupOptions = document.querySelector(
-            '.to-user-info-popup-options'
-        )
+        let toUserInfoPopupOptions = document.querySelector('.to-user-info-popup-options')
+        toUserInfoPopupOptions.classList.contains('hidden') ? toUserInfoPopupOptions.classList.remove('hidden') : null
         toUserInfoPopupOptions.appendChild(blockInfoDiv)
     }
 })
 
+// listen for unblocked user
 socket.on('unblockUser', (senderId) => {
     // console.log('Unblocked user', senderId)
     if (document.querySelector('.chat-child.active')) {
@@ -355,93 +274,198 @@ socket.on('unblockUser', (senderId) => {
     }
 })
 
-socket.on(
-    'receiver-changed-details',
-    (oldUserDetails, newUserDetails, callback) => {
-        try {
-            // add user popup
-            let popupPeople = document.querySelectorAll('.popup-people')
-            popupPeople.forEach((person) => {
-                let personUsername = person
-                    .querySelector('.popup-people-username')
-                    .innerText.trim()
-                if (personUsername === oldUserDetails.username) {
-                    person.querySelector('.popup-people-name').textContent =
-                        newUserDetails.name
-                    person.querySelector('.popup-people-username').textContent =
-                        newUserDetails.username
-                    person.querySelector('.popup-people-avatar').src =
-                        newUserDetails.avatar
+// listen for changed user details
+socket.on('receiver-changed-details', (oldUserDetails, newUserDetails, callback) => {
+    try {
+        // add user popup
+        let popupPeople = document.querySelectorAll('.new-chat-people')
+        popupPeople.forEach((person) => {
+            let personUsername = person.querySelector('.new-chat-people-username').innerText.trim()
+            if (personUsername === oldUserDetails.username) {
+                person.querySelector('.new-chat-people-name').textContent = newUserDetails.name
+                person.querySelector('.new-chat-people-username').textContent = newUserDetails.username
+                person.querySelector('.new-chat-people-avatar').src = newUserDetails.avatar
+            }
+        })
+
+        // left side chats list
+        let allLeftSideUser = document.querySelectorAll('.chat-child')
+        allLeftSideUser.forEach((user) => {
+            let username = user.querySelector('.chat-username').innerText.trim()
+            if (username === oldUserDetails.username) {
+                user.querySelector('.chat-name').textContent = newUserDetails.name
+                user.querySelector('.chat-username').textContent = newUserDetails.username
+                user.querySelector('.chats-img img').src = newUserDetails.avatar
+
+                // chat section on right
+                if (user.classList.contains('active')) {
+                    // chat head
+                    let chat_head = document.querySelector('.chats-head')
+                    chat_head.querySelector('.chat-img img').src = newUserDetails.avatar
+                    chat_head.querySelector('#chat-head-name').textContent = newUserDetails.name
+
+                    // chat head popup
+                    document.querySelector('.to-user-info-popup-details img').src = newUserDetails.avatar
+                    document.querySelector('.to-user-info-popup-details h3').textContent = newUserDetails.name
+                    document.querySelector('.to-user-info-popup-details h4').textContent = newUserDetails.username
+
+                    // chat mid
+                    let toUserProfileSec = document.querySelector('.to-user-profile-sec')
+                    toUserProfileSec.querySelector('.to-user-profile-sec-img img').src = newUserDetails.avatar
+                    toUserProfileSec.querySelector('.to-user-profile-sec-name h1').textContent = newUserDetails.name
+                    toUserProfileSec.querySelector('.to-user-profile-sec-name h3').textContent = newUserDetails.username
+                }
+            }
+        })
+
+        callback({
+            status: 'success',
+            message: 'details updated',
+        })
+    } catch (error) {
+        // console.log('Error:', error)
+        callback({
+            status: 'failure',
+            error: error,
+        })
+    }
+})
+
+// listen for joining the group
+socket.on('join-group', (data) => {
+    socket.emit('join-room', { roomId: data.roomId })
+
+    let currentUserName = document.querySelector('#change-details-name').value
+
+    if (currentUserName !== data.creatorName) createLeftsideGroup(data.groupInfo, false)
+})
+
+// listen for new group message
+socket.on('group-message', (data, callback) => {
+    // console.log(data)
+    const { groupId, message, msgId, createdAt, senderName } = data
+
+    let findGroup = ''
+
+    let allGroups = document.querySelectorAll('.group-child')
+    allGroups.forEach((group) => {
+        let id = group.dataset.id
+        // console.log(id, groupId)
+        if (id === groupId) {
+            findGroup = group
+        }
+    })
+
+    if (findGroup === '') {
+        // console.log('Group not found')
+        callback({
+            status: 'failure',
+            error: 'Group not found',
+        })
+        return
+    }
+
+    if (findGroup.classList.contains('active')) {
+        let date = utcToLocal(createdAt)
+        let msgDate = date.slice(6)
+        let msgTime = date.slice(0, 5)
+
+        let dates = Array.from(document.querySelectorAll('.date'))
+        let msgContainerDiv = document.querySelector('.message-container')
+
+        if (dates.length === 0 || dates[dates.length - 1].textContent !== msgDate) {
+            const dayDiv = document.createElement('div')
+            dayDiv.classList.add('day')
+            const dateDiv = document.createElement('div')
+            dateDiv.classList.add('date')
+            const dateh1 = document.createElement('h1')
+            dateh1.textContent = msgDate
+
+            dateDiv.appendChild(dateh1)
+            dayDiv.appendChild(dateDiv)
+            msgContainerDiv.appendChild(dayDiv)
+        }
+
+        let toUserMsg = toUserGroupMsgComponent(message, msgId, msgTime, senderName)
+
+        msgContainerDiv.appendChild(toUserMsg)
+        msgContainerDiv.scrollTop = msgContainerDiv.scrollHeight
+        callback({
+            status: 'success',
+        })
+    } else {
+        let unreadMsgStatus = findGroup.querySelector('.unread-badge')
+        let unreadMsgCount = parseInt(unreadMsgStatus.children[0].textContent) + 1
+        unreadMsgStatus.children[0].textContent = unreadMsgCount
+        unreadMsgStatus.classList.remove('hidden')
+
+        let groupName = findGroup.querySelector('.group-name').innerText
+
+        if (unreadMsgCount === 1) {
+            showNotification(`You have a new message in "${groupName}" group`)
+        } else {
+            showNotification(`You have ${unreadMsgCount} new messages in "${groupName}" group`)
+        }
+
+        callback({
+            status: 'unread',
+        })
+    }
+})
+
+// listen for deleted group message
+socket.on('delete-group-message', (data) => {
+    const { groupId, msgId, deletedBy } = data
+    let allGroups = document.querySelectorAll('.group-child')
+    let findGroup = ''
+
+    allGroups.forEach((group) => {
+        let id = group.dataset.id
+        if (id === groupId) {
+            findGroup = group
+        }
+    })
+
+    if (findGroup && findGroup.classList.contains('active')) {
+        let activeGroupId = findGroup.dataset.id
+
+        if (activeGroupId === groupId) {
+            let allToUserMessage = document.querySelectorAll('.to-user-msg')
+
+            allToUserMessage.forEach((msg) => {
+                let messageId = msg.dataset.id
+                if (msgId === messageId) {
+                    msg.remove()
                 }
             })
 
-            // left side chats list
-            let allLeftSideUser = document.querySelectorAll('.chat-child')
-            allLeftSideUser.forEach((user) => {
-                let username = user
-                    .querySelector('.chat-username')
-                    .innerText.trim()
-                if (username === oldUserDetails.username) {
-                    user.querySelector('.chat-name').textContent =
-                        newUserDetails.name
-                    user.querySelector('.chat-username').textContent =
-                        newUserDetails.username
-                    user.querySelector('.chats_img img').src =
-                        newUserDetails.avatar
-
-                    // chat section on right
-                    if (user.classList.contains('active')) {
-                        // chat head
-                        let chat_head = document.querySelector('.chats-head')
-                        chat_head.querySelector('.chats_img img').src =
-                            newUserDetails.avatar
-                        chat_head.querySelector('#chat-head-name').textContent =
-                            newUserDetails.name
-
-                        // chat head popup
-                        document.querySelector(
-                            '.to-user-info-popup-details img'
-                        ).src = newUserDetails.avatar
-                        document.querySelector(
-                            '.to-user-info-popup-details h3'
-                        ).textContent = newUserDetails.name
-                        document.querySelector(
-                            '.to-user-info-popup-details h4'
-                        ).textContent = newUserDetails.username
-
-                        // chat mid
-                        let toUserProfileSec = document.querySelector(
-                            '.to-user-profile-sec'
-                        )
-                        toUserProfileSec.querySelector(
-                            '.to-user-profile-sec-img img'
-                        ).src = newUserDetails.avatar
-                        toUserProfileSec.querySelector(
-                            '.to-user-profile-sec-name h1'
-                        ).textContent = newUserDetails.name
-                        toUserProfileSec.querySelector(
-                            '.to-user-profile-sec-name h3'
-                        ).textContent = newUserDetails.username
-                    }
+            let days = document.querySelectorAll('.day')
+            days.forEach((day) => {
+                if (day.nextElementSibling === null || day.nextElementSibling.classList.contains('day')) {
+                    day.remove()
                 }
-            })
-
-            callback({
-                status: 'success',
-                message: 'details updated',
-            })
-        } catch (error) {
-            console.log('Error:', error)
-            callback({
-                status: 'failure',
-                error: error,
             })
         }
+    } else if (findGroup) {
+        let unreadMsgStatus = findGroup.querySelector('.unread-badge')
+        if (unreadMsgStatus.classList.contains('hidden')) {
+            return
+        }
+        let unreadMsgCount = parseInt(unreadMsgStatus.children[0].innerText) - 1
+        unreadMsgStatus.children[0].textContent = unreadMsgCount
+        if (unreadMsgCount === 0) {
+            unreadMsgStatus.classList.add('hidden')
+        }
     }
-)
 
-socket.on('connection', () => {
-    console.log('Connected to server', socket.id)
+    let groupName = findGroup.querySelector('.group-name').innerText
+    showNotification(`"${deletedBy}" deleted a message in "${groupName}" group`)
+})
+
+//~ listen for leaving and deleting group
+
+socket.on('connect', () => {
+    console.log('Connected to server')
 })
 
 socket.on('disconnect', () => {

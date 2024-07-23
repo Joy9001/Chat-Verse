@@ -35,45 +35,45 @@ router.post('/change-details', csrfSynchronisedProtection, async (req, res) => {
     const currentUserId = req.user._id
     const { name, username, gender, avatar } = req.body
 
-    const findUser = await User.findById(currentUserId, {
-        name: 1,
-        username: 1,
-        gender: 1,
-        avatar: 1,
-    })
-
-    if (!findUser) {
-        return res.json({ success: false, message: 'User not found' })
-    }
-
-    const findUsername = await User.findOne({ username })
-
-    const oldUserDetails = {
-        name: findUser.name,
-        username: findUser.username,
-        avatar: findUser.avatar,
-    }
-
-    if (findUsername && !findUsername._id.equals(currentUserId)) {
-        return res.json({
-            success: false,
-            message: 'Username already taken',
-            user: findUser,
-        })
-    }
-
-    findUser.name = name
-    findUser.username = username
-    findUser.gender = gender
-    findUser.avatar = avatar
-
     try {
-        const savedUser = await findUser.save()
+        let findUser = await User.findById(currentUserId, {
+            name: 1,
+            username: 1,
+            gender: 1,
+            avatar: 1,
+        })
+
+        if (!findUser) {
+            return res.json({ success: false, message: 'User not found' })
+        }
+
+        const findUsername = await User.findOne({ username })
+
+        const oldUserDetails = {
+            name: findUser.name,
+            username: findUser.username,
+            avatar: findUser.avatar,
+        }
+
+        if (findUsername && !findUsername._id.equals(currentUserId)) {
+            return res.json({
+                success: false,
+                message: 'Username already taken',
+                user: findUser,
+            })
+        }
+
+        findUser.name = name
+        findUser.username = username
+        findUser.gender = gender
+        findUser.avatar = avatar
+
+        await findUser.save()
 
         const newUserDetails = {
-            name: savedUser.name,
-            username: savedUser.username,
-            avatar: savedUser.avatar,
+            name: findUser.name,
+            username: findUser.username,
+            avatar: findUser.avatar,
         }
 
         // Send the details to all the users who have added the current user to chat
@@ -96,22 +96,17 @@ router.post('/change-details', csrfSynchronisedProtection, async (req, res) => {
             if (senderSocketId) {
                 io.to(senderSocketId)
                     .timeout(2000)
-                    .emit(
-                        'receiver-changed-details',
-                        oldUserDetails,
-                        newUserDetails,
-                        (err, responses) => {
-                            console.log(responses)
-                            if (err) {
-                                console.error(err)
-                            }
-                            if (responses[0].status === 'success') {
-                                console.log('Changed details send successfully')
-                            } else {
-                                console.error('Error sending changed details')
-                            }
+                    .emit('receiver-changed-details', oldUserDetails, newUserDetails, (err, responses) => {
+                        console.log(responses)
+                        if (err) {
+                            console.error(err)
                         }
-                    )
+                        if (responses[0].status === 'success') {
+                            console.log('Changed details send successfully')
+                        } else {
+                            console.error('Error sending changed details')
+                        }
+                    })
             }
         })
         return res.json({
@@ -120,7 +115,7 @@ router.post('/change-details', csrfSynchronisedProtection, async (req, res) => {
             user: findUser,
         })
     } catch (error) {
-        console.error(error.message)
+        console.error('Error in /change-details', error.message)
         return res.json({
             success: false,
             message: 'Error changing details! Please Contact Us!',

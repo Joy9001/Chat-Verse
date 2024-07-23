@@ -1,0 +1,25 @@
+<div id="all-chats" class="absolute top-16 m-4 h-[calc(100%-9.5rem)] w-[calc(100%-2rem)]">
+    <div id="chat-section" class="chat-section absolute flex hidden h-full w-full flex-col">
+        <!-- profile info of to-user -->
+        <div class="to-user-profile-sec absolute mt-2 flex h-[29%] w-full flex-col items-center justify-around py-2">
+            <!-- to-user-profile-sec-img -->
+            <div class="to-user-profile-sec-img flex h-16 w-16 items-center justify-center">
+                <div class="w-24 rounded-full ring ring-primary ring-offset-2 ring-offset-base-100">
+                    <img draggable="false" src="/assets/logo.jpeg" alt="To User" class="h-full w-full rounded-full" />
+                </div>
+            </div>
+
+            <!-- to-user-profile-sec-name -->
+            <div class="to-user-profile-sec-name mt-2 flex max-w-[80%] flex-col items-center justify-center text-black">
+                <h1 class="w-full truncate text-center text-lg font-semibold">Emma</h1>
+                <div class="tooltip tooltip-left tooltip-accent w-full" data-tip="">
+                    <h3 class="w-full truncate text-base font-medium">@emma123</h3>
+                </div>
+            </div>
+        </div>
+        <!-- messages -->
+        <div id="messages" class="messages absolute bottom-0 mt-7 flex h-[69%] w-full flex-col">
+            <div class="message-container no-scrollbar flex h-full w-full flex-col justify-evenly overflow-y-scroll pb-1"></div>
+        </div>
+    </div>
+</div>

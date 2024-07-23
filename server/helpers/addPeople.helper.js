@@ -1,5 +1,4 @@
 import User from '../models/users.model.js'
-import { encryptWithCryptoJS } from './crypto.helper.js'
 
 const addPeople = async (currentUserId) => {
     try {
@@ -9,21 +8,13 @@ const addPeople = async (currentUserId) => {
                 {},
                 {
                     _id: 1,
+                    encryptedId: 1,
                     name: 1,
                     username: 1,
                     avatar: 1,
                 }
-            )
+            ).lean()
         ).filter((person) => person._id.toString() !== currentUserId.toString())
-
-        people = people.map((person) => {
-            return {
-                _id: encryptWithCryptoJS(person._id.toString()),
-                name: person.name,
-                username: person.username,
-                avatar: person.avatar,
-            }
-        })
 
         return people
     } catch (error) {

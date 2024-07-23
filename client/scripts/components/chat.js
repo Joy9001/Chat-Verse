@@ -1,80 +1,71 @@
 import { handleHtmlOnlineUsers, onlineUsers } from '../socket/socket.js'
+import { deleteGroupMessage, handleSendRequestGroup, addChatPopupInitialState } from './groupChat.js'
 
+// convert utc to local time
 export const utcToLocal = (utcDate) => {
     const date = new Date(utcDate)
 
     const hours = ('0' + date.getHours()).slice(-2)
     const minutes = ('0' + date.getMinutes()).slice(-2)
     const day = date.getDate().toString()
-    const monthNames = [
-        'Jan',
-        'Feb',
-        'Mar',
-        'Apr',
-        'May',
-        'Jun',
-        'Jul',
-        'Aug',
-        'Sep',
-        'Oct',
-        'Nov',
-        'Dec',
-    ]
+    const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
     const month = monthNames[date.getMonth()]
     const year = date.getFullYear()
 
     return `${hours}:${minutes} ${day} ${month}, ${year}`
 }
 
-const chatClicked = async (htmlElement, ...args) => {
-    let all_chats_children = document.getElementById('chat-parent').children
-    let chatSection = document.querySelector('.chat-section')
+export const showNotification = (text) => {
+    document.querySelector('#notification-alert').classList.remove('hidden')
+    document.querySelector('#notification-alert span').textContent = text
 
+    setTimeout(() => {
+        document.querySelector('#notification-alert span').textContent = ''
+        document.querySelector('#notification-alert').classList.add('hidden')
+    }, 5000)
+}
+
+// when chat is clicked
+export const chatClicked = async (htmlElement, ...args) => {
+    // remove active class from previous chat
+    document.querySelector('.chat-child.active') ? document.querySelector('.chat-child.active').classList.remove('active') : null
+    document.querySelector('.group-child.active') ? document.querySelector('.group-child.active').classList.remove('active') : null
+    htmlElement.classList.add('active')
+
+    // reset unread status
     let unreadElement = htmlElement.children[2]
     unreadElement.children[0].textContent = 0
-    unreadElement.classList.contains('hidden')
-        ? null
-        : unreadElement.classList.add('hidden')
+    unreadElement.classList.contains('hidden') ? null : unreadElement.classList.add('hidden')
 
-    const clickedUser_Username = htmlElement.children[1].children[1].innerText
+    const clickedUser_Username = htmlElement.querySelector('.chat-username').innerText
     let clickedUser = {}
 
     if (args[0] && args[0].username === clickedUser_Username) {
         clickedUser = args[0]
     } else {
         const clickedUser_Id = htmlElement.dataset.id
-        const clickedUser_Name = htmlElement.children[1].children[0].innerText
-        const clickedUser_Avatar = htmlElement.children[0].children[1].src
+        const clickedUser_Name = htmlElement.querySelector('.chat-name').innerText
+        const clickedUser_Avatar = htmlElement.querySelector('.chat-img img').src
 
         clickedUser = {
-            _id: clickedUser_Id,
+            encryptedId: clickedUser_Id,
             name: clickedUser_Name,
             avatar: clickedUser_Avatar,
             username: clickedUser_Username,
         }
     }
 
-    for (let i = 0; i < all_chats_children.length; i++) {
-        if (all_chats_children[i].classList.contains('active')) {
-            all_chats_children[i].classList.remove('active')
-        }
-    }
-
     let isOnline = false
-    let statusElement = htmlElement.children[0].children[0]
-    if (!statusElement.classList.contains('hidden')) {
-        isOnline = true
-    }
+    let statusElement = htmlElement.querySelector('.avatar')
+    // console.log('statusElement', statusElement)
+
+    statusElement.classList.contains('online') ? (isOnline = true) : (isOnline = false)
     handleChatHeadAndEnd(clickedUser, isOnline)
-
-    htmlElement.classList.add('active')
-    if (chatSection.classList.contains('hidden'))
-        chatSection.classList.remove('hidden')
-
     handleChats(clickedUser)
 }
 
-const handleChatHeadAndEnd = (clickedUser, isOnline) => {
+// handle chat head and end
+export const handleChatHeadAndEnd = (clickedUser, isOnline = false) => {
     let chat_mid = document.getElementById('all-chats')
     let chat_end = document.getElementById('chats-end')
     let chat_head = document.getElementById('chats-head')
@@ -82,54 +73,61 @@ const handleChatHeadAndEnd = (clickedUser, isOnline) => {
     let chat_head_img = document.getElementById('chat-head-img')
     let to_user_info_popup = document.getElementById('to-user-info-popup')
 
-    chat_end.classList.remove('hidden')
-    chat_head.classList.remove('hidden')
-    chat_mid.classList.remove('hidden')
+    chat_head.classList.contains('hidden') ? chat_head.classList.remove('hidden') : null
+    chat_mid.classList.contains('hidden') ? chat_mid.classList.remove('hidden') : null
+    chat_end.classList.contains('hidden') ? chat_end.classList.remove('hidden') : null
+
     chat_head_name.textContent = clickedUser.name
     chat_head_img.src = clickedUser.avatar
         ? clickedUser.avatar
         : `https://avatar.iran.liara.run/username?username=${clickedUser.name.replace(/ /g, '+')}`
-    to_user_info_popup.children[0].children[1].children[0].textContent =
-        clickedUser.name
-    to_user_info_popup.children[0].children[1].children[1].textContent =
-        clickedUser.username
-    to_user_info_popup.children[0].children[0].src = clickedUser.avatar
+    to_user_info_popup.querySelector('#to-user-info-popup-name').textContent = clickedUser.name
+    to_user_info_popup.querySelector('#to-user-info-popup-username').textContent = clickedUser.username
+    to_user_info_popup.querySelector('#to-user-info-popup-img').src = clickedUser.avatar
         ? clickedUser.avatar
         : `https://avatar.iran.liara.run/username?username=${clickedUser.name.replace(/ /g, '+')}`
 
+    let toUserInfoPopupOptions = document.querySelector('.to-user-info-popup-options')
+    toUserInfoPopupOptions.classList.contains('hidden') ? toUserInfoPopupOptions.classList.remove('hidden') : null
+
+    let groupInfoPopupOptions = document.querySelector('.group-info-popup-options')
+    groupInfoPopupOptions.classList.contains('hidden') ? null : groupInfoPopupOptions.classList.add('hidden')
+
     if (isOnline) {
-        chat_head.children[0].children[0].children[0].classList.remove('hidden')
+        chat_head.querySelector('.avatar').classList.add('online')
     } else {
-        chat_head.children[0].children[0].children[0].classList.add('hidden')
+        chat_head.querySelector('.avatar').classList.remove('online')
     }
+
+    // hide copy grp link btn
+    let copyBtn = document.querySelector('#copy-group-link-btn')
+    copyBtn.classList.contains('hidden') ? null : copyBtn.classList.add('hidden')
 }
 
-const handleChats = (clickedUser) => {
-    let toUserProfileSecImgDiv = document.querySelector(
-        '.to-user-profile-sec-img'
-    )
-    let toUserProfileSecImg = toUserProfileSecImgDiv.children[0]
+export const handleChats = (clickedUser) => {
+    let chatSection = document.querySelector('.chat-section')
+    if (chatSection.classList.contains('hidden')) chatSection.classList.remove('hidden')
+
+    let toUserProfileSecImg = document.querySelector('.to-user-profile-sec-img img')
     toUserProfileSecImg.src = clickedUser.avatar
         ? clickedUser.avatar
         : `https://avatar.iran.liara.run/username?username=${clickedUser.name.replace(/ /g, '+')}`
 
-    let toUserProfileSecNameDiv = document.querySelector(
-        '.to-user-profile-sec-name'
-    )
-    let toUserProfileSecName = toUserProfileSecNameDiv.children[0]
-    let toUserProfileSecUsername = toUserProfileSecNameDiv.children[1]
+    let toUserProfileSecName = document.querySelector('.to-user-profile-sec-name h1')
+    let toUserProfileSecUsername = document.querySelector('.to-user-profile-sec-name h3')
     toUserProfileSecName.textContent = clickedUser.name
     toUserProfileSecUsername.textContent = clickedUser.username
+    toUserProfileSecUsername.parentElement.dataset.tip = clickedUser.username
 
-    let receiverId = clickedUser._id
+    let receiverId = clickedUser.encryptedId
 
     handleConversation(receiverId)
 }
 
-const handleConversation = (receiverId) => {
+export const handleConversation = (receiverId) => {
     let chat_end = document.getElementById('chats-end')
 
-    fetch('/get-conv-api/get-conversation', {
+    fetch('/conv-api/get-conversation', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -147,18 +145,14 @@ const handleConversation = (receiverId) => {
                 let blockDiv = document.querySelector('#chats-end-block')
                 blockDiv.classList.remove('hidden')
             }
-
             if (blockedBy === currentUserId) {
-                let blockBtnChild =
-                    document.querySelector('#block-to-user').children[0]
+                let blockBtnChild = document.querySelector('#block-to-user').children[0]
                 blockBtnChild.textContent = 'Unblock'
             } else if (blockedBy !== null) {
                 let blockBtn = document.querySelector('#block-to-user')
                 blockBtn.classList.add('hidden')
 
-                let deleteChatBtn = document.querySelector(
-                    '#delete-chat-to-user'
-                )
+                let deleteChatBtn = document.querySelector('#delete-chat-to-user')
                 deleteChatBtn.classList.add('hidden')
 
                 let blockInfoDiv = document.querySelector('.block-info')
@@ -166,9 +160,8 @@ const handleConversation = (receiverId) => {
                     blockInfoDiv.classList.remove('hidden')
                 }
 
-                let toUserInfoPopupOptions = document.querySelector(
-                    '.to-user-info-popup-options'
-                )
+                let toUserInfoPopupOptions = document.querySelector('.to-user-info-popup-options')
+                toUserInfoPopupOptions.classList.contains('hidden') ? toUserInfoPopupOptions.classList.remove('hidden') : null
                 toUserInfoPopupOptions.appendChild(blockInfoDiv)
             }
             handleHtmlConversation(data)
@@ -178,12 +171,11 @@ const handleConversation = (receiverId) => {
         })
 }
 
-const handleHtmlConversation = (data) => {
-    // let chatSection = document.querySelector(".message-container");
-    let msgContainerDiv = document.querySelector('.message-container')
-
+export const handleHtmlConversation = (data) => {
     const currentUserId = data.senderId
-    // console.log("Data: ", data);
+    // console.log('Data: ', data)
+
+    let msgContainerDiv = document.querySelector('.message-container')
 
     if (data.messages.length === 0) {
         msgContainerDiv.textContent = ''
@@ -195,9 +187,10 @@ const handleHtmlConversation = (data) => {
         data.messages = data.messages.filter((msg) => msg !== null)
         data.messages.forEach((msg) => {
             // console.log("Message: ", msg);
-            let msgDate = utcToLocal(msg.createdAt)
-            if (msgDate.slice(6) !== date) {
-                date = utcToLocal(msg.createdAt).slice(6)
+            // create date
+            let msgDate = utcToLocal(msg.createdAt).slice(6)
+            if (msgDate !== date) {
+                date = msgDate
                 const dayDiv = document.createElement('div')
                 dayDiv.classList.add('day')
                 const dateDiv = document.createElement('div')
@@ -210,172 +203,148 @@ const handleHtmlConversation = (data) => {
                 msgContainerDiv.appendChild(dayDiv)
             }
 
-            // Message
-            let msgTextDiv = document.createElement('div')
-            msgTextDiv.classList.add('msg-container')
-            let msgP = document.createElement('p')
-            msgP.textContent = msg.message
-            let msgTimeP = document.createElement('p')
-            msgTimeP.textContent = msgDate.slice(0, 5)
-            msgTextDiv.appendChild(msgP)
-            msgTextDiv.appendChild(msgTimeP)
-
-            // Delete Button
-            const deleteMsgBtnDiv = document.createElement('div')
-            deleteMsgBtnDiv.classList.add('delete-msg-btn', 'hidden')
-            // deleteMsgBtnDiv.setAttribute('onclick', 'deleteMessage(this)')
-
             if (msg.senderId === currentUserId) {
-                const msgDiv = document.createElement('div')
-                msgDiv.classList.add('from-user-msg')
-                msgDiv.dataset.id = msg._id
-
-                deleteMsgBtnDiv.classList.add('pr-2')
-                deleteMsgBtnDiv.innerHTML = DOMPurify.sanitize(`
-                    <button class="btn btn-circle btn-outline border-[#4b2138] bg-[#E9E9E9] hover:bg-[#4B2138] hover:border-[#e9e9e9] h-6 w-6 min-h-4 group">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 group-hover:stroke-[#E9E9E9]" fill="none" viewBox="0 0 24 24" stroke="#4B2138"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
-                    </button>
-                `)
-                msgDiv.appendChild(deleteMsgBtnDiv)
-                msgDiv.appendChild(msgTextDiv)
-
-                msgContainerDiv.appendChild(msgDiv)
+                let fromUserMsg = fromUserMsgComponent(msg.message, msg._id, utcToLocal(msg.createdAt).slice(0, 5))
+                msgContainerDiv.appendChild(fromUserMsg)
             } else {
-                const msgDiv = document.createElement('div')
-                msgDiv.classList.add('to-user-msg')
-                msgDiv.dataset.id = msg._id
-
-                msgDiv.appendChild(msgTextDiv)
-                deleteMsgBtnDiv.classList.add('pl-2')
-                deleteMsgBtnDiv.innerHTML = DOMPurify.sanitize(`
-                    <button class="btn btn-circle btn-outline border-[#E9E9E9] bg-[#4b2138] hover:bg-[#E9E9E9] hover:border-[#4b2138] h-6 w-6 min-h-4 group">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 stroke-[#E9E9E9] group-hover:stroke-[#4b2138]" fill="none" viewBox="0 0 24 24" stroke="#4B2138"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
-                    </button>
-                `)
-                msgDiv.appendChild(deleteMsgBtnDiv)
-                msgContainerDiv.appendChild(msgDiv)
+                let toUserMsg = toUserMsgComponent(msg.message, msg._id, utcToLocal(msg.createdAt).slice(0, 5))
+                msgContainerDiv.appendChild(toUserMsg)
             }
         })
         msgContainerDiv.scrollTop = msgContainerDiv.scrollHeight
     }
 }
 
-document.querySelector('.chat-parent').addEventListener('click', (event) => {
-    if (event.target.closest('.chat-child')) {
-        chatClicked(event.target.closest('.chat-child'))
-    }
-})
+export const fromUserMsgComponent = (msg, msgId, time) => {
+    let component = document.createElement('div')
+    component.classList.add('from-user-msg')
+    component.dataset.id = msgId
+    component.innerHTML = `
+        <div class="delete-msg-btn hidden pr-2">
+            <button class="btn btn-circle btn-outline border-neutral bg-neutral hover:bg-accent hover:border-accent h-6 w-6 min-h-4 group">
+                <svg viewBox="0 0 24 24" fill="none" class="h-4 w-4 stroke-accent group-hover:stroke-neutral" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M6 18L18 6M6 6l12 12" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"></path>
+                </svg>
+            </button>
+        </div>
+        <div id="from-user-msg-container" class="msg-container">
+            <p class="py-1 text-base font-semibold text-black">${msg}</p>
+            <span class="text-sm font-normal text-black">${time}</span>
+        </div>
+    `
+    return component
+}
 
-document.querySelector('#transparent-modal').addEventListener('click', () => {
-    let add_people_btn = document.getElementById('add-chat-btn')
-    let add_people_popup = document.getElementById('add-chat-popup')
-    let overlay = document.querySelector('#transparent-modal')
-    let to_user_info_popup = document.getElementById('to-user-info-popup')
-    let to_user_info_btn = document.getElementById('to-user-info-btn')
-    let emoji_popup = document.getElementById('emoji-popup')
+export const toUserMsgComponent = (msg, msgId, time) => {
+    let component = document.createElement('div')
+    component.classList.add('to-user-msg')
+    component.dataset.id = msgId
+    component.innerHTML = `
+        <div id="to-user-msg-container" class="msg-container">
+            <p class="py-1 text-base font-semibold text-black">${msg}</p>
+            <span class="text-sm font-normal text-black">${time}</span>
+        </div>
+        <div class="delete-msg-btn hidden pl-2">
+            <button class="btn btn-circle btn-outline border-accent bg-accent hover:bg-neutral hover:border-neutral h-6 w-6 min-h-4 group">
+                <svg viewBox="0 0 24 24" fill="none" class="h-4 w-4 stroke-neutral group-hover:stroke-accent" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M6 18L18 6M6 6l12 12" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"></path>
+                </svg>
+            </button>
+        </div>
+    `
+    return component
+}
 
-    overlay.classList.add('hidden')
-    add_people_btn.classList.remove('active')
-    to_user_info_btn.classList.remove('active')
-    add_people_popup.classList.add('hidden')
-    to_user_info_popup.classList.add('hidden')
-    emoji_popup.classList.add('hidden')
-    if (add_people_btn.classList.contains('z-30')) {
-        add_people_btn.classList.remove('z-30')
-    }
-})
+export const createLeftsidePeople = (data) => {
+    let parentDiv = leftSidePersonComponent(data)
 
-document.getElementById('add-chat-btn').addEventListener('click', (event) => {
-    // event.stopPropagation()
-    let add_people_btn = document.getElementById('add-chat-btn')
-    let add_people_popup = document.getElementById('add-chat-popup')
-    let add_people_list = document.querySelector('.popup-people-all')
-    let popup_search = document.getElementById('popup-search')
-    let overlay = document.querySelector('#transparent-modal')
-
-    // document.body.style.overflow = "hidden";
-    add_people_btn.classList.toggle('active')
-    add_people_btn.classList.toggle('z-30')
-
-    if (add_people_popup.classList.contains('hidden')) {
-        add_people_popup.classList.remove('hidden')
-        overlay.classList.remove('hidden')
-        popup_search.focus()
-        add_people_list.scrollTop = 0
-    } else {
-        add_people_popup.classList.add('hidden')
-        overlay.classList.add('hidden')
-    }
-})
-
-const createLeftsidePeople = (data) => {
-    let parentDiv = document.createElement('div')
-    parentDiv.classList.add('chat-child')
-
-    let imgDiv = document.createElement('div')
-    imgDiv.classList.add('chats_img')
-    imgDiv.classList.add('indicator')
-
-    let statusDiv = `<span class="indicator-item badge badge-success h-2 p-[0.4rem] translate-x-[5%] translate-y-[10%] hidden status"></span>`
-
-    let img = document.createElement('img')
-    img.src = data.avatar
-        ? data.avatar
-        : `https://avatar.iran.liara.run/username?username=${data.name.replace(/ /g, '+')}`
-    img.alt = data.name
-
-    imgDiv.innerHTML = DOMPurify.sanitize(statusDiv)
-    imgDiv.appendChild(img)
-    parentDiv.appendChild(imgDiv)
-
-    let nameDiv = document.createElement('div')
-    nameDiv.classList.add('chat-name-parent')
-
-    let name = document.createElement('h4')
-    name.classList.add('chat-name')
-    name.textContent = data.name
-
-    let username = document.createElement('h4')
-    username.classList.add('chat-username')
-    username.textContent = data.username
-
-    nameDiv.appendChild(name)
-    nameDiv.appendChild(username)
-    parentDiv.appendChild(nameDiv)
-
-    let badgeDiv = `
-	<div class="unread-badge absolute right-8 hidden">
-        <div class="badge badge-accent">0</div>
-    </div>`
-
-    parentDiv.innerHTML += DOMPurify.sanitize(badgeDiv)
-
-    let all_chats = document.getElementById('chat-parent')
-    all_chats.appendChild(parentDiv)
+    let allPrivateChats = document.querySelector('.private-chats')
+    allPrivateChats.appendChild(parentDiv)
 
     chatClicked(parentDiv, data)
     handleHtmlOnlineUsers(onlineUsers)
 }
 
-const addPeopleToChat = async (element) => {
-    let leftPeople = document.querySelectorAll('.chat-child')
+export const leftSidePersonComponent = (data) => {
+    let parentDiv = document.createElement('div')
+    parentDiv.classList.add('chat-child', 'group')
+    parentDiv.dataset.id = data.encryptedId ? data.encryptedId : data._id
+    let onlineClass = data.isOnline ? 'online' : ''
+    parentDiv.innerHTML = `
+        <div class="avatar ${onlineClass}">
+            <div class="chat-img w-14 scale-110 rounded-full">
+                <img draggable="false" class="scale-110" src="${data.avatar}" alt="${data.username}" />
+            </div>
+        </div>
+        <div class="chat-name-parent">
+            <h4 class="chat-name">${data.name}</h4>
+            <h4 class="chat-username">${data.username}</h4>
+        </div>
+        <div class="unread-badge hidden right-8">
+            <div class="badge bg-secondary text-white">0</div>
+        </div>
+    `
+    return parentDiv
+}
+
+export const addPeopleToChat = async (element) => {
     let alreadyThere = false
     let clickedPerson = ''
     // console.log(element.children[1].children)
     const eleUsername = element.children[1].children[1].innerText
+
+    // Easter egg
+    let currentUserName = document.querySelector('#change-details-username').value
+    let selfChatJokes = [
+        "Talking to yourself? It's not a bug, it's a feature request!",
+        'Self-chatting: the ultimate form of code review.',
+        'Error 404: Self-chat not found. But hey, who needs other people?',
+        "Trying to chat with yourself? Sorry, we're still working on that mirror feature.",
+        'Self-chatting: because sometimes even your code needs a pep talk.',
+        'Looks like you want to talk to yourself. We call that solo debugging!',
+        'No self-chatting yet, but we admire your self-confidence!',
+        'Attempting self-chat? Our servers recommend a rubber duck instead.',
+        'Self-chatting not available. Try talking to your rubber duck instead!',
+        "Hold on, we're still working on that 'inner monologue' feature.",
+        'Self-chatting is under construction. Meanwhile, feel free to talk to your plants!',
+        "Mirror, mirror on the wall, self-chat isn't here at all!",
+        'Self-chatting feature in progress. For now, practice your stand-up routine!',
+        'Talking to yourself? You must be debugging in style!',
+        "Self-chat isn't ready, but you can always practice your next big speech.",
+        "Looks like you're trying to chat with yourself. Maybe take a coffee break instead!",
+        'Self-chat feature coming soon. In the meantime, how about a quick meditation session?',
+        "Self-chatting isn't supported yet. Try our premium feature: talking to a pillow!",
+    ]
+    if (eleUsername === currentUserName) {
+        let alert = document.querySelector('.alert')
+        let alertText = alert.querySelector('span')
+        alertText.innerHTML = `Well, you found an easter egg! Here's a joke: <b>${selfChatJokes[Math.floor(Math.random() * selfChatJokes.length)]}</b>`
+        alert.classList.remove('hidden')
+        setTimeout(() => {
+            alert.classList.add('hidden')
+            alertText.textContent = ''
+        }, 15000)
+        return
+    }
+
     const eleName = element.children[1].children[0].innerText
     const eleAvatar = element.children[0].src
     const eleId = element.dataset.id
 
     let eleData = {
-        _id: eleId,
+        encryptedId: eleId,
         name: eleName,
         username: eleUsername,
         avatar: eleAvatar,
     }
 
+    let privateChats = document.querySelector('.private-chats')
+    privateChats.open ? null : (privateChats.open = true)
+
+    let leftPeople = document.querySelectorAll('.chat-child')
     leftPeople.forEach((person) => {
-        let personUsername = person.children[1].children[1].innerText
+        let personUsername = person.querySelector('.chat-username').innerText
+
         if (personUsername === eleData.username) {
             alreadyThere = true
             clickedPerson = person
@@ -394,14 +363,14 @@ const addPeopleToChat = async (element) => {
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify({
-                receiverId: eleData._id,
+                receiverId: eleData.encryptedId,
             }),
         })
             .then((res) => res.json())
             .then((data) => {
                 if (data.message === 'Added people to chat') {
-                    createLeftsidePeople(data.newPeople)
-                    // console.log(data.newPeople);
+                    createLeftsidePeople(data.newPerson)
+                    // console.log(data.newPeople)
                 }
             })
             .catch((error) => {
@@ -416,39 +385,14 @@ const addPeopleToChat = async (element) => {
     document.querySelector('#transparent-modal').click()
 }
 
-document
-    .querySelector('.popup-people-all')
-    .addEventListener('click', (event) => {
-        if (event.target.closest('.popup-people')) {
-            addPeopleToChat(event.target.closest('.popup-people'))
-        }
-    })
-
-document.getElementById('to-user-info-btn').addEventListener('click', () => {
-    let overlay = document.querySelector('#transparent-modal')
-    let to_user_info_popup = document.getElementById('to-user-info-popup')
-    let to_user_info_btn = document.getElementById('to-user-info-btn')
-
-    if (to_user_info_popup.classList.contains('hidden')) {
-        to_user_info_popup.classList.remove('hidden')
-        overlay.classList.remove('hidden')
-        to_user_info_btn.classList.add('active')
-    } else {
-        to_user_info_popup.classList.add('hidden')
-        overlay.classList.add('hidden')
-        to_user_info_btn.classList.remove('active')
-    }
-})
-
-const handleHtmlSend = (msgRes) => {
-    // let chatSection = document.querySelector(".message-container");
+export const handleHtmlSend = (msgRes) => {
     let msgContainerDiv = document.querySelector('.message-container')
 
     let date = utcToLocal(msgRes.createdAt)
     let msgDate = date.slice(6)
     let msgTime = date.slice(0, 5)
 
-    let dates = document.querySelectorAll('.date')
+    let dates = Array.from(document.querySelectorAll('.date'))
 
     if (dates.length === 0 || dates[dates.length - 1].innerText !== msgDate) {
         const dayDiv = document.createElement('div')
@@ -463,40 +407,20 @@ const handleHtmlSend = (msgRes) => {
         msgContainerDiv.appendChild(dayDiv)
     }
 
-    let msg_div = document.createElement('div')
-    msg_div.classList.add('from-user-msg')
-    msg_div.dataset.id = msgRes._id
-    msg_div.innerHTML = DOMPurify.sanitize(`
-		<div class="pr-2 delete-msg-btn hidden">
-			<button class="btn btn-circle btn-outline border-[#4b2138] bg-[#E9E9E9] hover:bg-[#4B2138] hover:border-[#e9e9e9] h-6 w-6 min-h-4 group">
-				<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 group-hover:stroke-[#E9E9E9]" fill="none" viewBox="0 0 24 24" stroke="#4B2138"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
-			</button>
-		</div>
-    `)
+    let fromUserMsg = fromUserMsgComponent(msgRes.message, msgRes._id, msgTime)
+    msgContainerDiv.appendChild(fromUserMsg)
 
-    let msgTextDiv = document.createElement('div')
-    msgTextDiv.classList.add('msg-container')
-    let msgP = document.createElement('p')
-    msgP.textContent = msgRes.message
-    let msgTimeP = document.createElement('p')
-    msgTimeP.textContent = msgTime
-
-    msgTextDiv.appendChild(msgP)
-    msgTextDiv.appendChild(msgTimeP)
-    msg_div.append(msgTextDiv)
-
-    msgContainerDiv.appendChild(msg_div)
     msgContainerDiv.scrollTop = msgContainerDiv.scrollHeight
 }
 
-const handleSendRequest = async (receiverId, msg) => {
+export const handleSendRequest = async (receiverId, msg) => {
     fetch('/chat/send-message', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-            receiverId: receiverId,
+            receiverId,
             message: msg,
         }),
     })
@@ -519,55 +443,8 @@ const handleSendRequest = async (receiverId, msg) => {
         })
 }
 
-document.getElementById('send-btn').addEventListener('click', (e) => {
-    e.preventDefault()
-    let msgInput = document.getElementById('msg-input')
-
-    let msg = DOMPurify.sanitize(msgInput.value)
-    msgInput.value = ''
-    msgInput.focus()
-
-    if (msg.length > 0) {
-        let receiverId = document.querySelector('.chat-child.active').dataset.id
-        handleSendRequest(receiverId, msg)
-    }
-})
-
-document.getElementById('msg-input').addEventListener('keydown', (event) => {
-    let msgInput = document.getElementById('msg-input')
-
-    if (event.key === 'Enter' && !event.shiftKey) {
-        event.preventDefault()
-
-        let msg = DOMPurify.sanitize(msgInput.value)
-        msgInput.value = ''
-        msgInput.focus()
-
-        if (msg.length > 0) {
-            let receiverId =
-                document.querySelector('.chat-child.active').dataset.id
-            handleSendRequest(receiverId, msg)
-        }
-    } else if (event.shiftKey && event.key === 'Enter') {
-        event.preventDefault()
-        const start = msgInput.selectionStart
-        const text = msgInput.value
-
-        msgInput.value = text.slice(0, start) + '\n' + text.slice(start)
-        msgInput.selectionEnd = start + 1
-    }
-})
-
-const deleteMessage = async (btn) => {
-    let parent = btn.parentElement
-    let sibling = ''
-
-    if (parent.classList.contains('from-user-msg')) {
-        sibling = btn.nextElementSibling
-    } else {
-        sibling = btn.previousElementSibling
-    }
-    let msgId = parent.dataset.id
+export const deleteMessage = async (msg) => {
+    let msgId = msg.dataset.id
     // console.log('msgId', msgId)
 
     let receiverId = document.querySelector('.chat-child.active').dataset.id
@@ -586,10 +463,10 @@ const deleteMessage = async (btn) => {
         .then((data) => {
             // console.log(data.message)
             if (data.message === 'Message deleted') {
-                parent.remove()
+                msg.remove()
                 let days = document.querySelectorAll('.day')
                 days.forEach((day) => {
-                    if (day.nextElementSibling === null) {
+                    if (day.nextElementSibling === null || day.nextElementSibling.classList.contains('day')) {
                         day.remove()
                     }
                 })
@@ -606,17 +483,7 @@ const deleteMessage = async (btn) => {
         })
 }
 
-document
-    .querySelector('.message-container')
-    .addEventListener('click', (event) => {
-        // console.log('event.target', event.target)
-        if (event.target.closest('.delete-msg-btn')) {
-            const deleteMsgBtn = event.target.closest('.delete-msg-btn')
-            deleteMessage(deleteMsgBtn)
-        }
-    })
-
-const deleteConversation = async () => {
+export const deleteConversation = async () => {
     let chat_mid = document.getElementById('all-chats')
     let chat_end = document.getElementById('chats-end')
     let chat_head = document.getElementById('chats-head')
@@ -660,11 +527,7 @@ const deleteConversation = async () => {
         })
 }
 
-document.querySelector('#delete-chat-to-user').addEventListener('click', () => {
-    deleteConversation()
-})
-
-const handleBlockUser = (receiverId, htmlElement) => {
+export const handleBlockUser = (receiverId, htmlElement) => {
     let chat_end = document.getElementById('chats-end')
     let blockDiv = document.querySelector('#chats-end-block')
 
@@ -691,7 +554,7 @@ const handleBlockUser = (receiverId, htmlElement) => {
         })
 }
 
-const handleUnblockUser = (receiverId, htmlElement) => {
+export const handleUnblockUser = (receiverId, htmlElement) => {
     let chat_end = document.getElementById('chats-end')
     let blockDiv = document.querySelector('#chats-end-block')
 
@@ -718,7 +581,7 @@ const handleUnblockUser = (receiverId, htmlElement) => {
         })
 }
 
-const blockUnblockUser = async (htmlElement) => {
+export const blockUnblockUser = async (htmlElement) => {
     let receiver = document.querySelector('.chat-child.active')
     let receiverId = receiver.dataset.id
 
@@ -731,151 +594,8 @@ const blockUnblockUser = async (htmlElement) => {
     }
 }
 
-document.querySelector('#block-to-user').addEventListener('click', () => {
-    blockUnblockUser(document.querySelector('#block-to-user'))
-})
-
-const searchPeople = (event) => {
-    let queryText = event.target.value.toLowerCase()
-    let add_people = document.querySelectorAll('.popup-people')
-
-    if (queryText === '') {
-        add_people.forEach((person) => {
-            person.classList.remove('hidden')
-        })
-        return
-    } else {
-        fetch('/search/search-people', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ queryText }),
-        })
-            .then((res) => res.json())
-            .then((data) => {
-                const foundPeopleUsernames = data.people.map(
-                    (person) => person.username
-                )
-                const popupPeople = document.querySelectorAll('.popup-people')
-                popupPeople.forEach((person) => {
-                    const personUsername = person
-                        .querySelector('.popup-people-username')
-                        .innerText.trim()
-                    console.log('personUsername: ', personUsername)
-                    if (foundPeopleUsernames.includes(personUsername)) {
-                        person.classList.remove('hidden')
-                    } else {
-                        person.classList.add('hidden')
-                    }
-                })
-            })
-            .catch((err) => {
-                console.log('Error in searching people: ', err)
-            })
-    }
-}
-
-document
-    .getElementById('popup-search')
-    .addEventListener('keyup', (event) => searchPeople(event))
-
-document.querySelector('#from-user-modal-img').addEventListener('click', () => {
-    my_modal_2.showModal()
-})
-
-document
-    .querySelector('#change-profilePic-btn')
-    .addEventListener('click', () => {
-        const modalProfilePic = document.querySelector(
-            '#change-details-profilePic'
-        )
-
-        const gender = document.querySelector(
-            '#change-details-gender option:checked'
-        ).value
-        // console.log(gender)
-
-        fetch('/api/get-avatar', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ gender }),
-        })
-            .then((res) => res.json())
-            .then((data) => {
-                // console.log(data.avatar)
-                // console.log(modalProfilePic.src);
-                modalProfilePic.src = data.avatar
-            })
-            .catch((err) => {
-                console.log('Error in getting avatar: ', err)
-            })
-    })
-
-document
-    .querySelector('#chat-change-details-done-btn')
-    .addEventListener('click', () => {
-        let name = DOMPurify.sanitize(
-            document.querySelector('#change-details-name').value
-        )
-        let username = DOMPurify.sanitize(
-            document.querySelector('#change-details-username').value
-        )
-        const gender = DOMPurify.sanitize(
-            document.querySelector('#change-details-gender option:checked')
-                .value
-        )
-        let avatar = document.querySelector('#change-details-profilePic').src
-        const csrfToken = DOMPurify.sanitize(
-            document.querySelector('input[name="CSRFToken"]').value
-        )
-
-        fetch('/api/change-details', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'x-csrf-token': csrfToken,
-            },
-            body: JSON.stringify({
-                name,
-                username,
-                gender,
-                avatar,
-            }),
-        })
-            .then((res) => res.json())
-            .then((data) => {
-                document
-                    .querySelector('#notification-alert')
-                    .classList.remove('hidden')
-                document.querySelector('#notification-alert span').textContent =
-                    data.message
-                if (data.success) {
-                    document.querySelector('#from-user-modal-img').src =
-                        data.user.avatar
-                }
-
-                if (data.message === 'Username already taken') {
-                    username.textContent = data.user.username
-                }
-                setTimeout(() => {
-                    document.querySelector(
-                        '#notification-alert span'
-                    ).textContent = ''
-                    document
-                        .querySelector('#notification-alert')
-                        .classList.add('hidden')
-                }, 5000)
-            })
-            .catch((err) => {
-                console.log('Error in changing details: ', err)
-            })
-    })
-
 // Refresh access token every 10 minutes
-const setIntervalId = setInterval(
+export const setIntervalId = setInterval(
     () => {
         fetch('/auth/jwt/refresh-token', {
             method: 'GET',

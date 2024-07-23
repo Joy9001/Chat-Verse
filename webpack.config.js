@@ -1,23 +1,39 @@
 import dotenv from 'dotenv'
-import HtmlWebpackPlugin from 'html-webpack-plugin'
 import MiniCssExtractPlugin from 'mini-css-extract-plugin'
 import path from 'path'
 import TerserPlugin from 'terser-webpack-plugin'
 import webpack from 'webpack'
+import EjsWebpackPlugin from 'ejs-webpack-plugin'
+
 dotenv.config()
 
 export default {
+    target: 'web',
+    node: {
+        global: true,
+    },
     mode: process.env.NODE_ENV === 'development' ? 'development' : 'production',
     entry: {
         chat: './client/index/index-chat.js',
         login: './client/index/index-login.js',
         register: './client/index/index-register.js',
+        base: './client/index/index-base.js',
     },
     output: {
         filename: '[name].[contenthash].js',
         path: path.resolve('./client/dist'),
         clean: true,
         publicPath: '/',
+    },
+    resolve: {
+        fallback: {
+            fs: false,
+            os: false,
+            path: false,
+            crypto: false,
+            stream: false,
+            vm: false,
+        },
     },
     devtool: process.env.NODE_ENV === 'development' ? 'source-map' : false,
     module: {
@@ -34,7 +50,9 @@ export default {
             },
             {
                 test: /\.ejs$/,
-                use: 'raw-loader',
+                use: {
+                    loader: 'ejs',
+                },
             },
             {
                 test: /\.css$/i,
@@ -53,7 +71,6 @@ export default {
     optimization: {
         minimize: true,
         minimizer: [
-            `...`,
             new TerserPlugin({
                 exclude: /\/node_modules/,
                 extractComments: false,
@@ -66,27 +83,30 @@ export default {
         ],
     },
     plugins: [
-        new webpack.EnvironmentPlugin(['SITE_URL', 'PORT']),
-        new HtmlWebpackPlugin({
-            template: '!!raw-loader!./client/views/chat.ejs',
-            filename: 'views/chat.ejs',
-            favicon: './client/public/assets/favicon.ico',
-            chunks: ['chat'],
-            inject: true,
-        }),
-        new HtmlWebpackPlugin({
-            template: '!!raw-loader!./client/views/login.ejs',
-            filename: 'views/login.ejs',
-            favicon: './client/public/assets/favicon.ico',
-            chunks: ['login'],
-            inject: true,
-        }),
-        new HtmlWebpackPlugin({
-            template: '!!raw-loader!./client/views/register.ejs',
-            filename: 'views/register.ejs',
-            favicon: './client/public/assets/favicon.ico',
-            chunks: ['register'],
-            inject: true,
+        new webpack.EnvironmentPlugin(['DOMAIN', 'PORT']),
+        new EjsWebpackPlugin({
+            context: import.meta.dirname,
+            entry: {
+                './client/views/chat.ejs': {
+                    js: ['chat'],
+                    css: ['chat'],
+                    output: './client/views/dist',
+                },
+                './client/views/login.ejs': {
+                    js: ['login'],
+                    css: ['base'],
+                    output: './client/views/dist',
+                },
+                './client/views/register.ejs': {
+                    js: ['register'],
+                    css: ['base'],
+                    output: './client/views/dist',
+                },
+                './client/views/404.ejs': {
+                    css: ['chat'],
+                    output: './client/views/dist',
+                },
+            },
         }),
         new MiniCssExtractPlugin({
             filename: 'styles/[name].[contenthash].css',

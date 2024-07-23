@@ -51,13 +51,8 @@ export const isAuthenticated = (req, res, next) => {
                     return res.redirect('/auth/login')
                 }
 
-                const refreshToken = CryptoEnc.decryptWithCryptoJS(
-                    encryptedRefreshToken
-                )
-                const decoded = jwt.verify(
-                    refreshToken,
-                    process.env.REFRESH_TOKEN_SECRET
-                )
+                const refreshToken = CryptoEnc.decryptWithCryptoJS(encryptedRefreshToken)
+                const decoded = jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET)
 
                 if (refreshtokendb.user.toString() !== decoded.user) {
                     return res.status(403).json({
@@ -66,19 +61,11 @@ export const isAuthenticated = (req, res, next) => {
                 }
 
                 // Check if the refresh token is older than 1 day (24 hours)
-                if (
-                    Date.now() - refreshtokendb.updatedAt.getTime() >
-                    1000 * 60 * 60 * 24
-                ) {
-                    const newRefreshToken = jwt.sign(
-                        { user: decoded.user },
-                        process.env.REFRESH_TOKEN_SECRET,
-                        {
-                            expiresIn: '7d',
-                        }
-                    )
-                    const newEncryptedRefreshToken =
-                        CryptoEnc.encryptWithCryptoJS(newRefreshToken)
+                if (Date.now() - refreshtokendb.updatedAt.getTime() > 1000 * 60 * 60 * 24) {
+                    const newRefreshToken = jwt.sign({ user: decoded.user }, process.env.REFRESH_TOKEN_SECRET, {
+                        expiresIn: '7d',
+                    })
+                    const newEncryptedRefreshToken = CryptoEnc.encryptWithCryptoJS(newRefreshToken)
 
                     refreshtokendb.refreshToken = newEncryptedRefreshToken
                     await refreshtokendb.save()
@@ -91,15 +78,10 @@ export const isAuthenticated = (req, res, next) => {
                     })
                 }
 
-                const accessToken = jwt.sign(
-                    { user: decoded.user },
-                    process.env.ACCESS_TOKEN_SECRET,
-                    {
-                        expiresIn: '30m',
-                    }
-                )
-                const encryptedAccessToken =
-                    CryptoEnc.encryptWithCryptoJS(accessToken)
+                const accessToken = jwt.sign({ user: decoded.user }, process.env.ACCESS_TOKEN_SECRET, {
+                    expiresIn: '30m',
+                })
+                const encryptedAccessToken = CryptoEnc.encryptWithCryptoJS(accessToken)
                 res.cookie('accessToken', encryptedAccessToken, {
                     httpOnly: true,
                     secure: true,
@@ -113,10 +95,7 @@ export const isAuthenticated = (req, res, next) => {
                 req.user = userSession
                 return next()
             } catch (error) {
-                console.error(
-                    'Error in refresh token handling: ',
-                    error.message
-                )
+                console.error('Error in refresh token handling: ', error.message)
                 return res.status(500).json({ error: 'Internal Server Error' })
             }
         }

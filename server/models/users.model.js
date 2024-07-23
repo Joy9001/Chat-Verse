@@ -1,12 +1,8 @@
 import { Schema, model } from 'mongoose'
-import {
-    nameValidator,
-    usernameValidator,
-    emailValidator,
-    passwordValidator,
-} from './validator.js'
+import { nameValidator, usernameValidator, emailValidator, passwordValidator } from './validator.js'
 import { generateAvatar } from '../helpers/generateAvatar.helper.js'
 import crypto from 'crypto'
+import { encryptWithCryptoJS } from '../helpers/crypto.helper.js'
 
 const generateUsername = (name) => {
     const nameLower = name.toLowerCase().replace(/ /g, '_')
@@ -16,6 +12,10 @@ const generateUsername = (name) => {
 
 const userSchema = new Schema(
     {
+        encryptedId: {
+            type: Schema.Types.String,
+            default: '',
+        },
         name: {
             type: Schema.Types.String,
             required: [true, 'Please enter your full name'],
@@ -61,22 +61,43 @@ const userSchema = new Schema(
 )
 
 userSchema.pre('save', function (next) {
-    if (!this.username) {
-        this.username = generateUsername(this.name)
+    try {
+        if (!this.username) {
+            this.username = generateUsername(this.name)
+        }
+        next()
+    } catch (error) {
+        console.error('Error in pre-save hook:', error)
+        next(error)
     }
-    next()
 })
 
 userSchema.pre('save', function (next) {
-    if (this.avatar === '') {
-        try {
+    try {
+        if (this.avatar === '') {
             this.avatar = generateAvatar(this.name)
-            console.log('Avatar generated successfully', this.avatar)
-        } catch (error) {
-            console.error('Error generating avatar', error)
+            console.log('Avatar generated successfully...')
         }
+        next()
+    } catch (error) {
+        console.error('Error generating avatar', error)
+        next(error)
     }
-    next()
+})
+
+userSchema.post('save', async function (doc, next) {
+    // console.log('doc:', doc)
+    try {
+        if (doc.encryptedId === '') {
+            doc.encryptedId = encryptWithCryptoJS(doc._id.toString())
+            await doc.save()
+            console.log('EncryptedId saved successfully...')
+        }
+        next()
+    } catch (error) {
+        console.error('Error saving encryptedId: ', error)
+        next(error)
+    }
 })
 
 const User = model('User', userSchema)

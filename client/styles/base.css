@@ -10,10 +10,10 @@
 
     emoji-picker {
         @apply absolute h-64 w-[22.2rem];
-        --background: #fadcd5;
-        --border-color: #fadcd5;
-        --button-hover-background: #a66f8d;
-        --button-active-background: #a66f8d;
+        --background: #6f87af;
+        --border-color: #6f87af;
+        --button-hover-background: #ffffff;
+        --button-active-background: #ffffff;
     }
 
     textarea::-webkit-scrollbar {

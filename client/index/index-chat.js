@@ -1,4 +1,6 @@
 import '../scripts/components/chat.js'
+import '../scripts/components/groupChat.js'
+import '../scripts/components/events.js'
 import '../scripts/components/emojiPicker.js'
 import '../scripts/socket/socket.js'
 import '../styles/chat-output.css'
