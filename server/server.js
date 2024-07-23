@@ -21,8 +21,8 @@ import { Conversation } from './models/conversation.model.js'
 import { getGroupConversationMap, getUserMap } from './helpers/maps.helper.js'
 
 const PORT = process.env.PORT || 3000
-let USER_MAP = await getUserMap()
-let GROUP_CONV_MAP = await getGroupConversationMap()
+let USER_MAP = []
+let GROUP_CONV_MAP = []
 
 const app = express()
 const server = http.createServer(app)
@@ -253,6 +253,8 @@ server.listen(PORT, async () => {
         .then(async () => {
             console.log('MongoDB connected')
             console.log(`Server running on http://localhost:${PORT}`)
+            USER_MAP = await getUserMap()
+            GROUP_CONV_MAP = await getGroupConversationMap()
         })
         .catch((err) => {
             console.error('Error connecting to MongoDB: ', err.message)
