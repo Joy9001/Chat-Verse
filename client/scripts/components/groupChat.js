@@ -238,7 +238,7 @@ export const fromUserGroupMsgComponent = (msg, msgId, time, name) => {
                 <h3 class="msg-sender-name text-base font-medium text-black">${name}</h3>
                 <h4 class="msg-sending-time text-sm font-normal text-black">${time}</h4>
             </div>
-            <p class="msg-content py-1 text-base font-semibold text-black">${msg}</p>
+            <p class="msg-content py-1 text-base font-semibold text-black whitespace-pre-wrap">${msg}</p>
         </div>
     `
 
@@ -255,7 +255,7 @@ export const toUserGroupMsgComponent = (msg, msgId, time, name) => {
                 <h3 class="msg-sender-name text-base font-medium text-black">${name}</h3>
                 <h4 class="msg-sending-time text-sm font-normal text-black">${time}</h4>
             </div>
-            <p class="msg-content py-2.5 text-base font-semibold text-black">${msg}</p>
+            <p class="msg-content py-2.5 text-base font-semibold text-black whitespace-pre-wrap">${msg}</p>
         </div>
     `
     return component

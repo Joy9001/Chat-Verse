@@ -228,7 +228,7 @@ export const fromUserMsgComponent = (msg, msgId, time) => {
             </button>
         </div>
         <div id="from-user-msg-container" class="msg-container">
-            <p class="py-1 text-base font-semibold text-black">${msg}</p>
+            <p class="py-1 text-base font-semibold text-black whitespace-pre-wrap">${msg}</p>
             <span class="text-sm font-normal text-black">${time}</span>
         </div>
     `
@@ -241,7 +241,7 @@ export const toUserMsgComponent = (msg, msgId, time) => {
     component.dataset.id = msgId
     component.innerHTML = `
         <div id="to-user-msg-container" class="msg-container">
-            <p class="py-1 text-base font-semibold text-black">${msg}</p>
+            <p class="py-1 text-base font-semibold text-black whitespace-pre-wrap">${msg}</p>
             <span class="text-sm font-normal text-black">${time}</span>
         </div>
         <div class="delete-msg-btn hidden pl-2">
