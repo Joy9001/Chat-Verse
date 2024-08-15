@@ -295,7 +295,7 @@ socket.on('receiver-changed-details', (oldUserDetails, newUserDetails, callback)
             if (username === oldUserDetails.username) {
                 user.querySelector('.chat-name').textContent = newUserDetails.name
                 user.querySelector('.chat-username').textContent = newUserDetails.username
-                user.querySelector('.chats-img img').src = newUserDetails.avatar
+                user.querySelector('.chat-img img').src = newUserDetails.avatar
 
                 // chat section on right
                 if (user.classList.contains('active')) {

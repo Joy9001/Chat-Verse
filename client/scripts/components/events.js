@@ -188,6 +188,8 @@ document.querySelector('#chat-change-details-done-btn').addEventListener('click'
         .then((res) => res.json())
         .then((data) => {
             if (data.success) {
+                document.querySelector('#change-details-name').value = data.user.name
+                document.querySelector('#change-details-username').value = data.user.username
                 document.querySelector('#from-user-modal-img').src = data.user.avatar
             }
 
