@@ -140,7 +140,7 @@ cython_debug/
 .idea/
 .vscode/
 node_modules/
-*.txt
 /tailwindcss
 .prettierrc
-IMP.md
+docs/
+.secrets/

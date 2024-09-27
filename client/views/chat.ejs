@@ -1,38 +1,37 @@
 <!doctype html>
 <html lang="en" data-theme="themeLilac" class="no-scrollbar">
-    <head>
-        <meta charset="UTF-8" />
-        <meta http-equiv="X-UA-Compatible" content="ie=edge" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title>ChatVerse</title>
-        <link rel="shortcut icon" href="/assets/favicon.ico" type="image/x-icon" />
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.1.5/purify.min.js"></script>
-        <link rel="stylesheet" href="/client/styles/chat-output.css" />
-        <script src="/client/index/index-chat.js"></script>
-        <!-- font -->
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-        <link
-            href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=Rubik:ital,wght@0,300..900;1,300..900&display=swap"
-            rel="stylesheet"
-        />
-    </head>
+	<head>
+		<meta charset="UTF-8" />
+		<meta http-equiv="X-UA-Compatible" content="ie=edge" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>ChatVerse</title>
+		<link rel="shortcut icon" href="/assets/favicon.ico" type="image/x-icon" />
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.1.5/purify.min.js"></script>
+		<link rel="stylesheet" href="/client/styles/chat-output.css" />
+		<script src="/client/index/index-chat.js"></script>
+		<!-- font -->
+		<link rel="preconnect" href="https://fonts.googleapis.com" />
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+		<link
+			href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=Rubik:ital,wght@0,300..900;1,300..900&display=swap"
+			rel="stylesheet" />
+	</head>
 
-    <body class="no-scrollbar font-dm">
-        <%- include('../../public/svgs/icons.svg') %>
-        <!-- body -->
-        <div class="chat-body absolute flex h-full w-full items-center justify-center bg-backImage bg-cover bg-center">
-            <!-- chat main -->
-            <div class="chat-main absolute flex h-[90%] w-3/4 flex-row rounded-xl backdrop-blur-xl">
-                <!-- Modal -->
-                <div id="transparent-modal" class="fixed left-0 top-0 z-10 hidden h-full w-full"></div>
+	<body class="no-scrollbar font-dm">
+		<%- include('../../public/svgs/icons.svg') %>
+		<!-- body -->
+		<div class="chat-body absolute flex h-full w-full items-center justify-center bg-backImage bg-cover bg-center">
+			<!-- chat main -->
+			<div class="chat-main absolute flex h-[90%] w-3/4 flex-row rounded-xl backdrop-blur-xl">
+				<!-- Modal -->
+				<div id="transparent-modal" class="fixed left-0 top-0 z-10 hidden h-full w-full"></div>
 
-                <!-- left bar - all chats -->
-                <%- include('../partials/leftSide.ejs') %>
+				<!-- left bar - all chats -->
+				<%- include('../partials/leftSide.ejs') %>
 
-                <!-- right bar - all chats -->
-                <%- include('../partials/rightSide.ejs') %>
-            </div>
-        </div>
-    </body>
+				<!-- right bar - all chats -->
+				<%- include('../partials/rightSide.ejs') %>
+			</div>
+		</div>
+	</body>
 </html>

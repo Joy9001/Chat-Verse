@@ -3,13 +3,13 @@ import { generateAvatar, generateGroupAvatar } from '../helpers/generateAvatar.h
 const router = Router()
 
 router.get('/get-avatar', (req, res) => {
-    const avatar = generateAvatar()
-    res.json({ avatar })
+	const avatar = generateAvatar()
+	res.json({ avatar })
 })
 
 router.get('/get-group-avatar', (req, res) => {
-    const groupAvatar = generateGroupAvatar()
-    res.json({ groupAvatar })
+	const groupAvatar = generateGroupAvatar()
+	res.json({ groupAvatar })
 })
 
 export default router

@@ -1,117 +1,132 @@
 <!-- chats head -->
 <div
-    id="chats-head"
-    class="chats-head absolute top-0 ml-4 mt-4 flex hidden h-16 w-[calc(100%-2rem)] flex-row items-center justify-between rounded-md border-2 border-solid border-primary bg-primary"
->
-    <!-- to user profile -->
-    <div class="to-user-profile ml-4 flex flex-row items-center justify-center space-x-3">
-        <div class="avatar">
-            <div class="chat-img w-10 rounded-full">
-                <img draggable="false" id="chat-head-img" src="/assets/logo.jpeg" alt="User" />
-            </div>
-        </div>
-        <div class="text-lg font-semibold text-white">
-            <h1 id="chat-head-name"></h1>
-        </div>
-        <!-- copy group join link-->
-        <button
-            id="copy-group-link-btn"
-            class="group btn tooltip tooltip-bottom tooltip-accent m-0 flex h-6 min-h-1 w-9 items-center justify-center border-none bg-primary p-0 shadow-none hover:bg-white"
-            data-tip="Copy Group Link"
-        >
-            <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="24"
-                height="24"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                class="feather feather-link-2 stroke-white group-hover:stroke-black"
-            >
-                <path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path>
-                <line x1="8" y1="12" x2="16" y2="12"></line>
-            </svg>
-        </button>
-    </div>
+	id="chats-head"
+	class="chats-head absolute top-0 ml-4 mt-4 flex hidden h-16 w-[calc(100%-2rem)] flex-row items-center justify-between rounded-md border-2 border-solid border-primary bg-primary">
+	<!-- to user profile -->
+	<div class="to-user-profile ml-4 flex flex-row items-center justify-center space-x-3">
+		<div class="avatar">
+			<div class="chat-img w-10 rounded-full">
+				<img draggable="false" id="chat-head-img" src="/assets/logo.jpeg" alt="User" />
+			</div>
+		</div>
+		<div class="text-lg font-semibold text-white">
+			<h1 id="chat-head-name"></h1>
+		</div>
+		<!-- copy group join link-->
+		<button
+			id="copy-group-link-btn"
+			class="group btn tooltip tooltip-bottom tooltip-accent m-0 flex h-6 min-h-1 w-9 items-center justify-center border-none bg-primary p-0 shadow-none hover:bg-white"
+			data-tip="Copy Group Link">
+			<svg
+				xmlns="http://www.w3.org/2000/svg"
+				width="24"
+				height="24"
+				viewBox="0 0 24 24"
+				fill="none"
+				stroke="currentColor"
+				stroke-width="2"
+				stroke-linecap="round"
+				stroke-linejoin="round"
+				class="feather feather-link-2 stroke-white group-hover:stroke-black">
+				<path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path>
+				<line x1="8" y1="12" x2="16" y2="12"></line>
+			</svg>
+		</button>
+	</div>
 
-    <!-- to user info -->
-    <div class="mr-4 flex items-center justify-center">
-        <!-- to user info btn -->
-        <div class="tooltip tooltip-top tooltip-accent" data-tip="Info">
-            <div
-                id="to-user-info-btn"
-                class="to-user-info-btn z-30 h-9 w-9 cursor-pointer transition delay-100 duration-200 ease-in-out hover:scale-110"
-            >
-                <svg width="35px" height="35px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="icon">
-                    <use xlink:href="#icon-info"></use>
-                </svg>
-            </div>
-        </div>
+	<!-- to user info -->
+	<div class="mr-4 flex items-center justify-center">
+		<!-- to user info btn -->
+		<div class="tooltip tooltip-top tooltip-accent" data-tip="Info">
+			<div
+				id="to-user-info-btn"
+				class="to-user-info-btn z-30 h-9 w-9 cursor-pointer transition delay-100 duration-200 ease-in-out hover:scale-110">
+				<svg
+					width="35px"
+					height="35px"
+					viewBox="0 0 24 24"
+					fill="none"
+					xmlns="http://www.w3.org/2000/svg"
+					class="icon">
+					<use xlink:href="#icon-info"></use>
+				</svg>
+			</div>
+		</div>
 
-        <!-- to user info popup -->
-        <div
-            id="to-user-info-popup"
-            class="popup absolute right-4 top-14 z-30 hidden h-fit w-64 flex-col rounded-lg border-2 border-black bg-primary"
-        >
-            <!-- name & username -->
-            <div class="to-user-info-popup-details mt-1 flex h-18 cursor-pointer border-b-2 border-black pl-2">
-                <img id="to-user-info-popup-img" draggable="false" src="/assets/logo.jpeg" alt="User" class="ml-2 mt-2 h-14 w-14 rounded-full p-1" />
-                <div class="ml-2 mt-2 flex w-36 flex-col text-white">
-                    <h3 id="to-user-info-popup-name" class="mb-[-4px] overflow-hidden text-ellipsis whitespace-nowrap text-base font-bold">Emma</h3>
-                    <h4 id="to-user-info-popup-username" class="overflow-hidden text-ellipsis whitespace-nowrap text-sm font-medium">@emma123</h4>
-                </div>
-            </div>
+		<!-- to user info popup -->
+		<div
+			id="to-user-info-popup"
+			class="popup absolute right-4 top-14 z-30 hidden h-fit w-64 flex-col rounded-lg border-2 border-black bg-primary">
+			<!-- name & username -->
+			<div class="to-user-info-popup-details mt-1 flex h-18 cursor-pointer border-b-2 border-black pl-2">
+				<img
+					id="to-user-info-popup-img"
+					draggable="false"
+					src="/assets/logo.jpeg"
+					alt="User"
+					class="ml-2 mt-2 h-14 w-14 rounded-full p-1" />
+				<div class="ml-2 mt-2 flex w-36 flex-col text-white">
+					<h3
+						id="to-user-info-popup-name"
+						class="mb-[-4px] overflow-hidden text-ellipsis whitespace-nowrap text-base font-bold">
+						Emma
+					</h3>
+					<h4
+						id="to-user-info-popup-username"
+						class="overflow-hidden text-ellipsis whitespace-nowrap text-sm font-medium">
+						@emma123
+					</h4>
+				</div>
+			</div>
 
-            <div class="to-user-info-popup-options my-3 flex flex-col items-center justify-center space-y-1 *:p-1 *:*:font-semibold">
-                <!-- Block -->
-                <div
-                    id="block-to-user"
-                    class="btn mx-2 flex h-10 w-60 items-center justify-center rounded-md border-none bg-primary text-base text-white shadow-none hover:cursor-pointer hover:bg-secondary hover:text-black"
-                >
-                    <h3>Block</h3>
-                </div>
+			<div
+				class="to-user-info-popup-options my-3 flex flex-col items-center justify-center space-y-1 *:p-1 *:*:font-semibold">
+				<!-- Block -->
+				<div
+					id="block-to-user"
+					class="btn mx-2 flex h-10 w-60 items-center justify-center rounded-md border-none bg-primary text-base text-white shadow-none hover:cursor-pointer hover:bg-secondary hover:text-black">
+					<h3>Block</h3>
+				</div>
 
-                <!-- Delete Conversation -->
-                <div
-                    id="delete-chat-to-user"
-                    class="btn mx-2 flex h-10 w-60 items-center justify-center rounded-md border-none bg-primary text-base text-white shadow-none hover:cursor-pointer hover:bg-secondary hover:text-black"
-                >
-                    <h3>Delete Conversation</h3>
-                </div>
+				<!-- Delete Conversation -->
+				<div
+					id="delete-chat-to-user"
+					class="btn mx-2 flex h-10 w-60 items-center justify-center rounded-md border-none bg-primary text-base text-white shadow-none hover:cursor-pointer hover:bg-secondary hover:text-black">
+					<h3>Delete Conversation</h3>
+				</div>
 
-                <div class="block-info hidden text-white">
-                    <h3>You have been blocked</h3>
-                </div>
-            </div>
+				<div class="block-info hidden text-white">
+					<h3>You have been blocked</h3>
+				</div>
+			</div>
 
-            <div class="group-info-popup-options my-3 flex hidden flex-col items-center justify-center space-y-1 *:p-1 *:*:font-semibold">
-                <!--  Leave and Delete-->
-                <div
-                    id="leave-and-delete-group"
-                    class="btn mx-2 flex h-10 w-60 items-center justify-center rounded-md border-none bg-primary text-base text-white shadow-none hover:cursor-pointer hover:bg-secondary hover:text-black"
-                >
-                    <h3>Leave and Delete Group</h3>
-                </div>
+			<div
+				class="group-info-popup-options my-3 flex hidden flex-col items-center justify-center space-y-1 *:p-1 *:*:font-semibold">
+				<!--  Leave and Delete-->
+				<div
+					id="leave-and-delete-group"
+					class="btn mx-2 flex h-10 w-60 items-center justify-center rounded-md border-none bg-primary text-base text-white shadow-none hover:cursor-pointer hover:bg-secondary hover:text-black">
+					<h3>Leave and Delete Group</h3>
+				</div>
 
-                <!-- Show Participants -->
-                <details class="dropdown">
-                    <summary
-                        id="all-group-members-btn"
-                        class="btn mx-2 flex h-10 w-60 items-center justify-center rounded-md border-none bg-primary text-base text-white shadow-none hover:cursor-pointer hover:bg-secondary hover:text-black"
-                    >
-                        Show All Members
-                    </summary>
-                    <ul class="menu dropdown-content z-[1] mx-2 w-60 rounded-lg border-2 border-black bg-primary p-2 text-white shadow">
-                        <h1 class="ml-2 p-1 text-base font-semibold">All Members <span class="badge-white badge text-black"></span></h1>
-                        <div class="all-group-members no-scrollbar h-40 overflow-auto">
-                            <!-- all group members -->
-                        </div>
-                    </ul>
-                </details>
-            </div>
-        </div>
-    </div>
+				<!-- Show Participants -->
+				<details class="dropdown">
+					<summary
+						id="all-group-members-btn"
+						class="btn mx-2 flex h-10 w-60 items-center justify-center rounded-md border-none bg-primary text-base text-white shadow-none hover:cursor-pointer hover:bg-secondary hover:text-black">
+						Show All Members
+					</summary>
+					<ul
+						class="menu dropdown-content z-[1] mx-2 w-60 rounded-lg border-2 border-black bg-primary p-2 text-white shadow">
+						<h1 class="ml-2 p-1 text-base font-semibold">
+							All Members <span class="badge-white badge text-black"></span>
+						</h1>
+						<div class="all-group-members no-scrollbar h-40 overflow-auto">
+							<!-- all group members -->
+						</div>
+					</ul>
+				</details>
+			</div>
+		</div>
+	</div>
 </div>

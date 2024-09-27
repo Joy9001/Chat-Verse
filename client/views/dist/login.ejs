@@ -1,111 +1,110 @@
 <!doctype html>
 <html lang="en" data-theme="cupcake">
-    <head>
-        <meta charset="UTF-8" />
-        <meta http-equiv="X-UA-Compatible" content="ie=edge" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title>Login</title>
-        <link rel="shortcut icon" href="/assets/favicon.ico" type="image/x-icon" />
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.1.5/purify.min.js"></script>
-        <link rel="stylesheet" href="/styles/base.308efc4d2e7a1605da60.css" />
-        <script type="text/javascript" src="/login.ae1916f61f7db09ae542.js" defer></script>
-        <!-- font -->
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-        <link
-            href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=Rubik:ital,wght@0,300..900;1,300..900&display=swap"
-            rel="stylesheet"
-        />
-    </head>
+	<head>
+		<meta charset="UTF-8" />
+		<meta http-equiv="X-UA-Compatible" content="ie=edge" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Login</title>
+		<link rel="shortcut icon" href="/assets/favicon.ico" type="image/x-icon" />
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.1.5/purify.min.js"></script>
+		<link rel="stylesheet" href="/styles/base.308efc4d2e7a1605da60.css" />
+		<script type="text/javascript" src="/login.ae1916f61f7db09ae542.js" defer></script>
+		<!-- font -->
+		<link rel="preconnect" href="https://fonts.googleapis.com" />
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+		<link
+			href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=Rubik:ital,wght@0,300..900;1,300..900&display=swap"
+			rel="stylesheet" />
+	</head>
 
-    <body class="no-scrollbar font-dm">
-        <div class="login_body absolute flex h-full w-full items-center justify-center bg-backImage bg-cover bg-center">
-            <div class="login_main absolute flex h-4/5 w-3/4 flex-row rounded-xl shadow-2xl backdrop-blur-2xl">
-                <div class="login_form absolute left-0 flex h-full w-1/2 items-center justify-center rounded-l-xl max-xl:w-full">
-                    <div class="no-scrollbar absolute flex h-[95%] w-[95%] flex-col items-center justify-center space-y-6 overflow-scroll p-8">
-                        <h1 class="top-11 mb-7 text-5xl font-bold text-black max-md:hidden">Chat Verse</h1>
-                        <h1 class="mb-4 text-4xl font-bold text-black">Login</h1>
-                        <form>
-                            <div class="flex flex-col space-y-2">
-                                <label for="email" class="text-lg font-semibold text-black">Email</label>
-                                <input
-                                    type="email"
-                                    name="email"
-                                    title="email"
-                                    placeholder="Enter your email"
-                                    autocomplete="email"
-                                    id="login-email"
-                                    class="w-60 rounded-md border-2 border-solid border-primary bg-accent p-2 text-black outline-none"
-                                />
-                            </div>
-                            <div class="flex flex-col space-y-2">
-                                <label for="password" class="text-lg font-semibold text-black">Password</label>
-                                <input
-                                    type="password"
-                                    name="password"
-                                    title="password"
-                                    placeholder="Enter your password"
-                                    autocomplete="current-password"
-                                    id="login-password"
-                                    class="w-60 rounded-md border-2 border-solid border-primary bg-accent p-2 text-black outline-none"
-                                />
-                            </div>
-                        </form>
-                        <button
-                            type="submit"
-                            id="login-btn"
-                            class="btn w-40 rounded-md border-2 border-solid border-primary bg-primary p-2 text-white"
-                        >
-                            Login
-                        </button>
-                        <div class="divider divider-primary text-black">OR</div>
-                        <!-- Google Button -->
-                        <div
-                            id="g_id_onload"
-                            class="hidden"
-                            data-client_id="368519354830-lf7bkpjqadbvmh2h9l4fqaqd89b4ldil.apps.googleusercontent.com"
-                            data-context="signin"
-                            data-ux_mode="redirect"
-                            data-login_uri="http://localhost:3000/auth/one-tap-google/callback"
-                        ></div>
-                        <button
-                            id="google-signin-btn"
-                            type="submit"
-                            class="btn flex w-fit items-center justify-center rounded-md border-2 border-solid border-primary bg-primary text-white"
-                        >
-                            <a href="/auth/login/google"
-                                ><span class="mx-9 flex items-center justify-center"
-                                    ><img class="mr-2" src="/svgs/google-icon.svg" alt="google-icon" />Sign in with Google</span
-                                ></a
-                            >
-                        </button>
-                        <!-- Go to register -->
-                        <p class="text-black">
-                            <span>Don't have an account?</span>
-                            <a href="/auth/register" class="text-black underline">Register</a>
-                        </p>
-                    </div>
-                </div>
-                <div class="side_img absolute right-0 h-full w-1/2 rounded-r-xl max-xl:hidden">
-                    <img class="h-full w-full rounded-r-xl" src="/assets/side-image.png" alt=" login" />
-                </div>
-                <div
-                    role="alert"
-                    id="login-alert"
-                    class="alert absolute bottom-0 mx-2 my-2 hidden w-[49%] border-none bg-primary text-white max-xl:w-[99%]"
-                >
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="h-6 w-6 shrink-0 stroke-current">
-                        <path
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                            stroke-width="2"
-                            d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                        ></path>
-                    </svg>
-                    <span>This is an alert</span>
-                </div>
-            </div>
-        </div>
-    </body>
-    <script src="https://accounts.google.com/gsi/client" async></script>
+	<body class="no-scrollbar font-dm">
+		<div class="login_body absolute flex h-full w-full items-center justify-center bg-backImage bg-cover bg-center">
+			<div class="login_main absolute flex h-4/5 w-3/4 flex-row rounded-xl shadow-2xl backdrop-blur-2xl">
+				<div
+					class="login_form absolute left-0 flex h-full w-1/2 items-center justify-center rounded-l-xl max-xl:w-full">
+					<div
+						class="no-scrollbar absolute flex h-[95%] w-[95%] flex-col items-center justify-center space-y-6 overflow-scroll p-8">
+						<h1 class="top-11 mb-7 text-5xl font-bold text-black max-md:hidden">Chat Verse</h1>
+						<h1 class="mb-4 text-4xl font-bold text-black">Login</h1>
+						<form>
+							<div class="flex flex-col space-y-2">
+								<label for="email" class="text-lg font-semibold text-black">Email</label>
+								<input
+									type="email"
+									name="email"
+									title="email"
+									placeholder="Enter your email"
+									autocomplete="email"
+									id="login-email"
+									class="w-60 rounded-md border-2 border-solid border-primary bg-accent p-2 text-black outline-none" />
+							</div>
+							<div class="flex flex-col space-y-2">
+								<label for="password" class="text-lg font-semibold text-black">Password</label>
+								<input
+									type="password"
+									name="password"
+									title="password"
+									placeholder="Enter your password"
+									autocomplete="current-password"
+									id="login-password"
+									class="w-60 rounded-md border-2 border-solid border-primary bg-accent p-2 text-black outline-none" />
+							</div>
+						</form>
+						<button
+							type="submit"
+							id="login-btn"
+							class="btn w-40 rounded-md border-2 border-solid border-primary bg-primary p-2 text-white">
+							Login
+						</button>
+						<div class="divider divider-primary text-black">OR</div>
+						<!-- Google Button -->
+						<div
+							id="g_id_onload"
+							class="hidden"
+							data-client_id="368519354830-lf7bkpjqadbvmh2h9l4fqaqd89b4ldil.apps.googleusercontent.com"
+							data-context="signin"
+							data-ux_mode="redirect"
+							data-login_uri="http://localhost:3000/auth/one-tap-google/callback"></div>
+						<button
+							id="google-signin-btn"
+							type="submit"
+							class="btn flex w-fit items-center justify-center rounded-md border-2 border-solid border-primary bg-primary text-white">
+							<a href="/auth/login/google"
+								><span class="mx-9 flex items-center justify-center"
+									><img class="mr-2" src="/svgs/google-icon.svg" alt="google-icon" />Sign in with
+									Google</span
+								></a
+							>
+						</button>
+						<!-- Go to register -->
+						<p class="text-black">
+							<span>Don't have an account?</span>
+							<a href="/auth/register" class="text-black underline">Register</a>
+						</p>
+					</div>
+				</div>
+				<div class="side_img absolute right-0 h-full w-1/2 rounded-r-xl max-xl:hidden">
+					<img class="h-full w-full rounded-r-xl" src="/assets/side-image.png" alt=" login" />
+				</div>
+				<div
+					role="alert"
+					id="login-alert"
+					class="alert absolute bottom-0 mx-2 my-2 hidden w-[49%] border-none bg-primary text-white max-xl:w-[99%]">
+					<svg
+						xmlns="http://www.w3.org/2000/svg"
+						fill="none"
+						viewBox="0 0 24 24"
+						class="h-6 w-6 shrink-0 stroke-current">
+						<path
+							stroke-linecap="round"
+							stroke-linejoin="round"
+							stroke-width="2"
+							d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+					</svg>
+					<span>This is an alert</span>
+				</div>
+			</div>
+		</div>
+	</body>
+	<script src="https://accounts.google.com/gsi/client" async></script>
 </html>

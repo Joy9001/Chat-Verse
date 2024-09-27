@@ -1,70 +1,63 @@
 <div
-    id="chats-end"
-    class="absolute bottom-0 my-2 ml-4 flex hidden h-16 w-[calc(100%-2rem)] flex-row items-center justify-between rounded-md border-2 border-solid border-primary bg-primary p-2 *:mx-1"
->
-    <!-- emoji -->
-    <div id="emoji-btn" class="flex cursor-pointer items-center justify-center max-sm:hidden">
-        <div class="tooltip tooltip-top tooltip-accent" data-tip="Emoji">
-            <div
-                id="emoji-popup-btn"
-                class="emoji-popup-btn flex h-8 w-8 items-center justify-center hover:scale-110 hover:duration-200 active:scale-110"
-            >
-                <img draggable="false" src="/assets/smile.png" alt="Emoji" />
-            </div>
-        </div>
+	id="chats-end"
+	class="absolute bottom-0 my-2 ml-4 flex hidden h-16 w-[calc(100%-2rem)] flex-row items-center justify-between rounded-md border-2 border-solid border-primary bg-primary p-2 *:mx-1">
+	<!-- emoji -->
+	<div id="emoji-btn" class="flex cursor-pointer items-center justify-center max-sm:hidden">
+		<div class="tooltip tooltip-top tooltip-accent" data-tip="Emoji">
+			<div
+				id="emoji-popup-btn"
+				class="emoji-popup-btn flex h-8 w-8 items-center justify-center hover:scale-110 hover:duration-200 active:scale-110">
+				<img draggable="false" src="/assets/smile.png" alt="Emoji" />
+			</div>
+		</div>
 
-        <div
-            id="emoji-popup"
-            class="popup absolute bottom-16 left-0 z-50 mb-1 ml-1 hidden h-80 w-[24rem] rounded-lg border-1 border-primary bg-primary p-3 shadow-lg"
-        >
-            <div class="p-2 text-xl font-bold text-white">
-                <h1>Emoji</h1>
-            </div>
+		<div
+			id="emoji-popup"
+			class="popup absolute bottom-16 left-0 z-50 mb-1 ml-1 hidden h-80 w-[24rem] rounded-lg border-1 border-primary bg-primary p-3 shadow-lg">
+			<div class="p-2 text-xl font-bold text-white">
+				<h1>Emoji</h1>
+			</div>
 
-            <emoji-picker class="light"></emoji-picker>
-        </div>
-    </div>
+			<emoji-picker class="light"></emoji-picker>
+		</div>
+	</div>
 
-    <!-- message input area -->
-    <div class="flex w-[93%] items-center justify-center">
-        <textarea
-            id="msg-input"
-            class="msg-input h-10 w-full resize-none flex-wrap rounded-md bg-white p-2 outline-none"
-            cols="30"
-            rows="10"
-            placeholder="Type a message..."
-            type="text"
-        ></textarea>
-    </div>
+	<!-- message input area -->
+	<div class="flex w-[93%] items-center justify-center">
+		<textarea
+			id="msg-input"
+			class="msg-input h-10 w-full resize-none flex-wrap rounded-md bg-white p-2 outline-none"
+			cols="30"
+			rows="10"
+			placeholder="Type a message..."
+			type="text"></textarea>
+	</div>
 
-    <!-- send button -->
-    <div class="tooltip tooltip-top tooltip-accent" data-tip="Send">
-        <div
-            id="send-btn"
-            class="mr-1 mt-1 flex h-8 w-8 cursor-pointer items-start justify-center rounded-full transition delay-100 duration-200 ease-in-out hover:scale-110"
-        >
-            <svg
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                class="feather feather-send h-7 w-7 stroke-white"
-            >
-                <line x1="22" y1="2" x2="11" y2="13"></line>
-                <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
-            </svg>
-        </div>
-    </div>
+	<!-- send button -->
+	<div class="tooltip tooltip-top tooltip-accent" data-tip="Send">
+		<div
+			id="send-btn"
+			class="mr-1 mt-1 flex h-8 w-8 cursor-pointer items-start justify-center rounded-full transition delay-100 duration-200 ease-in-out hover:scale-110">
+			<svg
+				xmlns="http://www.w3.org/2000/svg"
+				viewBox="0 0 24 24"
+				fill="none"
+				stroke="currentColor"
+				stroke-width="2"
+				stroke-linecap="round"
+				stroke-linejoin="round"
+				class="feather feather-send h-7 w-7 stroke-white">
+				<line x1="22" y1="2" x2="11" y2="13"></line>
+				<polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+			</svg>
+		</div>
+	</div>
 </div>
 
 <div
-    id="chats-end-block"
-    class="absolute bottom-0 my-2 ml-4 flex hidden h-16 w-[calc(100%-2rem)] flex-row items-center justify-between rounded-md border-2 border-solid border-primary bg-primary p-2 *:mx-1"
->
-    <div class="block-status flex items-center justify-center font-semibold text-white">
-        <span>You conversation is blocked</span>
-    </div>
+	id="chats-end-block"
+	class="absolute bottom-0 my-2 ml-4 flex hidden h-16 w-[calc(100%-2rem)] flex-row items-center justify-between rounded-md border-2 border-solid border-primary bg-primary p-2 *:mx-1">
+	<div class="block-status flex items-center justify-center font-semibold text-white">
+		<span>You conversation is blocked</span>
+	</div>
 </div>

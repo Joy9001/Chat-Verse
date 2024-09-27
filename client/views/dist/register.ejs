@@ -1,186 +1,188 @@
 <!doctype html>
 <html lang="en" data-theme="cupcake">
-    <head>
-        <meta charset="UTF-8" />
-        <meta http-equiv="X-UA-Compatible" content="ie=edge" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title>Register</title>
-        <link rel="shortcut icon" href="/assets/favicon.ico" type="image/x-icon" />
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.1.5/purify.min.js"></script>
-        <link rel="stylesheet" href="/styles/base.308efc4d2e7a1605da60.css" />
-        <script type="text/javascript" src="/register.96b8310d9f84eba4d60a.js" defer></script>
-        <!-- font -->
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-        <link
-            href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=Rubik:ital,wght@0,300..900;1,300..900&display=swap"
-            rel="stylesheet"
-        />
-    </head>
+	<head>
+		<meta charset="UTF-8" />
+		<meta http-equiv="X-UA-Compatible" content="ie=edge" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Register</title>
+		<link rel="shortcut icon" href="/assets/favicon.ico" type="image/x-icon" />
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.1.5/purify.min.js"></script>
+		<link rel="stylesheet" href="/styles/base.308efc4d2e7a1605da60.css" />
+		<script type="text/javascript" src="/register.96b8310d9f84eba4d60a.js" defer></script>
+		<!-- font -->
+		<link rel="preconnect" href="https://fonts.googleapis.com" />
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+		<link
+			href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=Rubik:ital,wght@0,300..900;1,300..900&display=swap"
+			rel="stylesheet" />
+	</head>
 
-    <body class="no-scrollbar font-dm">
-        <div class="register-body absolute flex h-full w-full items-center justify-center bg-backImage bg-cover bg-center">
-            <div class="register-main absolute flex h-4/5 w-3/4 flex-row rounded-xl shadow-2xl backdrop-blur-2xl">
-                <!-- side image -->
-                <div class="side_img absolute left-0 h-full w-1/2 rounded-l-xl max-xl:hidden">
-                    <img class="h-full w-full rounded-l-xl" src="/assets/side-image.png" alt="register" />
-                </div>
-                <!-- register form -->
-                <div class="register-div absolute right-0 flex h-full w-1/2 items-center justify-center rounded-r-xl max-xl:w-full">
-                    <div class="no-scrollbar absolute flex h-[95%] w-[95%] flex-col items-center justify-center space-y-6 overflow-scroll p-6">
-                        <h1 class="flex items-center justify-center text-5xl font-bold text-black max-md:hidden">Chat Verse</h1>
-                        <h1 class="flex items-center justify-center text-4xl font-bold text-black">Register</h1>
-                        <form>
-                            <div class="flex flex-col space-y-2">
-                                <label for="email" class="text-lg font-semibold text-black">Email</label>
-                                <input
-                                    type="email"
-                                    name="email"
-                                    title="email"
-                                    placeholder="Enter your email"
-                                    autocomplete="email"
-                                    id="register-email"
-                                    class="w-60 rounded-md border-2 border-solid border-primary bg-white p-2 text-black outline-none"
-                                />
-                            </div>
-                            <div class="flex flex-col space-y-2">
-                                <label for="password" class="text-lg font-semibold text-black">Password</label>
-                                <input
-                                    type="password"
-                                    name="password"
-                                    title="password"
-                                    placeholder="Enter your password"
-                                    autocomplete="current-password"
-                                    id="register-password"
-                                    class="w-60 rounded-md border-2 border-solid border-primary bg-white p-2 text-black outline-none"
-                                />
-                            </div>
-                        </form>
-                        <!-- Open the modal using ID.showModal() method -->
-                        <button class="btn border-1 border-solid border-primary bg-primary text-white" onclick="my_modal_2.showModal()">
-                            Enter Details
-                        </button>
-                        <dialog id="my_modal_2" class="no-scrollbar modal">
-                            <div class="no-scrollbar modal-box bg-white">
-                                <div class="change-details flex flex-col items-center justify-center space-y-4">
-                                    <div class="flex flex-col items-center justify-center space-y-2">
-                                        <label for="name" class="text-lg font-semibold text-primary">Name</label>
-                                        <input
-                                            type="name"
-                                            name="name"
-                                            id="change-details-name"
-                                            class="w-60 rounded-md border-2 border-solid border-black bg-white p-2 text-base text-black outline-none"
-                                            value=""
-                                            placeholder="Enter your name"
-                                        />
-                                    </div>
-                                    <div class="flex flex-col items-center justify-center space-y-2">
-                                        <label for="username" class="text-lg font-semibold text-primary">Username</label>
-                                        <input
-                                            type="username"
-                                            name="username"
-                                            id="change-details-username"
-                                            class="w-60 rounded-md border-2 border-solid border-black bg-white p-2 text-base text-black outline-none"
-                                            value=""
-                                            placeholder="Enter your username"
-                                        />
-                                    </div>
-                                    <div class="flex flex-col items-center justify-center space-y-2">
-                                        <label for="gender" class="text-lg font-semibold text-primary">Gender</label>
-                                        <select
-                                            name="gender"
-                                            id="change-details-gender"
-                                            class="w-60 rounded-md border-2 border-solid border-black bg-white p-2 text-base text-black outline-none"
-                                        >
-                                            <option>Male</option>
-                                            <option>Female</option>
-                                        </select>
-                                    </div>
-                                    <div class="flex flex-col items-center justify-center space-y-4">
-                                        <label for="profilePic" class="text-lg font-semibold text-primary">Profile Picture</label>
-                                        <div class="avatar">
-                                            <div class="w-24 rounded-full ring ring-primary ring-offset-2 ring-offset-base-100">
-                                                <img
-                                                    id="change-details-profilePic"
-                                                    src="https://api.dicebear.com/8.x/adventurer/svg?seed=<%= Math.floor(Math.random() * 10000) %>"
-                                                />
-                                            </div>
-                                        </div>
-                                        <button
-                                            class="btn w-24 border-1 border-solid border-primary bg-primary text-white"
-                                            id="change-profilePic-btn"
-                                        >
-                                            Change
-                                        </button>
-                                    </div>
-                                </div>
-                                <div class="modal-action">
-                                    <form method="dialog">
-                                        <!-- if there is a button in form, it will close the modal -->
-                                        <button
-                                            id="chat-change-details-done-btn"
-                                            class="btn w-24 border-1 border-solid border-primary bg-primary text-white"
-                                        >
-                                            Done
-                                        </button>
-                                    </form>
-                                </div>
-                            </div>
-                        </dialog>
+	<body class="no-scrollbar font-dm">
+		<div
+			class="register-body absolute flex h-full w-full items-center justify-center bg-backImage bg-cover bg-center">
+			<div class="register-main absolute flex h-4/5 w-3/4 flex-row rounded-xl shadow-2xl backdrop-blur-2xl">
+				<!-- side image -->
+				<div class="side_img absolute left-0 h-full w-1/2 rounded-l-xl max-xl:hidden">
+					<img class="h-full w-full rounded-l-xl" src="/assets/side-image.png" alt="register" />
+				</div>
+				<!-- register form -->
+				<div
+					class="register-div absolute right-0 flex h-full w-1/2 items-center justify-center rounded-r-xl max-xl:w-full">
+					<div
+						class="no-scrollbar absolute flex h-[95%] w-[95%] flex-col items-center justify-center space-y-6 overflow-scroll p-6">
+						<h1 class="flex items-center justify-center text-5xl font-bold text-black max-md:hidden">
+							Chat Verse
+						</h1>
+						<h1 class="flex items-center justify-center text-4xl font-bold text-black">Register</h1>
+						<form>
+							<div class="flex flex-col space-y-2">
+								<label for="email" class="text-lg font-semibold text-black">Email</label>
+								<input
+									type="email"
+									name="email"
+									title="email"
+									placeholder="Enter your email"
+									autocomplete="email"
+									id="register-email"
+									class="w-60 rounded-md border-2 border-solid border-primary bg-white p-2 text-black outline-none" />
+							</div>
+							<div class="flex flex-col space-y-2">
+								<label for="password" class="text-lg font-semibold text-black">Password</label>
+								<input
+									type="password"
+									name="password"
+									title="password"
+									placeholder="Enter your password"
+									autocomplete="current-password"
+									id="register-password"
+									class="w-60 rounded-md border-2 border-solid border-primary bg-white p-2 text-black outline-none" />
+							</div>
+						</form>
+						<!-- Open the modal using ID.showModal() method -->
+						<button
+							class="btn border-1 border-solid border-primary bg-primary text-white"
+							onclick="my_modal_2.showModal()">
+							Enter Details
+						</button>
+						<dialog id="my_modal_2" class="no-scrollbar modal">
+							<div class="no-scrollbar modal-box bg-white">
+								<div class="change-details flex flex-col items-center justify-center space-y-4">
+									<div class="flex flex-col items-center justify-center space-y-2">
+										<label for="name" class="text-lg font-semibold text-primary">Name</label>
+										<input
+											type="name"
+											name="name"
+											id="change-details-name"
+											class="w-60 rounded-md border-2 border-solid border-black bg-white p-2 text-base text-black outline-none"
+											value=""
+											placeholder="Enter your name" />
+									</div>
+									<div class="flex flex-col items-center justify-center space-y-2">
+										<label for="username" class="text-lg font-semibold text-primary"
+											>Username</label
+										>
+										<input
+											type="username"
+											name="username"
+											id="change-details-username"
+											class="w-60 rounded-md border-2 border-solid border-black bg-white p-2 text-base text-black outline-none"
+											value=""
+											placeholder="Enter your username" />
+									</div>
+									<div class="flex flex-col items-center justify-center space-y-2">
+										<label for="gender" class="text-lg font-semibold text-primary">Gender</label>
+										<select
+											name="gender"
+											id="change-details-gender"
+											class="w-60 rounded-md border-2 border-solid border-black bg-white p-2 text-base text-black outline-none">
+											<option>Male</option>
+											<option>Female</option>
+										</select>
+									</div>
+									<div class="flex flex-col items-center justify-center space-y-4">
+										<label for="profilePic" class="text-lg font-semibold text-primary"
+											>Profile Picture</label
+										>
+										<div class="avatar">
+											<div
+												class="w-24 rounded-full ring ring-primary ring-offset-2 ring-offset-base-100">
+												<img
+													id="change-details-profilePic"
+													src="https://api.dicebear.com/8.x/adventurer/svg?seed=<%= Math.floor(Math.random() * 10000) %>" />
+											</div>
+										</div>
+										<button
+											class="btn w-24 border-1 border-solid border-primary bg-primary text-white"
+											id="change-profilePic-btn">
+											Change
+										</button>
+									</div>
+								</div>
+								<div class="modal-action">
+									<form method="dialog">
+										<!-- if there is a button in form, it will close the modal -->
+										<button
+											id="chat-change-details-done-btn"
+											class="btn w-24 border-1 border-solid border-primary bg-primary text-white">
+											Done
+										</button>
+									</form>
+								</div>
+							</div>
+						</dialog>
 
-                        <button
-                            id="register-btn"
-                            type="submit"
-                            class="btn w-fit rounded-md border-2 border-solid border-primary bg-primary text-white"
-                        >
-                            <span class="mx-9">Register</span>
-                        </button>
-                        <div class="divider divider-primary text-black">OR</div>
-                        <!-- Google Button -->
-                        <div
-                            id="g_id_onload"
-                            class="hidden"
-                            data-client_id="368519354830-lf7bkpjqadbvmh2h9l4fqaqd89b4ldil.apps.googleusercontent.com"
-                            data-context="signin"
-                            data-ux_mode="redirect"
-                            data-login_uri="http://localhost:3000/auth/one-tap-google/callback"
-                        ></div>
-                        <button
-                            id="google-signup-btn"
-                            type="submit"
-                            class="btn flex w-fit items-center justify-center rounded-md border-2 border-solid border-primary bg-primary text-white"
-                        >
-                            <a href="/auth/login/google">
-                                <div class="mx-9 flex items-center justify-center">
-                                    <img class="mr-2" src="/svgs/google-icon.svg" alt="google-icon" />
-                                    <span>Sign up with Google</span>
-                                </div>
-                            </a>
-                        </button>
-                        <!-- Go to login -->
-                        <p class="text-black">
-                            <span>Already have an account?</span>
-                            <a href="/auth/login" class="text-black underline">Login</a>
-                        </p>
-                    </div>
-                    <div
-                        role="alert"
-                        id="register-alert"
-                        class="aalert absolute bottom-0 mx-2 my-2 hidden w-[49%] border-none bg-primary text-white max-xl:w-[99%]"
-                    >
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="h-6 w-6 shrink-0 stroke-current">
-                            <path
-                                stroke-linecap="round"
-                                stroke-linejoin="round"
-                                stroke-width="2"
-                                d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                            ></path>
-                        </svg>
-                        <span>This is an alert</span>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </body>
-    <script src="https://accounts.google.com/gsi/client" async defer></script>
+						<button
+							id="register-btn"
+							type="submit"
+							class="btn w-fit rounded-md border-2 border-solid border-primary bg-primary text-white">
+							<span class="mx-9">Register</span>
+						</button>
+						<div class="divider divider-primary text-black">OR</div>
+						<!-- Google Button -->
+						<div
+							id="g_id_onload"
+							class="hidden"
+							data-client_id="368519354830-lf7bkpjqadbvmh2h9l4fqaqd89b4ldil.apps.googleusercontent.com"
+							data-context="signin"
+							data-ux_mode="redirect"
+							data-login_uri="http://localhost:3000/auth/one-tap-google/callback"></div>
+						<button
+							id="google-signup-btn"
+							type="submit"
+							class="btn flex w-fit items-center justify-center rounded-md border-2 border-solid border-primary bg-primary text-white">
+							<a href="/auth/login/google">
+								<div class="mx-9 flex items-center justify-center">
+									<img class="mr-2" src="/svgs/google-icon.svg" alt="google-icon" />
+									<span>Sign up with Google</span>
+								</div>
+							</a>
+						</button>
+						<!-- Go to login -->
+						<p class="text-black">
+							<span>Already have an account?</span>
+							<a href="/auth/login" class="text-black underline">Login</a>
+						</p>
+					</div>
+					<div
+						role="alert"
+						id="register-alert"
+						class="aalert absolute bottom-0 mx-2 my-2 hidden w-[49%] border-none bg-primary text-white max-xl:w-[99%]">
+						<svg
+							xmlns="http://www.w3.org/2000/svg"
+							fill="none"
+							viewBox="0 0 24 24"
+							class="h-6 w-6 shrink-0 stroke-current">
+							<path
+								stroke-linecap="round"
+								stroke-linejoin="round"
+								stroke-width="2"
+								d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+						</svg>
+						<span>This is an alert</span>
+					</div>
+				</div>
+			</div>
+		</div>
+	</body>
+	<script src="https://accounts.google.com/gsi/client" async defer></script>
 </html>

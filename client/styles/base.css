@@ -3,30 +3,30 @@
 @tailwind utilities;
 
 @layer base {
-    @font-face {
-        font-family: 'Operator Mono';
-        src: url('../public/assets/OPERATORMONO-BOOKITALIC.OTF');
-    }
+	@font-face {
+		font-family: 'Operator Mono';
+		src: url('../public/assets/OPERATORMONO-BOOKITALIC.OTF');
+	}
 
-    emoji-picker {
-        @apply absolute h-64 w-[22.2rem];
-        --background: #6f87af;
-        --border-color: #6f87af;
-        --button-hover-background: #ffffff;
-        --button-active-background: #ffffff;
-    }
+	emoji-picker {
+		@apply absolute h-64 w-[22.2rem];
+		--background: #6f87af;
+		--border-color: #6f87af;
+		--button-hover-background: #ffffff;
+		--button-active-background: #ffffff;
+	}
 
-    textarea::-webkit-scrollbar {
-        width: 0rem;
-    }
+	textarea::-webkit-scrollbar {
+		width: 0rem;
+	}
 }
 
 @layer utilities {
-    .no-scrollbar::-webkit-scrollbar {
-        display: none; /* Safari and Chrome */
-    }
-    .no-scrollbar {
-        -ms-overflow-style: none; /* IE and Edge */
-        scrollbar-width: none; /* Firefox */
-    }
+	.no-scrollbar::-webkit-scrollbar {
+		display: none; /* Safari and Chrome */
+	}
+	.no-scrollbar {
+		-ms-overflow-style: none; /* IE and Edge */
+		scrollbar-width: none; /* Firefox */
+	}
 }

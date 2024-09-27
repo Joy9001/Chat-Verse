@@ -2,13 +2,13 @@ import { Router } from 'express'
 const router = Router()
 import { messageController } from '../controllers/chat.controller.js'
 import {
-    sendMessageController,
-    deleteMessageController,
-    // unreadMessageController,
-    deleteConversationController,
-    blockUserController,
-    unblockUserController,
-    // getPeopleToAddController,
+	sendMessageController,
+	deleteMessageController,
+	// unreadMessageController,
+	deleteConversationController,
+	blockUserController,
+	unblockUserController,
+	// getPeopleToAddController,
 } from '../controllers/chat.controller.js'
 import '../strategies/passport-jwt.strategy.js'
 import { limiter } from '../helpers/rateLimit.helper.js'

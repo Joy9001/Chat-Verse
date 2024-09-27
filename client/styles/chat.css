@@ -1,78 +1,78 @@
 @import 'base.css';
 @layer components {
-    .chat-child,
-    .group-child {
-        @apply my-2 flex h-20 cursor-pointer items-center rounded-2xl p-2 pl-5;
-    }
+	.chat-child,
+	.group-child {
+		@apply my-2 flex h-20 cursor-pointer items-center rounded-2xl p-2 pl-5;
+	}
 
-    .chat-child.active,
-    .group-child.active {
-        @apply bg-primary shadow-md;
-    }
+	.chat-child.active,
+	.group-child.active {
+		@apply bg-primary shadow-md;
+	}
 
-    .chat-child:hover:not(.active),
-    .group-child:hover:not(.active) {
-        @apply bg-primary shadow-md;
-    }
+	.chat-child:hover:not(.active),
+	.group-child:hover:not(.active) {
+		@apply bg-primary shadow-md;
+	}
 
-    .chat-name-parent,
-    .group-name-parent {
-        @apply ml-4 w-[70%] text-black group-hover:text-white group-[.active]:text-white;
-    }
+	.chat-name-parent,
+	.group-name-parent {
+		@apply ml-4 w-[70%] text-black group-hover:text-white group-[.active]:text-white;
+	}
 
-    .group-img {
-        @apply ml-2 h-14 max-lg:hidden;
-    }
+	.group-img {
+		@apply ml-2 h-14 max-lg:hidden;
+	}
 
-    .group-img img {
-        @apply h-full w-full rounded-full;
-    }
+	.group-img img {
+		@apply h-full w-full rounded-full;
+	}
 
-    .chat-name,
-    .group-name {
-        @apply text-lg font-semibold;
-    }
+	.chat-name,
+	.group-name {
+		@apply text-lg font-semibold;
+	}
 
-    .chat-username,
-    .group-description {
-        @apply text-sm font-medium;
-    }
+	.chat-username,
+	.group-description {
+		@apply text-sm font-medium;
+	}
 
-    .chat-name,
-    .group-name,
-    .chat-username,
-    .group-description {
-        @apply overflow-hidden text-ellipsis whitespace-nowrap;
-    }
+	.chat-name,
+	.group-name,
+	.chat-username,
+	.group-description {
+		@apply overflow-hidden text-ellipsis whitespace-nowrap;
+	}
 
-    .tab-content-people,
-    .group-member {
-        @apply m-1 flex h-12 cursor-pointer items-center justify-start rounded-lg px-1 py-2 text-black hover:bg-secondary hover:text-white;
-    }
+	.tab-content-people,
+	.group-member {
+		@apply m-1 flex h-12 cursor-pointer items-center justify-start rounded-lg px-1 py-2 text-black hover:bg-secondary hover:text-white;
+	}
 
-    .tab-content-people img {
-        @apply ml-1 h-11 rounded-full;
-    }
+	.tab-content-people img {
+		@apply ml-1 h-11 rounded-full;
+	}
 
-    .to-user-msg {
-        @apply relative my-3 ml-10 flex w-auto max-w-[60%] flex-row items-center justify-start self-start;
-    }
+	.to-user-msg {
+		@apply relative my-3 ml-10 flex w-auto max-w-[60%] flex-row items-center justify-start self-start;
+	}
 
-    #to-user-msg-container {
-        @apply rounded-md bg-accent p-3 shadow-md;
-    }
+	#to-user-msg-container {
+		@apply rounded-md bg-accent p-3 shadow-md;
+	}
 
-    #to-user-msg-container::after {
-        content: '';
-        position: absolute;
-        bottom: 0px;
-        left: -10px;
-        width: 15px;
-        height: 15px;
-        background: linear-gradient(-45deg, #dde3da 0%, #dde3da 50%, transparent 50%);
-    }
+	#to-user-msg-container::after {
+		content: '';
+		position: absolute;
+		bottom: 0px;
+		left: -10px;
+		width: 15px;
+		height: 15px;
+		background: linear-gradient(-45deg, #dde3da 0%, #dde3da 50%, transparent 50%);
+	}
 
-    /* .to-user-msg p {
+	/* .to-user-msg p {
         @apply whitespace-pre-wrap text-wrap text-left text-base font-semibold text-[#e9e9e9];
     }
     .to-user-msg span {
@@ -80,29 +80,29 @@
         font-size: 0.8rem;
     } */
 
-    .to-user-msg:hover .delete-msg-btn {
-        @apply block;
-    }
+	.to-user-msg:hover .delete-msg-btn {
+		@apply block;
+	}
 
-    .from-user-msg {
-        @apply relative my-3 mr-10 flex w-auto max-w-[60%] flex-row items-center justify-end self-end;
-    }
+	.from-user-msg {
+		@apply relative my-3 mr-10 flex w-auto max-w-[60%] flex-row items-center justify-end self-end;
+	}
 
-    #from-user-msg-container {
-        @apply rounded-md bg-neutral p-3 shadow-md;
-    }
+	#from-user-msg-container {
+		@apply rounded-md bg-neutral p-3 shadow-md;
+	}
 
-    #from-user-msg-container::after {
-        content: '';
-        position: absolute;
-        bottom: 0px;
-        right: -10px;
-        width: 15px;
-        height: 15px;
-        background: linear-gradient(45deg, #c297ce 0%, #c297ce 50%, transparent 50%);
-    }
+	#from-user-msg-container::after {
+		content: '';
+		position: absolute;
+		bottom: 0px;
+		right: -10px;
+		width: 15px;
+		height: 15px;
+		background: linear-gradient(45deg, #c297ce 0%, #c297ce 50%, transparent 50%);
+	}
 
-    /* .from-user-msg p {
+	/* .from-user-msg p {
         @apply whitespace-pre-wrap text-wrap text-right text-base font-semibold text-[#4B2138];
     }
 
@@ -111,26 +111,26 @@
         font-size: 0.8rem;
     } */
 
-    .from-user-msg:hover .delete-msg-btn {
-        @apply block;
-    }
+	.from-user-msg:hover .delete-msg-btn {
+		@apply block;
+	}
 
-    .msg-container {
-        @apply relative flex h-full w-full flex-col;
-    }
-    .msg-container p {
-        @apply h-full w-full text-pretty break-words text-left;
-    }
+	.msg-container {
+		@apply relative flex h-full w-full flex-col;
+	}
+	.msg-container p {
+		@apply h-full w-full text-pretty break-words text-left;
+	}
 
-    .msg-container span {
-        @apply text-right;
-    }
+	.msg-container span {
+		@apply text-right;
+	}
 
-    .day {
-        @apply relative flex w-full flex-col justify-center text-black;
-    }
+	.day {
+		@apply relative flex w-full flex-col justify-center text-black;
+	}
 
-    .date {
-        @apply mb-10 flex items-center justify-center text-center text-sm font-semibold text-[#1BOC1A];
-    }
+	.date {
+		@apply mb-10 flex items-center justify-center text-center text-sm font-semibold text-[#1BOC1A];
+	}
 }

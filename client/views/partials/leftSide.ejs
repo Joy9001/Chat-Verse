@@ -1,178 +1,191 @@
 <div class="all-chats absolute flex h-full w-[35%] flex-col rounded-l-xl border-r-[1px] border-secondary">
-    <!-- heading -->
-    <div
-        class="heading w-[100% - 2rem] m-4 flex h-16 items-center justify-between rounded-lg border-2 border-solid border-primary bg-primary p-2 shadow-md"
-    >
-        <!-- title -->
-        <div class="ml-4 text-xl font-bold text-white max-lg:text-lg max-md:text-base max-sm:text-sm">
-            <h1>ChatVerse</h1>
-        </div>
+	<!-- heading -->
+	<div
+		class="heading w-[100% - 2rem] m-4 flex h-16 items-center justify-between rounded-lg border-2 border-solid border-primary bg-primary p-2 shadow-md">
+		<!-- title -->
+		<div class="ml-4 text-xl font-bold text-white max-lg:text-lg max-md:text-base max-sm:text-sm">
+			<h1>ChatVerse</h1>
+		</div>
 
-        <!-- add user -->
-        <%- include('./addUsers.ejs') %>
-    </div>
+		<!-- add user -->
+		<%- include('./addUsers.ejs') %>
+	</div>
 
-    <!-- all messages title -->
-    <div class="mx-5 flex items-center justify-between text-2xl text-black">
-        <h1 class="font-bold max-lg:text-lg max-md:text-base max-sm:hidden">All Chats</h1>
+	<!-- all messages title -->
+	<div class="mx-5 flex items-center justify-between text-2xl text-black">
+		<h1 class="font-bold max-lg:text-lg max-md:text-base max-sm:hidden">All Chats</h1>
 
-        <!-- change details -->
-        <!-- user img -->
-        <div class="tooltip tooltip-left tooltip-accent flex items-center justify-center" data-tip="<%= currentUser.name %>">
-            <div class="avatar online">
-                <div class="w-16 scale-100 rounded-full transition delay-100 duration-200 ease-in-out hover:scale-110">
-                    <img
-                        draggable="false"
-                        id="from-user-modal-img"
-                        class="scale-100 cursor-pointer"
-                        src="<%= currentUser.avatar %>"
-                        alt="<%= currentUser.name %>"
-                    />
-                </div>
-            </div>
-            <!-- chnage user details modal -->
-            <dialog id="my_modal_2" class="no-scrollbar modal">
-                <div class="no-scrollbar modal-box bg-white">
-                    <div class="change-details flex flex-col items-center justify-center space-y-4">
-                        <div class="hidden">
-                            <input type="hidden" name="CSRFToken" value="<%= csrfToken %>" />
-                        </div>
-                        <div class="flex flex-col space-y-2">
-                            <label for="change-details-name" class="text-lg font-semibold text-primary">Name</label>
-                            <input
-                                type="name"
-                                name="name"
-                                title="name"
-                                placeholder="Enter your name"
-                                id="change-details-name"
-                                autocomplete="name"
-                                class="w-60 rounded-md border-2 border-solid border-black bg-white p-2 text-base text-black outline-none focus:border-primary"
-                                value="<%= currentUser.name %>"
-                            />
-                        </div>
-                        <div class="flex flex-col space-y-2">
-                            <label for="change-details-username" class="text-lg font-semibold text-primary">Username</label>
-                            <input
-                                type="username"
-                                name="username"
-                                title="username"
-                                placeholder="Enter your username"
-                                id="change-details-username"
-                                autocomplete="username"
-                                class="w-60 rounded-md border-2 border-solid border-black bg-white p-2 text-base text-black outline-none focus:border-primary"
-                                value="<%= currentUser.username %>"
-                            />
-                        </div>
-                        <div class="flex flex-col space-y-2">
-                            <label for="change-details-gender" class="text-lg font-semibold text-primary">Gender</label>
-                            <select
-                                name="gender"
-                                id="change-details-gender"
-                                class="w-60 rounded-md border-2 border-solid border-black bg-white p-2 text-base text-black outline-none focus:border-primary"
-                            >
-                                <% if (currentUser.gender==="male" ) { %>
-                                <option selected>Male</option>
-                                <% } else { %>
-                                <option>Male</option>
-                                <% } %> <% if (currentUser.gender==="female" ) { %>
-                                <option selected>Female</option>
-                                <% } else { %>
-                                <option>Female</option>
-                                <% } %>
-                            </select>
-                        </div>
-                        <div class="flex flex-col items-center justify-center space-y-3">
-                            <div for="change-details-profilePic" class="text-lg font-semibold text-primary">Profile Picture</div>
-                            <div class="avatar">
-                                <div class="w-24 rounded-full ring ring-primary ring-offset-2 ring-offset-base-100">
-                                    <img draggable="false" id="change-details-profilePic" src="<%= currentUser.avatar %>" />
-                                </div>
-                            </div>
-                            <button class="btn w-24 border-1 border-solid border-primary bg-primary text-white" id="change-profilePic-btn">
-                                Change
-                            </button>
-                        </div>
-                    </div>
-                    <div class="modal-action flex justify-between">
-                        <a href="/auth/logout"
-                            ><button id="logout-btn" class="btn border-1 border-solid border-primary bg-primary text-white">Logout</button></a
-                        >
-                        <form method="dialog">
-                            <button id="chat-change-details-done-btn" class="btn border-1 border-solid border-primary bg-primary text-white">
-                                Done
-                            </button>
-                        </form>
-                    </div>
-                </div>
-                <form method="dialog" class="modal-backdrop">
-                    <button>close</button>
-                </form>
-            </dialog>
-        </div>
-    </div>
+		<!-- change details -->
+		<!-- user img -->
+		<div
+			class="tooltip tooltip-left tooltip-accent flex items-center justify-center"
+			data-tip="<%= currentUser.name %>">
+			<div class="avatar online">
+				<div class="w-16 scale-100 rounded-full transition delay-100 duration-200 ease-in-out hover:scale-110">
+					<img
+						draggable="false"
+						id="from-user-modal-img"
+						class="scale-100 cursor-pointer"
+						src="<%= currentUser.avatar %>"
+						alt="<%= currentUser.name %>" />
+				</div>
+			</div>
+			<!-- chnage user details modal -->
+			<dialog id="my_modal_2" class="no-scrollbar modal">
+				<div class="no-scrollbar modal-box bg-white">
+					<div class="change-details flex flex-col items-center justify-center space-y-4">
+						<div class="hidden">
+							<input type="hidden" name="CSRFToken" value="<%= csrfToken %>" />
+						</div>
+						<div class="flex flex-col space-y-2">
+							<label for="change-details-name" class="text-lg font-semibold text-primary">Name</label>
+							<input
+								type="name"
+								name="name"
+								title="name"
+								placeholder="Enter your name"
+								id="change-details-name"
+								autocomplete="name"
+								class="w-60 rounded-md border-2 border-solid border-black bg-white p-2 text-base text-black outline-none focus:border-primary"
+								value="<%= currentUser.name %>" />
+						</div>
+						<div class="flex flex-col space-y-2">
+							<label for="change-details-username" class="text-lg font-semibold text-primary"
+								>Username</label
+							>
+							<input
+								type="username"
+								name="username"
+								title="username"
+								placeholder="Enter your username"
+								id="change-details-username"
+								autocomplete="username"
+								class="w-60 rounded-md border-2 border-solid border-black bg-white p-2 text-base text-black outline-none focus:border-primary"
+								value="<%= currentUser.username %>" />
+						</div>
+						<div class="flex flex-col space-y-2">
+							<label for="change-details-gender" class="text-lg font-semibold text-primary">Gender</label>
+							<select
+								name="gender"
+								id="change-details-gender"
+								class="w-60 rounded-md border-2 border-solid border-black bg-white p-2 text-base text-black outline-none focus:border-primary">
+								<% if (currentUser.gender==="male" ) { %>
+								<option selected>Male</option>
+								<% } else { %>
+								<option>Male</option>
+								<% } %> <% if (currentUser.gender==="female" ) { %>
+								<option selected>Female</option>
+								<% } else { %>
+								<option>Female</option>
+								<% } %>
+							</select>
+						</div>
+						<div class="flex flex-col items-center justify-center space-y-3">
+							<div for="change-details-profilePic" class="text-lg font-semibold text-primary">
+								Profile Picture
+							</div>
+							<div class="avatar">
+								<div class="w-24 rounded-full ring ring-primary ring-offset-2 ring-offset-base-100">
+									<img
+										draggable="false"
+										id="change-details-profilePic"
+										src="<%= currentUser.avatar %>" />
+								</div>
+							</div>
+							<button
+								class="btn w-24 border-1 border-solid border-primary bg-primary text-white"
+								id="change-profilePic-btn">
+								Change
+							</button>
+						</div>
+					</div>
+					<div class="modal-action flex justify-between">
+						<a href="/auth/logout"
+							><button
+								id="logout-btn"
+								class="btn border-1 border-solid border-primary bg-primary text-white">
+								Logout
+							</button></a
+						>
+						<form method="dialog">
+							<button
+								id="chat-change-details-done-btn"
+								class="btn border-1 border-solid border-primary bg-primary text-white">
+								Done
+							</button>
+						</form>
+					</div>
+				</div>
+				<form method="dialog" class="modal-backdrop">
+					<button>close</button>
+				</form>
+			</dialog>
+		</div>
+	</div>
 
-    <!-- peoples -->
-    <div id="chat-parent" class="chat-parent no-scrollbar mx-2 my-2 overflow-y-scroll">
-        <!-- Private Chats -->
-        <details class="private-chats dropdown h-fit w-full" open>
-            <summary class="private-chat-header pl-4 text-xl font-bold">Private Chats</summary>
-            <% if (currentChatPeople) { %> <% currentChatPeople.forEach((person)=> { %>
-            <div class="chat-child group" data-id="<%= person.encryptedId %>">
-                <div class="avatar">
-                    <div class="chat-img w-14 scale-110 rounded-full">
-                        <% if (person.avatar) { %>
-                        <img draggable="false" class="scale-110" src="<%= person.avatar %>" alt="<%= person.name %>" />
-                        <% } else { %>
-                        <img
-                            draggable="false"
-                            src="https://avatar.iran.liara.run/username?username=<%= person.name.replace(' ', '+') %>"
-                            alt="User"
-                        />
-                        <% } %>
-                    </div>
-                </div>
-                <div class="chat-name-parent">
-                    <h4 class="chat-name"><%= person.name %></h4>
-                    <h4 class="chat-username"><%= person.username %></h4>
-                </div>
-                <!-- unread badge -->
-                <div class="unread-badge <%= person.totalUnreadMsgCount === 0 ? 'hidden' : '' %> right-8">
-                    <div class="badge bg-secondary text-white"><%= person.totalUnreadMsgCount %></div>
-                </div>
-            </div>
-            <% }) %> <% } %>
-        </details>
+	<!-- peoples -->
+	<div id="chat-parent" class="chat-parent no-scrollbar mx-2 my-2 overflow-y-scroll">
+		<!-- Private Chats -->
+		<details class="private-chats dropdown h-fit w-full" open>
+			<summary class="private-chat-header pl-4 text-xl font-bold">Private Chats</summary>
+			<% if (currentChatPeople) { %> <% currentChatPeople.forEach((person)=> { %>
+			<div class="chat-child group" data-id="<%= person.encryptedId %>">
+				<div class="avatar">
+					<div class="chat-img w-14 scale-110 rounded-full">
+						<% if (person.avatar) { %>
+						<img draggable="false" class="scale-110" src="<%= person.avatar %>" alt="<%= person.name %>" />
+						<% } else { %>
+						<img
+							draggable="false"
+							src="https://avatar.iran.liara.run/username?username=<%= person.name.replace(' ', '+') %>"
+							alt="User" />
+						<% } %>
+					</div>
+				</div>
+				<div class="chat-name-parent">
+					<h4 class="chat-name"><%= person.name %></h4>
+					<h4 class="chat-username"><%= person.username %></h4>
+				</div>
+				<!-- unread badge -->
+				<div class="unread-badge <%= person.totalUnreadMsgCount === 0 ? 'hidden' : '' %> right-8">
+					<div class="badge bg-secondary text-white"><%= person.totalUnreadMsgCount %></div>
+				</div>
+			</div>
+			<% }) %> <% } %>
+		</details>
 
-        <!-- Group Chats -->
-        <details class="group-chats dropdown h-fit w-full" open>
-            <summary class="group-chat-header pl-4 text-xl font-bold">Group Chats</summary>
-            <% if (currentGroups) {%> <% currentGroups.forEach((group)=> { %>
-            <div class="group-child group" data-id="<%= group.groupId %>">
-                <div class="group-img">
-                    <img draggable="false" src="<%= group.groupAvatar %>" alt="<%= group.groupName %>" />
-                </div>
-                <div class="group-name-parent">
-                    <h4 class="group-name"><%= group.groupName %></h4>
-                    <h4 class="group-description"><%= group.groupDescription %></h4>
-                </div>
-                <div class="unread-badge <%= group.totalUnreadMsgCount === 0 ? 'hidden' : '' %> right-8">
-                    <div class="badge bg-secondary text-white"><%= group.totalUnreadMsgCount %></div>
-                </div>
-            </div>
-            <% }) %> <% } %>
-        </details>
-    </div>
+		<!-- Group Chats -->
+		<details class="group-chats dropdown h-fit w-full" open>
+			<summary class="group-chat-header pl-4 text-xl font-bold">Group Chats</summary>
+			<% if (currentGroups) {%> <% currentGroups.forEach((group)=> { %>
+			<div class="group-child group" data-id="<%= group.groupId %>">
+				<div class="group-img">
+					<img draggable="false" src="<%= group.groupAvatar %>" alt="<%= group.groupName %>" />
+				</div>
+				<div class="group-name-parent">
+					<h4 class="group-name"><%= group.groupName %></h4>
+					<h4 class="group-description"><%= group.groupDescription %></h4>
+				</div>
+				<div class="unread-badge <%= group.totalUnreadMsgCount === 0 ? 'hidden' : '' %> right-8">
+					<div class="badge bg-secondary text-white"><%= group.totalUnreadMsgCount %></div>
+				</div>
+			</div>
+			<% }) %> <% } %>
+		</details>
+	</div>
 
-    <!-- alert -->
-    <div role="alert" id="notification-alert" class="alert absolute bottom-0 mb-2 ml-3 hidden w-[95%] border-none bg-white text-primary">
-        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="h-6 w-6 shrink-0 stroke-primary">
-            <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-            ></path>
-        </svg>
-        <span></span>
-    </div>
+	<!-- alert -->
+	<div
+		role="alert"
+		id="notification-alert"
+		class="alert absolute bottom-0 mb-2 ml-3 hidden w-[95%] border-none bg-white text-primary">
+		<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="h-6 w-6 shrink-0 stroke-primary">
+			<path
+				stroke-linecap="round"
+				stroke-linejoin="round"
+				stroke-width="2"
+				d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+		</svg>
+		<span></span>
+	</div>
 </div>
