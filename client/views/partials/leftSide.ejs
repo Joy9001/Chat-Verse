@@ -159,8 +159,10 @@
 			<summary class="group-chat-header pl-4 text-xl font-bold">Group Chats</summary>
 			<% if (currentGroups) {%> <% currentGroups.forEach((group)=> { %>
 			<div class="group-child group" data-id="<%= group.groupId %>">
-				<div class="group-img">
-					<img draggable="false" src="<%= group.groupAvatar %>" alt="<%= group.groupName %>" />
+				<div class="avatar">
+					<div class="group-img">
+						<img draggable="false" src="<%= group.groupAvatar %>" alt="<%= group.groupName %>" />
+					</div>
 				</div>
 				<div class="group-name-parent">
 					<h4 class="group-name"><%= group.groupName %></h4>

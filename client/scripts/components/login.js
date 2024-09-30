@@ -32,9 +32,10 @@ document.querySelector('#login-btn').addEventListener('click', async () => {
 		document.querySelector('#login-alert span').textContent = data.message
 		document.querySelector('#login-alert').classList.remove('hidden')
 
+		window.location.href = '/chat'
+
 		setTimeout(() => {
 			document.querySelector('#login-alert').classList.add('hidden')
-			window.location.href = '/chat'
 		}, 3000)
 	} catch (error) {
 		document.querySelector('#login-alert span').textContent = error.message

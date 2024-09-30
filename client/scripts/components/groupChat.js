@@ -33,6 +33,9 @@ export const createLeftsideGroup = (data, clicked = true) => {
 	parentDiv.classList.add('group-child', 'group')
 	parentDiv.dataset.id = data.groupId
 
+	let avatarDiv = document.createElement('div')
+	avatarDiv.classList.add('avatar')
+
 	let imgDiv = document.createElement('div')
 	imgDiv.classList.add('group-img')
 
@@ -44,7 +47,8 @@ export const createLeftsideGroup = (data, clicked = true) => {
 	img.alt = data.groupName
 
 	imgDiv.appendChild(img)
-	parentDiv.appendChild(imgDiv)
+	avatarDiv.appendChild(imgDiv)
+	parentDiv.appendChild(avatarDiv)
 
 	let nameDiv = document.createElement('div')
 	nameDiv.classList.add('group-name-parent')

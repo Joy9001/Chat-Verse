@@ -1,9 +1,9 @@
+import EjsWebpackPlugin from '@joy9001/ejs-webpack5-plugin'
 import dotenv from 'dotenv'
 import MiniCssExtractPlugin from 'mini-css-extract-plugin'
 import path from 'path'
 import TerserPlugin from 'terser-webpack-plugin'
 import webpack from 'webpack'
-import EjsWebpackPlugin from 'ejs-webpack-plugin'
 
 dotenv.config()
 
@@ -85,7 +85,8 @@ export default {
 	plugins: [
 		new webpack.EnvironmentPlugin(['DOMAIN', 'PORT']),
 		new EjsWebpackPlugin({
-			context: import.meta.dirname,
+			context:
+				process.env.NODE_ENV === 'development' ? import.meta.dirname : new URL('.', import.meta.url).pathname,
 			entry: {
 				'./client/views/chat.ejs': {
 					js: ['chat'],

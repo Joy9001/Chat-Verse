@@ -144,3 +144,4 @@ node_modules/
 .prettierrc
 docs/
 .secrets/
+.npmrc
