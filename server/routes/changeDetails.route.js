@@ -1,9 +1,10 @@
-import { Router } from 'express'
-import User from '../models/users.model.js'
 import { csrfSync } from 'csrf-sync'
-const router = Router()
+import { Router } from 'express'
+import redisClient from '../helpers/redisClient.helper.js'
 import { getReceiverSocketId } from '../helpers/socket.helper.js'
+import User from '../models/users.model.js'
 import { io } from '../server.js'
+const router = Router()
 
 // csrf
 const { csrfSynchronisedProtection } = csrfSync()
@@ -68,7 +69,9 @@ router.post('/change-details', csrfSynchronisedProtection, async (req, res) => {
 		findUser.gender = gender
 		findUser.avatar = avatar
 
-		await findUser.save()
+		findUser = await findUser.save()
+
+		await redisClient.set(`user:${currentUserId}`, JSON.stringify(findUser))
 
 		const newUserDetails = {
 			name: findUser.name,

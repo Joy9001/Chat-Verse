@@ -1,15 +1,16 @@
+import { csrfSync } from 'csrf-sync'
 import addPeople from '../helpers/addPeople.helper.js'
 import { getPeopleToChat } from '../helpers/addPeopleToChat.helper.js'
-import { getCurrentChatPeople, getCurrentGroups } from '../helpers/getCurrentChats.helper.js'
-import Message from '../models/message.model.js'
-import { Conversation } from '../models/conversation.model.js'
-import AddedPeopleToChat from '../models/addedPeopleToChat.model.js'
-import User from '../models/users.model.js'
-import { io } from '../server.js'
-import { getReceiverSocketId } from '../helpers/socket.helper.js'
-import { csrfSync } from 'csrf-sync'
 import { updateUnreadCount } from '../helpers/conversation.helper.js'
 import { decryptWithCryptoJS } from '../helpers/crypto.helper.js'
+import { getCurrentChatPeople, getCurrentGroups } from '../helpers/getCurrentChats.helper.js'
+import redisClient from '../helpers/redisClient.helper.js'
+import { getReceiverSocketId } from '../helpers/socket.helper.js'
+import AddedPeopleToChat from '../models/addedPeopleToChat.model.js'
+import { Conversation } from '../models/conversation.model.js'
+import Message from '../models/message.model.js'
+import User from '../models/users.model.js'
+import { io } from '../server.js'
 
 // csrf sync
 const { generateToken } = csrfSync()
@@ -18,14 +19,24 @@ const messageController = async (req, res) => {
 	try {
 		const currentUserId = req.user._id
 
-		// Get current user
-		const currentUser = await User.findById(currentUserId, {
-			name: 1,
-			username: 1,
-			avatar: 1,
-			gender: 1,
-		}).lean()
-		if (!currentUser) return res.status(404).json({ message: 'User not found' })
+		let currentUser = await redisClient.get(`user:${currentUserId}`)
+		if (!currentUser) {
+			console.log('User not found in Redis')
+			// Get current user
+			currentUser = await User.findById(currentUserId, {
+				password: 0,
+				__v: 0,
+				createdAt: 0,
+				updatedAt: 0,
+			}).lean()
+			if (!currentUser) return res.status(404).json({ message: 'User not found' })
+
+			// Set the current user in Redis
+			await redisClient.set(`user:${currentUserId}`, JSON.stringify(currentUser))
+		} else {
+			console.log('User found in Redis')
+			currentUser = JSON.parse(currentUser)
+		}
 
 		// Get people to add
 		const peopleToAdd = await addPeople(currentUserId)
@@ -171,7 +182,16 @@ const sendMessageController = async (req, res) => {
 		})
 
 		await msg.save()
-		let senderUsername = await User.findOne({ _id: senderId }, { _id: 0, username: 1 }).lean()
+
+		// Get the sender's username
+		let sender = await redisClient.get(`user:${senderId}`)
+		if (!sender) {
+			sender = await User.findOne({ _id: senderId }, { password: 0, __v: 0, createdAt: 0, updatedAt: 0 }).lean()
+			await redisClient.set(`user:${senderId}`, JSON.stringify(sender))
+		} else {
+			sender = JSON.parse(sender)
+		}
+		let senderUsername = sender.username
 
 		// Socket functionality
 		const receiverSocketId = getReceiverSocketId(receiverId)
@@ -222,7 +242,15 @@ const deleteMessageController = async (req, res) => {
 	let { receiverId, msgId } = req.body
 	receiverId = decryptWithCryptoJS(receiverId)
 
-	let senderUsername = await User.findOne({ _id: senderId }, { _id: 0, username: 1 })
+	let sender = await redisClient.get(`user:${senderId}`)
+	if (!sender) {
+		sender = await User.findOne({ _id: senderId }, { password: 0, __v: 0, createdAt: 0, updatedAt: 0 }).lean()
+		await redisClient.set(`user:${senderId}`, JSON.stringify(sender))
+	} else {
+		sender = JSON.parse(sender)
+	}
+	let senderUsername = sender.username
+
 	try {
 		// console.log('msgId: ', msgId)
 		const findMsg = await Message.findOne({
@@ -341,7 +369,16 @@ const deleteConversationController = async (req, res) => {
 
 		// Socket functionality
 		const receiverSocketId = getReceiverSocketId(receiverId)
-		let senderUsername = await User.findOne({ _id: senderId }, { _id: 0, username: 1 })
+
+		let sender = await redisClient.get(`user:${senderId}`)
+		if (!sender) {
+			sender = await User.findOne({ _id: senderId }, { password: 0, __v: 0, createdAt: 0, updatedAt: 0 }).lean()
+			await redisClient.set(`user:${senderId}`, JSON.stringify(sender))
+		} else {
+			sender = JSON.parse(sender)
+		}
+		let senderUsername = sender.username
+
 		if (receiverSocketId) {
 			io.to(receiverSocketId).emit('deleteConversation', senderUsername.username)
 			console.log('Deleted Conversation sent to receiver', receiverSocketId)
@@ -443,12 +480,11 @@ const unblockUserController = async (req, res) => {
 // }
 
 export {
-	messageController,
-	sendMessageController,
-	deleteMessageController,
+	blockUserController,
 	// unreadMessageController,
 	deleteConversationController,
-	blockUserController,
+	deleteMessageController,
+	messageController,
+	sendMessageController,
 	unblockUserController,
-	// getPeopleToAddController,
 }

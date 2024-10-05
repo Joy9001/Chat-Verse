@@ -1,13 +1,13 @@
 import { Router } from 'express'
-import { Conversation } from '../models/conversation.model.js'
-import User from '../models/users.model.js'
-import { decryptWithCryptoJS } from '../helpers/crypto.helper.js'
-import AddedPeopleToChat from '../models/addedPeopleToChat.model.js'
-import GroupMessage from '../models/groupMessage.model.js'
-import { USER_MAP, GROUP_CONV_MAP } from '../server.js'
-import { io, userSockets } from '../server.js'
 import { updateUnreadCount } from '../helpers/conversation.helper.js'
+import { decryptWithCryptoJS } from '../helpers/crypto.helper.js'
 import { getGroupConversationMap } from '../helpers/maps.helper.js'
+import redisClient from '../helpers/redisClient.helper.js'
+import AddedPeopleToChat from '../models/addedPeopleToChat.model.js'
+import { Conversation } from '../models/conversation.model.js'
+import GroupMessage from '../models/groupMessage.model.js'
+import User from '../models/users.model.js'
+import { GROUP_CONV_MAP, io, USER_MAP, userSockets } from '../server.js'
 
 const router = Router()
 
@@ -86,14 +86,23 @@ router.post('/create-group', async (req, res) => {
 
 router.post('/get-group-conversation', async (req, res) => {
 	let { groupId } = req.body
+	let currentUserId = req.user._id
 
-	let currentUser = await User.findOne(
-		{ _id: req.user._id },
-		{
-			_id: 1,
-			encryptedId: 1,
-		}
-	)
+	let currentUser = await redisClient.get(`user:${currentUserId}`)
+	if (!currentUser) {
+		currentUser = await User.findOne(
+			{ _id: currentUserId },
+			{
+				password: 0,
+				__v: 0,
+				updatedAt: 0,
+				createdAt: 0,
+			}
+		).lean()
+		await redisClient.set(`user:${currentUserId}`, JSON.stringify(currentUser))
+	} else {
+		currentUser = JSON.parse(currentUser)
+	}
 
 	groupId = decryptWithCryptoJS(groupId)
 
@@ -398,18 +407,29 @@ router.post('/get-group-members', async (req, res) => {
 
 		// console.log('findGroup:', findGroup)
 		let groupMembersPromises = findGroup.participants.map(async (memberId) => {
-			let member = await User.findOne(
-				{ _id: memberId },
-				{
-					_id: 1,
-					encryptedId: 1,
-					name: 1,
-					username: 1,
-					avatar: 1,
-				}
-			).lean()
+			try {
+				let member = await redisClient.get(`user:${memberId}`)
 
-			return member
+				if (!member) {
+					member = await User.findOne(
+						{ _id: memberId },
+						{
+							password: 0,
+							__v: 0,
+							updatedAt: 0,
+							createdAt: 0,
+						}
+					).lean()
+					await redisClient.set(`user:${memberId}`, JSON.stringify(member))
+				} else {
+					member = JSON.parse(member)
+				}
+
+				return member
+			} catch (error) {
+				console.log(`Error fetching user ${memberId}:`, error.message)
+				return null // return null if there's an error
+			}
 		})
 
 		let groupMembers = await Promise.all(groupMembersPromises)

@@ -1,8 +1,8 @@
 import { Router } from 'express'
-import { Conversation } from '../models/conversation.model.js'
 import { getConversation } from '../helpers/conversation.helper.js'
-import User from '../models/users.model.js'
 import { decryptWithCryptoJS } from '../helpers/crypto.helper.js'
+import { Conversation } from '../models/conversation.model.js'
+import User from '../models/users.model.js'
 
 const router = Router()
 

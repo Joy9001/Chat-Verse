@@ -13,7 +13,6 @@ import path from 'path'
 import { Server } from 'socket.io'
 import connectMongo from './db/connectMongo.db.js'
 import { getGroupConversationMap, getUserMap } from './helpers/maps.helper.js'
-import redisClient from './helpers/redisClient.helper.js'
 import { onlyForHandshake } from './helpers/socket.helper.js'
 import { Conversation } from './models/conversation.model.js'
 import User from './models/users.model.js'
@@ -256,13 +255,9 @@ app.get('*', function (req, res) {
 server.listen(PORT, async () => {
 	try {
 		await connectMongo()
-		console.log('MongoDB connected')
 		console.log(`Server running on http://localhost:${PORT}`)
 		USER_MAP = await getUserMap()
 		GROUP_CONV_MAP = await getGroupConversationMap()
-
-		await redisClient.connect()
-		console.log('Redis connected')
 	} catch (err) {
 		console.error('Error connecting to MongoDB: ', err.message)
 		// retry connecting to MongoDB
