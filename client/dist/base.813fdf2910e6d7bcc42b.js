@@ -1,0 +1,2 @@
+(()=>{"use strict";var e={"./client/styles/base-output.css":(e,t,r)=>{r.r(t)}},t={};function r(o){var s=t[o];if(void 0!==s)return s.exports;var u=t[o]={exports:{}};return e[o](u,u.exports,r),u.exports}r.r=e=>{"undefined"!=typeof Symbol&&Symbol.toStringTag&&Object.defineProperty(e,Symbol.toStringTag,{value:"Module"}),Object.defineProperty(e,"__esModule",{value:!0})};var o={};(()=>{r.r(o);r("./client/styles/base-output.css")})()})();
+//# sourceMappingURL=base.813fdf2910e6d7bcc42b.js.map
