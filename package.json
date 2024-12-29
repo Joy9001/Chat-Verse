@@ -52,9 +52,7 @@
 		"passport-local": "^1.0.0",
 		"socket.io": "^4.8.0",
 		"socket.io-client": "^4.8.0",
-		"validator": "^13.12.0"
-	},
-	"devDependencies": {
+		"validator": "^13.12.0",
 		"@babel/preset-env": "^7.25.4",
 		"@joy9001/ejs-webpack5-plugin": "^1.0.1",
 		"@socket.io/admin-ui": "^0.5.1",
