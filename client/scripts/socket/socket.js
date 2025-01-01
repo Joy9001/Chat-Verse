@@ -1,6 +1,6 @@
 import io from 'socket.io-client'
-import { toUserMsgComponent, leftSidePersonComponent, utcToLocal, showNotification } from '../components/chat.js'
-import { toUserGroupMsgComponent, createLeftsideGroup } from '../components/groupChat.js'
+import { leftSidePersonComponent, showNotification, toUserMsgComponent, utcToLocal } from '../components/chat.js'
+import { createLeftsideGroup, toUserGroupMsgComponent } from '../components/groupChat.js'
 
 // show the message in the chat section
 const handleHtmlGet = (message) => {
@@ -59,6 +59,7 @@ const createLeftsidePeopleR = (data) => {
 	return parentDiv
 }
 
+console.log('Connecting to server', process.env.DOMAIN)
 const socket = io(process.env.DOMAIN, {
 	withCredentials: true,
 })
@@ -472,4 +473,4 @@ socket.on('disconnect', () => {
 	console.log('Disconnected from server')
 })
 
-export { onlineUsers, handleHtmlOnlineUsers }
+export { handleHtmlOnlineUsers, onlineUsers }
