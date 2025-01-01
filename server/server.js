@@ -1,26 +1,27 @@
-import express from 'express'
-import dotenv from 'dotenv'
-dotenv.config()
-import cors from 'cors'
-import http from 'http'
-import { Server } from 'socket.io'
 import { instrument } from '@socket.io/admin-ui'
-import passport from 'passport'
-import session from 'express-session'
 import MongoStore from 'connect-mongo'
-import path from 'path'
-import morgan from 'morgan'
-import helmet from 'helmet'
 import cookieParser from 'cookie-parser'
-import indexRouter from './routes/index.route.js'
+import cors from 'cors'
+import dotenv from 'dotenv'
+import express from 'express'
+import session from 'express-session'
+import helmet from 'helmet'
+import http from 'http'
+import morgan from 'morgan'
+import passport from 'passport'
+import path from 'path'
+import { Server } from 'socket.io'
 import connectMongo from './db/connectMongo.db.js'
-import './strategies/passport-jwt.strategy.js'
-import { onlyForHandshake } from './helpers/socket.helper.js'
-import User from './models/users.model.js'
-import { Conversation } from './models/conversation.model.js'
 import { getGroupConversationMap, getUserMap } from './helpers/maps.helper.js'
+import { onlyForHandshake } from './helpers/socket.helper.js'
+import { Conversation } from './models/conversation.model.js'
+import User from './models/users.model.js'
+import indexRouter from './routes/index.route.js'
+import './strategies/passport-jwt.strategy.js'
+dotenv.config()
 
 const PORT = process.env.PORT || 3000
+const DOMAIN = process.env.DOMAIN || 'http://localhost'
 let USER_MAP = []
 let GROUP_CONV_MAP = []
 
@@ -256,7 +257,7 @@ server.listen(PORT, async () => {
 	await connectMongo()
 		.then(async () => {
 			console.log('MongoDB connected')
-			console.log(`Server running on http://localhost:${PORT}`)
+			console.log(`Server running on ${DOMAIN}:${PORT}`)
 			USER_MAP = await getUserMap()
 			GROUP_CONV_MAP = await getGroupConversationMap()
 		})
@@ -267,7 +268,7 @@ server.listen(PORT, async () => {
 				await connectMongo()
 					.then(() => {
 						console.log('MongoDB connected')
-						console.log(`Server running on http://localhost:${PORT}`)
+						console.log(`Server running on ${DOMAIN}:${PORT}`)
 					})
 					.catch((err) => {
 						console.error('Error connecting to MongoDB: ', err.message)
@@ -276,4 +277,4 @@ server.listen(PORT, async () => {
 		})
 })
 
-export { io, userSockets, USER_MAP, GROUP_CONV_MAP }
+export { GROUP_CONV_MAP, io, USER_MAP, userSockets }
