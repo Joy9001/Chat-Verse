@@ -144,3 +144,7 @@ node_modules/
 .prettierrc
 docs/
 .secrets/
+
+# dist
+client/dist/
+client/views/dist/
