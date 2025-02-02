@@ -199,7 +199,7 @@ const sendMessageController = async (req, res) => {
 		if (receiverSocketId) {
 			io.to(receiverSocketId)
 				.timeout(2000)
-				.emit('newMessage', msg, senderUsername.username, async (err, responses) => {
+				.emit('newMessage', msg, senderUsername, async (err, responses) => {
 					// console.log('response: ', responses)
 					if (err) {
 						console.log('Error sending message to receiver: ', err)
