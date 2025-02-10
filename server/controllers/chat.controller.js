@@ -45,7 +45,7 @@ const messageController = async (req, res) => {
 		// Get current chat people
 		let currentChatPeople = []
 		if (currentUserAddedPeopleToChat) {
-			currentChatPeople = await getCurrentChatPeople(currentUserAddedPeopleToChat.recivers)
+			currentChatPeople = await getCurrentChatPeople(currentUserAddedPeopleToChat.receivers)
 		}
 
 		// Get unread messages
@@ -353,7 +353,7 @@ const deleteConversationController = async (req, res) => {
 				senderId: senderId,
 			},
 			{
-				$pull: { recivers: receiverId },
+				$pull: { receivers: receiverId },
 			}
 		)
 
@@ -363,7 +363,7 @@ const deleteConversationController = async (req, res) => {
 				senderId: receiverId,
 			},
 			{
-				$pull: { recivers: senderId },
+				$pull: { receivers: senderId },
 			}
 		)
 

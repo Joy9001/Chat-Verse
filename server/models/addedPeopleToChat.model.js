@@ -7,7 +7,7 @@ const addedPeopleToChatSchema = new Schema({
 		required: [true, 'senderId is required'],
 	},
 
-	recivers: [
+	receivers: [
 		{
 			type: Schema.Types.ObjectId,
 			ref: 'User',

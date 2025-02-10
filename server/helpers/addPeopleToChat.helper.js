@@ -8,16 +8,16 @@ const addPeopleToChat = async (senderId, receiverId, next) => {
 		})
 
 		if (findSender) {
-			if (findSender.recivers.some((receiver) => receiver.toString() === receiverId.toString())) {
+			if (findSender.receivers.some((receiver) => receiver.toString() === receiverId.toString())) {
 				return 'Already exists in the chat'
 			}
 
-			findSender.recivers.push(receiverId)
+			findSender.receivers.push(receiverId)
 			await findSender.save()
 		} else {
 			const addedpeople = new AddedPeopleToChat({
 				senderId,
-				recivers: [receiverId],
+				receivers: [receiverId],
 			})
 
 			await addedpeople.save()

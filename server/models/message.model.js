@@ -1,7 +1,7 @@
 import { Schema, model } from 'mongoose'
-import { Conversation } from './conversation.model.js'
 import { addPeopleToChat } from '../helpers/addPeopleToChat.helper.js'
 import AddedPeopleToChat from './addedPeopleToChat.model.js'
+import { Conversation } from './conversation.model.js'
 
 const messageSchema = new Schema(
 	{
@@ -51,7 +51,7 @@ messageSchema.pre('deleteOne', { document: true, query: false }, async function 
 					senderId: this.senderId,
 				},
 				{
-					$pull: { recivers: this.receiverId },
+					$pull: { receivers: this.receiverId },
 				}
 			)
 
@@ -62,7 +62,7 @@ messageSchema.pre('deleteOne', { document: true, query: false }, async function 
 					senderId: this.receiverId,
 				},
 				{
-					$pull: { recivers: this.senderId },
+					$pull: { receivers: this.senderId },
 				}
 			)
 		} else {
