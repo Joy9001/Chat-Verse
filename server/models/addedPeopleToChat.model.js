@@ -1,28 +1,31 @@
 import { Schema, model } from 'mongoose'
 
-const addedPeopleToChatSchema = new Schema({
-	senderId: {
-		type: Schema.Types.ObjectId,
-		ref: 'User',
-		required: [true, 'senderId is required'],
-	},
-
-	receivers: [
-		{
+const addedPeopleToChatSchema = new Schema(
+	{
+		senderId: {
 			type: Schema.Types.ObjectId,
 			ref: 'User',
-			default: [],
+			required: [true, 'senderId is required'],
 		},
-	],
 
-	groups: [
-		{
-			type: Schema.Types.ObjectId,
-			ref: 'Conversation',
-			default: [],
-		},
-	],
-})
+		receivers: [
+			{
+				type: Schema.Types.ObjectId,
+				ref: 'User',
+				default: [],
+			},
+		],
+
+		groups: [
+			{
+				type: Schema.Types.ObjectId,
+				ref: 'Conversation',
+				default: [],
+			},
+		],
+	},
+	{ timestamps: true }
+)
 
 const AddedPeopleToChat = model('AddedPeopleToChat', addedPeopleToChatSchema)
 
