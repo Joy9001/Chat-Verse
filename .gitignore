@@ -148,3 +148,4 @@ docs/
 # dist
 client/dist/
 client/views/dist/
+.windsurfrules
