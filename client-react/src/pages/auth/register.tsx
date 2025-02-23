@@ -1,9 +1,8 @@
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Button } from '@/components/ui/button'
-import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Separator } from '@/components/ui/separator'
+import { UserDetailsDialog } from '@/components/UserDetailsDialog'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useNavigate } from '@tanstack/react-router'
 import { useState } from 'react'
@@ -174,83 +173,16 @@ export default function RegisterPage() {
 							Enter Details
 						</Button>
 
-						<Dialog open={isDetailsModalOpen} onOpenChange={setIsDetailsModalOpen}>
-							<DialogContent className='bg-white'>
-								<DialogHeader>
-									<DialogTitle className='text-2xl font-bold'>Additional Details</DialogTitle>
-								</DialogHeader>
-
-								<form onSubmit={handleSubmit(onDetailsSubmit)} className='space-y-4'>
-									<div className='space-y-2'>
-										<label className='text-primary text-lg font-semibold'>Name</label>
-										<Input
-											{...registerDetails('name')}
-											placeholder='Enter your name'
-											className='border-2 border-black bg-white text-black'
-										/>
-										{detailsErrors.name && (
-											<p className='text-sm text-red-500'>{detailsErrors.name.message}</p>
-										)}
-									</div>
-
-									<div className='space-y-2'>
-										<label className='text-primary text-lg font-semibold'>Username</label>
-										<Input
-											{...registerDetails('username')}
-											placeholder='Enter your username'
-											className='border-2 border-black bg-white text-black'
-										/>
-										{detailsErrors.username && (
-											<p className='text-sm text-red-500'>{detailsErrors.username.message}</p>
-										)}
-									</div>
-
-									<div className='space-y-2'>
-										<label className='text-primary text-lg font-semibold'>Gender</label>
-										<Select
-											{...registerDetails('gender')}
-											onValueChange={(value: 'Male' | 'Female') =>
-												setDetailsValue('gender', value)
-											}>
-											<SelectTrigger className='border-2 border-black bg-white text-black'>
-												<SelectValue placeholder='Select gender' />
-											</SelectTrigger>
-											<SelectContent>
-												<SelectItem value='Male'>Male</SelectItem>
-												<SelectItem value='Female'>Female</SelectItem>
-											</SelectContent>
-										</Select>
-									</div>
-
-									<div className='space-y-4'>
-										<label className='text-primary text-lg font-semibold'>Profile Picture</label>
-										<div className='flex flex-col items-center space-y-4'>
-											<div className='ring-primary ring-offset-base-100 h-24 w-24 rounded-full ring ring-offset-2'>
-												<img
-													src={avatarUrl}
-													alt='avatar'
-													className='h-full w-full rounded-full'
-												/>
-											</div>
-											<Button
-												type='button'
-												onClick={handleChangeAvatar}
-												className='border-primary bg-primary w-24 border text-white'>
-												Change
-											</Button>
-										</div>
-									</div>
-
-									<DialogFooter>
-										<Button
-											type='submit'
-											className='border-primary bg-primary w-24 border text-white'>
-											Done
-										</Button>
-									</DialogFooter>
-								</form>
-							</DialogContent>
-						</Dialog>
+						<UserDetailsDialog
+							isOpen={isDetailsModalOpen}
+							onOpenChange={setIsDetailsModalOpen}
+							register={registerDetails}
+							errors={detailsErrors}
+							setValue={setDetailsValue}
+							onSubmit={handleSubmit(onDetailsSubmit)}
+							avatarUrl={avatarUrl}
+							onChangeAvatar={handleChangeAvatar}
+						/>
 
 						<Separator className='bg-primary' />
 
