@@ -1,22 +1,14 @@
 import { Button } from '@/components/ui/button'
 import { useAuthStore } from '@/store/auth.store'
 
-interface GoogleAuthButtonProps {
-  variant?: 'default' | 'outline'
-  className?: string
-}
-
-export function GoogleAuthButton({ 
-  variant = 'outline', 
-  className = 'w-full' 
-}: GoogleAuthButtonProps) {
+export function GoogleAuthButton() {
   const { loginWithGoogle } = useAuthStore()
 
   return (
     <Button 
       type="button" 
-      variant={variant} 
-      className={`flex items-center justify-center gap-2 ${className}`}
+      variant="outline"
+      className="flex items-center justify-center gap-2 w-full hover:cursor-pointer"
       onClick={loginWithGoogle}
     >
       <svg
