@@ -116,37 +116,35 @@ router.post('/login', (req, res, next) => {
 				process.env.ACCESS_TOKEN_SECRET,
 				{ expiresIn: '30m' }
 			);
-			const encryptedAccessToken = CryptoEnc.encryptWithCryptoJS(accessToken);
 
 			const refreshToken = jwt.sign(
 				{ user: user._id },
 				process.env.REFRESH_TOKEN_SECRET,
 				{ expiresIn: '7d' }
 			);
-			const encryptedRefreshToken = CryptoEnc.encryptWithCryptoJS(refreshToken);
 
 			// Save the refresh token in db
 			const findAuth = await Auth.findOne({ user: user._id });
 			if (!findAuth) {
 				const newAuth = new Auth({
 					user: user._id,
-					refreshToken: encryptedRefreshToken,
+					refreshToken: refreshToken,
 				});
 
 				await newAuth.save();
 			} else {
-				findAuth.refreshToken = encryptedRefreshToken;
+				findAuth.refreshToken = refreshToken;
 				await findAuth.save();
 			}
 
-			res.cookie('accessToken', encryptedAccessToken, {
+			res.cookie('accessToken', accessToken, {
 				httpOnly: true,
 				secure: true,
 				sameSite: 'strict',
 				maxAge: 1000 * 60 * 30, // 30 minutes
 			});
 
-			res.cookie('refreshToken', encryptedRefreshToken, {
+			res.cookie('refreshToken', refreshToken, {
 				httpOnly: true,
 				secure: true,
 				sameSite: 'strict',
@@ -265,10 +263,10 @@ router.get('/logout', async (req, res) => {
 		});
 
 		// Remove the refresh token from db and clear the cookie
-		const encryptedRefreshToken = req.cookies.refreshToken;
-		if (encryptedRefreshToken) {
+		const refreshToken = req.cookies.refreshToken;
+		if (refreshToken) {
 			const authData = await Auth.findOneAndDelete({
-				refreshToken: encryptedRefreshToken,
+				refreshToken: refreshToken,
 			});
 			if (!authData) {
 				return res.status(404).json({ error: 'Refresh token not found' });

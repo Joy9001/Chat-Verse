@@ -20,7 +20,7 @@ import indexRouter from './routes/index.route.js';
 import './strategies/passport-jwt.strategy.js';
 dotenv.config();
 
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 3001;
 const DOMAIN = process.env.DOMAIN || 'http://localhost';
 let USER_MAP = [];
 let GROUP_CONV_MAP = [];
@@ -34,7 +34,7 @@ const io = new Server(server, {
 			process.env.DOMAIN,
 			'http://localhost:5172', // React client
 			'http://localhost:5173', // Backward compatibility
-			'https://admin.socket.io'
+			'https://admin.socket.io',
 		],
 		methods: ['GET', 'POST'],
 		credentials: true,
@@ -55,7 +55,9 @@ app.use(
 app.use(
 	cors({
 		origin: [
-			process.env.NODE_ENV === 'production' ? process.env.DOMAIN : 'http://localhost:5172',
+			process.env.NODE_ENV === 'production'
+				? process.env.DOMAIN
+				: 'http://localhost:5172',
 			'http://localhost:5173', // Keep this for backward compatibility
 		],
 		methods: ['GET', 'POST', 'PUT', 'DELETE'],
@@ -216,12 +218,10 @@ app.use(
 		passport.authenticate('jwt', async (err, user, info) => {
 			if (err) {
 				console.error('Error in /admin: ', err.message);
-				return res
-					.status(401)
-					.json({
-						error: 'Unauthorized! Only admin can access this page!',
-						code: 401,
-					});
+				return res.status(401).json({
+					error: 'Unauthorized! Only admin can access this page!',
+					code: 401,
+				});
 			}
 			if (user) {
 				const userId = user._id;
@@ -234,12 +234,10 @@ app.use(
 
 				if (findUser.role !== 'admin') {
 					console.log('User is not an admin');
-					return res
-						.status(401)
-						.json({
-							error: 'Unauthorized! Only admin can access this page!',
-							code: 401,
-						});
+					return res.status(401).json({
+						error: 'Unauthorized! Only admin can access this page!',
+						code: 401,
+					});
 				}
 
 				const userSession = {
@@ -249,12 +247,10 @@ app.use(
 				return next();
 			}
 			console.log('Info in /admin: ', info.message);
-			return res
-				.status(401)
-				.json({
-					error: 'Unauthorized! Only admin can access this page!',
-					code: 401,
-				});
+			return res.status(401).json({
+				error: 'Unauthorized! Only admin can access this page!',
+				code: 401,
+			});
 		})(req, res, next);
 	},
 	express.static(path.resolve('./client/admin-ui/dist'))

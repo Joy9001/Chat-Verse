@@ -128,8 +128,8 @@ Its MVC architecture and modular design ensure scalability, while an integrated 
 3. Create a `.env` file in the root directory and add the following environment variables
 
     ```env
-    PORT=3000
-    DOMAIN=http://localhost:3000
+    PORT=3001
+    DOMAIN=http://localhost:3001
     MONGODB_URI=mongodb://localhost:27017/chat-app (Add a Atlas Cluster URL)
     NODE_ENV=production
     SESSION_SECRET=your_session_secret
@@ -140,8 +140,8 @@ Its MVC architecture and modular design ensure scalability, while an integrated 
     ADMIN_HASHED_PASSWORD=your_hashed_password
     GOOGLE_CLIENT_ID=your_google_client_id
     GOOGLE_CLIENT_SECRET=your_google_client_secret
-    GOOGLE_CALLBACK_URL=http://localhost:3000/auth/google/callback
-    GOOGLE_ONE_TAP_CALLBACK_URL=http://localhost:3000/auth/google/one-tap/callback
+    GOOGLE_CALLBACK_URL=http://localhost:3001/auth/google/callback
+    GOOGLE_ONE_TAP_CALLBACK_URL=http://localhost:3001/auth/google/one-tap/callback
     ```
 
 4. Start the server
@@ -150,7 +150,7 @@ Its MVC architecture and modular design ensure scalability, while an integrated 
     npm start
     ```
 
-5. Open the browser and go to `http://localhost:3000`
+5. Open the browser and go to `http://localhost:3001`
 
 ## Usage
 
