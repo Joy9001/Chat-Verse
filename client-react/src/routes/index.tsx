@@ -2,7 +2,7 @@ import App from '@/App'
 import LoginPage from '@/pages/auth/login'
 import RegisterPage from '@/pages/auth/register'
 import ChatPage from '@/pages/chat'
-import { useAuthStore } from '@/stores/auth.store'
+import { useAuthStore } from '@/store/auth.store'
 import { createRootRoute, createRoute, createRouter, redirect } from '@tanstack/react-router'
 import { z } from 'zod'
 
