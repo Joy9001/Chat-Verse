@@ -3,7 +3,7 @@ import LoginPage from '@/pages/auth/login'
 import RegisterPage from '@/pages/auth/register'
 import ChatPage from '@/pages/chat'
 import { useAuthStore } from '@/stores/auth.store'
-import { createRootRoute, createRoute, createRouter } from '@tanstack/react-router'
+import { createRootRoute, createRoute, createRouter, redirect } from '@tanstack/react-router'
 import { z } from 'zod'
 
 // Root route
@@ -47,8 +47,23 @@ const chatSearchSchema = z.object({
 	groupId: z.string().optional(),
 })
 
+// Index route - redirects to chat if authenticated, otherwise to login
+const indexRoute = createRoute({
+	getParentRoute: () => rootRoute,
+	path: '/',
+	beforeLoad: () => {
+		const { isAuthenticated } = useAuthStore.getState()
+		if (isAuthenticated) {
+			throw redirect({ to: '/chat' })
+		} else {
+			throw redirect({ to: '/auth/login' })
+		}
+	},
+})
+
 // Create and export the router configuration
 const routeTree = rootRoute.addChildren([
+	indexRoute,
 	loginRoute,
 	registerRoute,
 	chatRoute.addChildren([
