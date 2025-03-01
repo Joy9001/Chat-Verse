@@ -70,11 +70,19 @@ router.get('/jwt/refresh-token', async (req, res) => {
 	}
 })
 
-router.get('/login', limiter, isAuthenticated, (req, res) => {
+router.get('/user', limiter, isAuthenticated, (req, res) => {
 	if (req.user) {
-		return res.redirect('/chat')
+		// Return user data for authenticated users
+		return res.status(200).json({
+			isAuthenticated: true,
+			user: req.user
+		})
 	}
-	res.render('login')
+	// Return authentication status for non-authenticated users
+	return res.status(401).json({
+		isAuthenticated: false,
+		message: 'User not authenticated'
+	})
 })
 
 router.post('/login', (req, res, next) => {
@@ -142,29 +150,36 @@ router.get('/login/google', passport.authenticate('google'))
 router.get(
 	'/google/callback',
 	passport.authenticate('google', {
-		successRedirect: '/chat',
-		failureRedirect: '/auth/login',
+		failureRedirect: process.env.NODE_ENV === 'production' ? `${process.env.DOMAIN}/login` : 'http://localhost:5173/login',
 	}),
 	(req, res) => {
-		console.log('Google callback', req)
+		console.log('Google callback processed')
+		// Redirect to frontend app after successful authentication
+		res.redirect(process.env.NODE_ENV === 'production' ? `${process.env.DOMAIN}` : 'http://localhost:5173')
 	}
 )
 
 // google one tap route
 router.post(
 	'/one-tap-google/callback',
-	passport.authenticate('google-one-tap', {
-		successRedirect: '/chat',
-		failureRedirect: '/auth/login',
-	})
+	passport.authenticate('google-one-tap', { session: true }),
+	(req, res) => {
+		// Send user data back to frontend
+		if (req.user) {
+			return res.status(200).json({
+				success: true,
+				user: req.user
+			})
+		} else {
+			return res.status(401).json({
+				success: false,
+				message: 'Authentication failed'
+			})
+		}
+	}
 )
 
-router.get('/register', limiter, isAuthenticated, (req, res) => {
-	if (req.user) {
-		return res.redirect('/chat')
-	}
-	res.render('register')
-})
+// Not needed for API-only server
 
 router.post('/register', async (req, res) => {
 	const { email, password, name, username, gender, avatar } = req.body
@@ -247,7 +262,9 @@ router.get('/logout', async (req, res) => {
 			secure: true,
 			sameSite: 'strict',
 		})
-		return res.redirect('/auth/login')
+		
+		// Return success response instead of redirect
+		return res.status(200).json({ success: true, message: 'Logged out successfully' })
 	} catch (error) {
 		return res.status(500).json({ error: 'Internal Server Error' })
 	}
