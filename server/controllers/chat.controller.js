@@ -2,7 +2,6 @@ import { csrfSync } from 'csrf-sync';
 import addPeople from '../helpers/addPeople.helper.js';
 import { getPeopleToChat } from '../helpers/addPeopleToChat.helper.js';
 import { updateUnreadCount } from '../helpers/conversation.helper.js';
-import { decryptWithCryptoJS } from '../helpers/crypto.helper.js';
 import {
 	getCurrentChatPeople,
 	getCurrentGroups,
@@ -171,7 +170,7 @@ const messageController = async (req, res) => {
 const sendMessageController = async (req, res) => {
 	const senderId = req.user._id;
 	let { receiverId, message } = req.body;
-	receiverId = decryptWithCryptoJS(receiverId);
+	// Use receiverId directly without decryption
 	// console.log('receiverId', receiverId)
 
 	try {

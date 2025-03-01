@@ -1,24 +1,21 @@
-import { Router } from 'express'
-import { Conversation } from '../models/conversation.model.js'
-import { getConversation } from '../helpers/conversation.helper.js'
-import User from '../models/users.model.js'
-import { decryptWithCryptoJS } from '../helpers/crypto.helper.js'
+import { Router } from 'express';
+import { getConversation } from '../helpers/conversation.helper.js';
+import { Conversation } from '../models/conversation.model.js';
+import User from '../models/users.model.js';
 
-const router = Router()
+const router = Router();
 
 router.post('/get-conversation', async (req, res) => {
-	const senderId = req.user._id
-	let { receiverId } = req.body
-	console.log('receiverId before', receiverId)
-	receiverId = decryptWithCryptoJS(receiverId)
-	console.log('senderId', senderId, 'receiverId', receiverId)
+	const senderId = req.user._id;
+	let { receiverId } = req.body;
+	console.log('senderId', senderId, 'receiverId', receiverId);
 	// console.log('type of receiverId: ', typeof receiverId)
 
 	try {
 		const findConversation = await Conversation.findOne({
 			participants: { $all: [senderId, receiverId] },
 			isGroup: false,
-		})
+		});
 		// console.log("findConversation", findConversation);
 		if (findConversation) {
 			if (findConversation.messages.length === 0) {
@@ -27,38 +24,40 @@ router.post('/get-conversation', async (req, res) => {
 					isBlocked: findConversation.isBlocked,
 					blockedBy: findConversation.blockedBy,
 					senderId: senderId,
-				})
+				});
 			} else {
 				try {
 					findConversation.unreadMsgCount.forEach((obj) => {
 						if (obj.senderId.toString() === receiverId.toString()) {
 							// console.log("obj unreadCount", obj.unreadCount);
-							obj.unreadCount = 0
+							obj.unreadCount = 0;
 						}
-					})
-					await findConversation.save()
-					const conversation = await getConversation(findConversation.messages)
+					});
+					await findConversation.save();
+					const conversation = await getConversation(findConversation.messages);
 
 					return res.status(200).json({
 						messages: conversation,
 						isBlocked: findConversation.isBlocked,
 						blockedBy: findConversation.blockedBy,
 						senderId: senderId,
-					})
+					});
 				} catch (error) {
-					console.log('Error getting conversation: ', error.message)
+					console.log('Error getting conversation: ', error.message);
 				}
 			}
 		} else {
-			return res.status(200).json({ messages: [], isBlocked: false, blockedBy: null })
+			return res
+				.status(200)
+				.json({ messages: [], isBlocked: false, blockedBy: null });
 		}
 	} catch (error) {
-		console.log('Error getting conversation: ', error.message)
+		console.log('Error getting conversation: ', error.message);
 	}
-})
+});
 
 router.post('/user-details', async (req, res) => {
-	const { username } = req.body
+	const { username } = req.body;
 	// console.log('inside /user-details username', username)
 	// console.log('inside /user-details username type', typeof username)
 	try {
@@ -71,18 +70,18 @@ router.post('/user-details', async (req, res) => {
 				gender: 1,
 				avatar: 1,
 			}
-		).lean()
+		).lean();
 
 		if (user) {
-			console.log('inside /user-details', user.username)
-			return res.status(200).json(user)
+			console.log('inside /user-details', user.username);
+			return res.status(200).json(user);
 		}
 
-		return res.status(400).json({ error: 'User not found' })
+		return res.status(400).json({ error: 'User not found' });
 	} catch (err) {
-		console.log('Error getting user details: ', err.message)
-		return res.status(400).json({ error: err.message })
+		console.log('Error getting user details: ', err.message);
+		return res.status(400).json({ error: err.message });
 	}
-})
+});
 
-export default router
+export default router;

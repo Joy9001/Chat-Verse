@@ -1,22 +1,21 @@
-import { Router } from 'express'
-import { Conversation } from '../models/conversation.model.js'
-import User from '../models/users.model.js'
-import { decryptWithCryptoJS } from '../helpers/crypto.helper.js'
-import AddedPeopleToChat from '../models/addedPeopleToChat.model.js'
-import GroupMessage from '../models/groupMessage.model.js'
-import { USER_MAP, GROUP_CONV_MAP } from '../server.js'
-import { io, userSockets } from '../server.js'
-import { updateUnreadCount } from '../helpers/conversation.helper.js'
-import { getGroupConversationMap } from '../helpers/maps.helper.js'
+import { Router } from 'express';
+import { updateUnreadCount } from '../helpers/conversation.helper.js';
+import { getGroupConversationMap } from '../helpers/maps.helper.js';
+import AddedPeopleToChat from '../models/addedPeopleToChat.model.js';
+import { Conversation } from '../models/conversation.model.js';
+import GroupMessage from '../models/groupMessage.model.js';
+import User from '../models/users.model.js';
+import { GROUP_CONV_MAP, io, USER_MAP, userSockets } from '../server.js';
 
-const router = Router()
+const router = Router();
 
 router.post('/create-group', async (req, res) => {
-	const { groupMembersIds, groupName, groupDescription, groupAvatar } = req.body
-	const creatorId = req.user._id
+	const { groupMembersIds, groupName, groupDescription, groupAvatar } =
+		req.body;
+	const creatorId = req.user._id;
 
-	const decryptedGroupMembersIds = groupMembersIds.map((id) => decryptWithCryptoJS(id))
-	const groupMembers = [...decryptedGroupMembersIds, creatorId]
+	// Use group member IDs directly without decryption
+	const groupMembers = [...groupMembersIds, creatorId];
 
 	try {
 		let newConversation = new Conversation({
@@ -25,39 +24,41 @@ router.post('/create-group', async (req, res) => {
 			groupName,
 			groupDescription,
 			groupAvatar,
-		})
+		});
 
-		await newConversation.save()
+		await newConversation.save();
 
 		// Add group members to the group
 		const addGroupMembersPromises = groupMembers.map(async (memberId) => {
 			try {
-				let addedPeopleToGroup = await AddedPeopleToChat.findOne({ senderId: memberId })
+				let addedPeopleToGroup = await AddedPeopleToChat.findOne({
+					senderId: memberId,
+				});
 
 				if (addedPeopleToGroup) {
-					addedPeopleToGroup.groups.push(newConversation._id)
+					addedPeopleToGroup.groups.push(newConversation._id);
 				} else {
 					addedPeopleToGroup = new AddedPeopleToChat({
 						senderId: memberId,
 						groups: [newConversation._id],
-					})
+					});
 				}
 
-				await addedPeopleToGroup.save()
+				await addedPeopleToGroup.save();
 			} catch (error) {
-				console.error(`Error processing group member ${memberId}:`, error)
+				console.error(`Error processing group member ${memberId}:`, error);
 			}
-		})
+		});
 
-		await Promise.all(addGroupMembersPromises)
+		await Promise.all(addGroupMembersPromises);
 
-		console.log('Group created successfully')
+		console.log('Group created successfully');
 
 		// get the new group info
 		let groupInfo = await Conversation.findOne(
 			{ _id: newConversation._id, isGroup: true },
 			{ __v: 0, isBlocked: 0, blockedBy: 0 }
-		).lean()
+		).lean();
 
 		// join the group room
 		groupMembers.forEach((memberId) => {
@@ -66,26 +67,26 @@ router.post('/create-group', async (req, res) => {
 					roomId: newConversation._id,
 					groupInfo,
 					creatorName: USER_MAP[creatorId].name,
-				})
+				});
 			}
-		})
+		});
 
 		// update GROUP_CONV_MAP
-		GROUP_CONV_MAP = await getGroupConversationMap()
+		GROUP_CONV_MAP = await getGroupConversationMap();
 
 		return res.status(200).json({
 			message: 'Group created successfully',
 			success: true,
 			groupInfo,
-		})
+		});
 	} catch (error) {
-		console.error('Error creating group:', error.message)
-		return res.status(400).json({ error: error.message, success: false })
+		console.error('Error creating group:', error.message);
+		return res.status(400).json({ error: error.message, success: false });
 	}
-})
+});
 
 router.post('/get-group-conversation', async (req, res) => {
-	let { groupId } = req.body
+	let { groupId } = req.body;
 
 	let currentUser = await User.findOne(
 		{ _id: req.user._id },
@@ -93,9 +94,9 @@ router.post('/get-group-conversation', async (req, res) => {
 			_id: 1,
 			encryptedId: 1,
 		}
-	)
+	);
 
-	groupId = decryptWithCryptoJS(groupId)
+	// Use groupId directly without decryption
 
 	try {
 		let groupConversation = await Conversation.findOne(
@@ -105,7 +106,7 @@ router.post('/get-group-conversation', async (req, res) => {
 				blockedBy: 0,
 				__v: 0,
 			}
-		).lean()
+		).lean();
 
 		if (groupConversation) {
 			let groupMessagesPromises = groupConversation.messages.map((msgId) => {
@@ -115,43 +116,45 @@ router.post('/get-group-conversation', async (req, res) => {
 						groupId: 0,
 						__v: 0,
 					}
-				).lean()
-			})
+				).lean();
+			});
 
-			let groupMessages = await Promise.all(groupMessagesPromises)
-			groupMessages = groupMessages.filter((msg) => msg !== null)
+			let groupMessages = await Promise.all(groupMessagesPromises);
+			groupMessages = groupMessages.filter((msg) => msg !== null);
 
 			const updatedGroupMessages = await Promise.all(
 				groupMessages.map(async (msg) => {
 					// console.log('msg:', msg)
-					const user = USER_MAP[msg.senderId.toString()]
+					const user = USER_MAP[msg.senderId.toString()];
 					return {
 						_id: msg._id,
-						senderId: user.encryptedId,
+						senderId: user._id,
 						senderName: user.name,
 						message: msg.message,
 						createdAt: msg.createdAt,
-					}
+					};
 				})
-			)
+			);
 
 			// Send response first
 			res.status(200).json({
 				requesterId: currentUser.encryptedId,
 				groupMessages: updatedGroupMessages,
 				groupInfo: groupConversation,
-			})
+			});
 
 			// Update unread count after sending the response
 			process.nextTick(async () => {
 				let unreadMsgs = groupConversation.unreadMsgCount.filter((obj) =>
-					obj.receivers.some((rec) => rec.toString() === currentUser._id.toString())
-				)
+					obj.receivers.some(
+						(rec) => rec.toString() === currentUser._id.toString()
+					)
+				);
 
 				if (unreadMsgs.length > 0) {
 					unreadMsgs.forEach((unreadMsg) => {
-						unreadMsg.unreadCount = 0
-					})
+						unreadMsg.unreadCount = 0;
+					});
 
 					try {
 						await Conversation.findByIdAndUpdate(
@@ -160,54 +163,66 @@ router.post('/get-group-conversation', async (req, res) => {
 								unreadMsgCount: groupConversation.unreadMsgCount,
 							},
 							{ new: true }
-						)
+						);
 					} catch (error) {
-						console.log('Error updating unread count: ', error.message)
+						console.log('Error updating unread count: ', error.message);
 					}
 				} else {
-					console.log('No unread messages to update')
+					console.log('No unread messages to update');
 				}
-			})
+			});
 		} else {
-			res.status(200).json({ requesterId: currentUser.encryptedId, groupMessages: [], groupInfo: {} })
+			res
+				.status(200)
+				.json({
+					requesterId: currentUser._id,
+					groupMessages: [],
+					groupInfo: {},
+				});
 		}
 	} catch (error) {
-		console.log('Error getting group conversation: ', error.message)
-		res.status(400).json({ error: error.message })
+		console.log('Error getting group conversation: ', error.message);
+		res.status(400).json({ error: error.message });
 	}
-})
+});
 
 router.post('/send-group-message', async (req, res) => {
-	const { groupId, msg } = req.body
-	const senderId = req.user._id
-	let sender = USER_MAP[senderId]
+	const { groupId, msg } = req.body;
+	const senderId = req.user._id;
+	let sender = USER_MAP[senderId];
 
 	try {
-		const decryptedGroupId = decryptWithCryptoJS(groupId)
+		// Use groupId directly without decryption
 
 		const newGroupMessage = new GroupMessage({
-			groupId: decryptedGroupId,
+			groupId: groupId,
 			senderId,
 			message: msg,
-		})
+		});
 
-		await newGroupMessage.save()
+		await newGroupMessage.save();
 		// console.log('newGroupMessage:', newGroupMessage)
 
 		// Add the message to the conversation - done in the pre hook
 
 		// Get the group conversation
-		const groupConversation = await Conversation.findOne({ _id: decryptedGroupId, isGroup: true })
+		const groupConversation = await Conversation.findOne({
+			_id: groupId,
+			isGroup: true,
+		});
 
 		// console.log('groupConversation:', groupConversation)
 
 		// Send the message to all group members
-		const groupMembers = groupConversation.participants
+		const groupMembers = groupConversation.participants;
 		// console.log('userSockets in send group message:', userSockets)
 
 		groupMembers.forEach(async (memberId) => {
 			// console.log('Sending message to:', memberId, 'from:', senderId)
-			if (userSockets[memberId] && memberId.toString() !== senderId.toString()) {
+			if (
+				userSockets[memberId] &&
+				memberId.toString() !== senderId.toString()
+			) {
 				io.to(userSockets[memberId])
 					.timeout(2000)
 					.emit(
@@ -221,36 +236,43 @@ router.post('/send-group-message', async (req, res) => {
 						},
 						async (err, ack) => {
 							if (err) {
-								console.error('Error sending group message:', err)
-								throw new Error(err)
+								console.error('Error sending group message:', err);
+								throw new Error(err);
 							}
 
 							if (ack[0].status === 'success') {
-								console.log('Message sent successfully to ', memberId)
+								console.log('Message sent successfully to ', memberId);
 							} else if (ack[0].status === 'failure') {
-								console.error('Error sending group message:', ack[0].error)
-								throw new Error(ack[0].error)
+								console.error('Error sending group message:', ack[0].error);
+								throw new Error(ack[0].error);
 							} else {
-								const unreadResult = await updateUnreadCount(senderId, memberId, true)
+								const unreadResult = await updateUnreadCount(
+									senderId,
+									memberId,
+									true
+								);
 								if (unreadResult.success) {
-									console.log('Updated unread count successfully')
+									console.log('Updated unread count successfully');
 								} else {
-									console.error('Error updating unread count:', unreadResult.error)
-									throw new Error(unreadResult.error)
+									console.error(
+										'Error updating unread count:',
+										unreadResult.error
+									);
+									throw new Error(unreadResult.error);
 								}
 							}
 						}
-					)
+					);
 			} else if (!userSockets[memberId]) {
-				const unreadResult = await updateUnreadCount(senderId, memberId, true)
+				const unreadResult = await updateUnreadCount(senderId, memberId, true);
 				if (unreadResult.success) {
-					console.log('Updated unread count successfully')
+					console.log('Updated unread count successfully');
 				} else {
-					console.error('Error updating unread count:', unreadResult.error)
-					throw new Error(unreadResult.error)
+					console.error('Error updating unread count:', unreadResult.error);
+					throw new Error(unreadResult.error);
 				}
 			}
-		})
+		});
 
 		return res.status(200).json({
 			status: 'Message sent successfully',
@@ -262,46 +284,49 @@ router.post('/send-group-message', async (req, res) => {
 				message: newGroupMessage.message,
 				createdAt: newGroupMessage.createdAt,
 			},
-		})
+		});
 	} catch (error) {
-		console.error('Error sending group message:', error.message)
-		return res.status(400).json({ error: error.message })
+		console.error('Error sending group message:', error.message);
+		return res.status(400).json({ error: error.message });
 	}
-})
+});
 
 // delete message
 router.post('/delete-group-message', async (req, res) => {
-	const { msgId, groupId } = req.body
+	const { msgId, groupId } = req.body;
 	// console.log('msgId:', msgId, 'groupId:', groupId)
-	const currentUserId = req.user._id
-	let currentUser = USER_MAP[currentUserId]
+	const currentUserId = req.user._id;
+	let currentUser = USER_MAP[currentUserId];
 
 	try {
-		const decryptedGroupId = decryptWithCryptoJS(groupId)
+		const decryptedGroupId = decryptWithCryptoJS(groupId);
 
 		let groupMessage = await GroupMessage.findOne({
 			_id: msgId,
 			groupId: decryptedGroupId,
 			senderId: currentUserId,
-		})
+		});
 
 		if (!groupMessage) {
-			console.log('Group message not found')
-			return res.status(404).json({ error: 'Message not found' })
+			console.log('Group message not found');
+			return res.status(404).json({ error: 'Message not found' });
 		}
 
-		let deleteRes = await groupMessage.deleteOne()
+		let deleteRes = await groupMessage.deleteOne();
 
 		if (deleteRes.acknowledged !== true) {
-			console.log('Error deleting group message')
-			return res.status(400).json({ error: 'Error deleting group message' })
+			console.log('Error deleting group message');
+			return res.status(400).json({ error: 'Error deleting group message' });
 		}
 
-		let group = await Conversation.findOne({ _id: decryptedGroupId, isGroup: true })
+		let group = await Conversation.findOne({
+			_id: decryptedGroupId,
+			isGroup: true,
+		});
 
 		if (!group) {
-			console.log('Group not found')
-			return res.status(404).json({ error: 'Group not found' })
+			console.log('Group not found');
+			return res.status(404).json({ error: 'Group not found' });
 		}
 
 		// console.log('userSockets in delete group message:', userSockets)
@@ -309,79 +334,92 @@ router.post('/delete-group-message', async (req, res) => {
 			return {
 				memberId,
 				socketId: userSockets[memberId],
-			}
-		})
+			};
+		});
 
 		// console.log('groupMembers:', groupMembers)
 
 		groupMembers.forEach((member) => {
 			if (member.socketId) {
 				// console.log('groupId:', groupId, 'msgId:', msgId)
-				io.to(member.socketId).emit('delete-group-message', { groupId, msgId, deletedBy: currentUser.name })
+				io.to(member.socketId).emit('delete-group-message', {
+					groupId,
+					msgId,
+					deletedBy: currentUser.name,
+				});
 			} else {
-				console.log('Socket not found for member: ', member.memberId)
+				console.log('Socket not found for member: ', member.memberId);
 			}
-		})
+		});
 
-		return res.status(200).json({ status: 'Group message deleted successfully', success: true })
+		return res
+			.status(200)
+			.json({ status: 'Group message deleted successfully', success: true });
 	} catch (error) {
-		console.error('Error deleting group message:', error.message)
-		return res.status(400).json({ error: error.message })
+		console.error('Error deleting group message:', error.message);
+		return res.status(400).json({ error: error.message });
 	}
-})
+});
 
 //~ leave and delete group
 router.post('/leave-and-delete-group', async (req, res) => {
-	const { groupId } = req.body
-	const currentUserId = req.user._id
+	const { groupId } = req.body;
+	const currentUserId = req.user._id;
 
 	try {
-		const decryptedGroupId = decryptWithCryptoJS(groupId)
+		const decryptedGroupId = decryptWithCryptoJS(groupId);
 
-		let findGroup = await Conversation.findOne({ _id: decryptedGroupId, isGroup: true })
+		let findGroup = await Conversation.findOne({
+			_id: decryptedGroupId,
+			isGroup: true,
+		});
 
 		if (!findGroup) {
-			console.log('Group not found in /leave-and-delete-group')
-			return res.status(404).json({ error: 'Group not found' })
+			console.log('Group not found in /leave-and-delete-group');
+			return res.status(404).json({ error: 'Group not found' });
 		}
 
 		findGroup.participants = findGroup.participants.filter(
 			(memberId) => memberId.toString() !== currentUserId.toString()
-		)
+		);
 
 		if (findGroup.participants.length === 0) {
-			console.log('Group has no members left. Deleting group...')
-			await findGroup.deleteOne()
+			console.log('Group has no members left. Deleting group...');
+			await findGroup.deleteOne();
 
 			// update GROUP_CONV_MAP
-			GROUP_CONV_MAP = await getGroupConversationMap()
+			GROUP_CONV_MAP = await getGroupConversationMap();
 		} else {
-			await findGroup.save()
+			await findGroup.save();
 		}
 
 		// remove group from user's groups
-		let user = await AddedPeopleToChat.findOne({ senderId: currentUserId })
+		let user = await AddedPeopleToChat.findOne({ senderId: currentUserId });
 
 		if (user) {
-			user.groups = user.groups.filter((group) => group.toString() !== decryptedGroupId.toString())
-			await user.save()
+			user.groups = user.groups.filter(
+				(group) => group.toString() !== decryptedGroupId.toString()
+			);
+			await user.save();
 		}
 
 		// send response
-		return res.status(200).json({ status: 'Group left and deleted successfully', success: true })
+		return res
+			.status(200)
+			.json({ status: 'Group left and deleted successfully', success: true });
 	} catch (error) {
-		console.error('Error leaving and deleting group:', error.message)
-		return res.status(400).json({ error: error.message })
+		console.error('Error leaving and deleting group:', error.message);
+		return res.status(400).json({ error: error.message });
 	}
-})
+});
 
 // get group members
 router.post('/get-group-members', async (req, res) => {
-	const { groupId } = req.body
-	const currentUserId = req.user._id
+	const { groupId } = req.body;
+	const currentUserId = req.user._id;
 
 	try {
-		const decryptedGroupId = decryptWithCryptoJS(groupId)
+		const decryptedGroupId = decryptWithCryptoJS(groupId);
 
 		const findGroup = await Conversation.findOne(
 			{ _id: decryptedGroupId, isGroup: true },
@@ -389,11 +427,11 @@ router.post('/get-group-members', async (req, res) => {
 				participants: 1,
 				groupId: 1,
 			}
-		).lean()
+		).lean();
 
 		if (!findGroup) {
-			console.log('Group not found in /get-group-members')
-			return res.status(404).json({ error: 'Group not found' })
+			console.log('Group not found in /get-group-members');
+			return res.status(404).json({ error: 'Group not found' });
 		}
 
 		// console.log('findGroup:', findGroup)
@@ -407,67 +445,84 @@ router.post('/get-group-members', async (req, res) => {
 					username: 1,
 					avatar: 1,
 				}
-			).lean()
+			).lean();
 
-			return member
-		})
+			return member;
+		});
 
-		let groupMembers = await Promise.all(groupMembersPromises)
+		let groupMembers = await Promise.all(groupMembersPromises);
 
 		// console.log('groupMembers:', groupMembers)
 		// groupMembers = groupMembers.filter((member) => member._id.toString() !== currentUserId.toString())
 
-		return res.status(200).json({ groupMembers, success: true })
+		return res.status(200).json({ groupMembers, success: true });
 	} catch (error) {}
-})
+});
 
 // join user using group link
 router.get('/join-group-via-link', async (req, res) => {
 	try {
-		const groupId = req.query.id || null
+		const groupId = req.query.id || null;
 		// console.log('groupId:', groupId)
 		if (!groupId) {
-			return res.status(400).json({ error: 'Invalid group link' })
+			return res.status(400).json({ error: 'Invalid group link' });
 		}
-		const currentUserId = req.user._id
-		const decryptedGroupId = decryptWithCryptoJS(groupId)
+		const currentUserId = req.user._id;
+		const decryptedGroupId = decryptWithCryptoJS(groupId);
 
-		let findGroup = await Conversation.findOne({ _id: decryptedGroupId, isGroup: true })
+		let findGroup = await Conversation.findOne({
+			_id: decryptedGroupId,
+			isGroup: true,
+		});
 
 		if (!findGroup) {
-			return res.status(404).render('404', { error: 'Group not found', code: 404 })
+			return res
+				.status(404)
+				.render('404', { error: 'Group not found', code: 404 });
 		}
 
-		if (findGroup.participants.some((memberId) => memberId.toString() === currentUserId.toString())) {
-			return res.redirect('/chat')
+		if (
+			findGroup.participants.some(
+				(memberId) => memberId.toString() === currentUserId.toString()
+			)
+		) {
+			return res.redirect('/chat');
 		} else {
-			findGroup.participants.push(currentUserId)
-			await findGroup.save()
+			findGroup.participants.push(currentUserId);
+			await findGroup.save();
 		}
 
-		let addedPeopleUser = await AddedPeopleToChat.findOne({ senderId: currentUserId })
+		let addedPeopleUser = await AddedPeopleToChat.findOne({
+			senderId: currentUserId,
+		});
 
 		if (addedPeopleUser) {
-			if (addedPeopleUser.groups.some((group) => group.toString() === decryptedGroupId.toString())) {
-				return res.redirect('/chat')
+			if (
+				addedPeopleUser.groups.some(
+					(group) => group.toString() === decryptedGroupId.toString()
+				)
+			) {
+				return res.redirect('/chat');
 			} else {
-				addedPeopleUser.groups.push(decryptedGroupId)
-				await addedPeopleUser.save()
+				addedPeopleUser.groups.push(decryptedGroupId);
+				await addedPeopleUser.save();
 			}
 		} else {
 			addedPeopleUser = new AddedPeopleToChat({
 				senderId: currentUserId,
 				groups: [decryptedGroupId],
-			})
+			});
 
-			await addedPeopleUser.save()
+			await addedPeopleUser.save();
 		}
 
-		return res.status(200).redirect('/chat')
+		return res.status(200).redirect('/chat');
 	} catch (error) {
-		console.error('Error joining group via link:', error.message)
-		return res.status(404).render('404', { error: 'Internal server error', code: 404 })
+		console.error('Error joining group via link:', error.message);
+		return res
+			.status(404)
+			.render('404', { error: 'Internal server error', code: 404 });
 	}
-})
+});
 
-export default router
+export default router;

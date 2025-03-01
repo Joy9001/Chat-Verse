@@ -1,21 +1,21 @@
-import { Schema, model } from 'mongoose'
-import { nameValidator, usernameValidator, emailValidator, passwordValidator } from './validator.js'
-import { generateAvatar } from '../helpers/generateAvatar.helper.js'
-import crypto from 'crypto'
-import { encryptWithCryptoJS } from '../helpers/crypto.helper.js'
+import crypto from 'crypto';
+import { Schema, model } from 'mongoose';
+import { generateAvatar } from '../helpers/generateAvatar.helper.js';
+import {
+	emailValidator,
+	nameValidator,
+	passwordValidator,
+	usernameValidator,
+} from './validator.js';
 
 const generateUsername = (name) => {
-	const nameLower = name.toLowerCase().replace(/ /g, '_')
-	const username = nameLower + '@' + crypto.randomInt(1, 100000)
-	return username
-}
+	const nameLower = name.toLowerCase().replace(/ /g, '_');
+	const username = nameLower + '@' + crypto.randomInt(1, 100000);
+	return username;
+};
 
 const userSchema = new Schema(
 	{
-		encryptedId: {
-			type: Schema.Types.String,
-			default: '',
-		},
 		name: {
 			type: Schema.Types.String,
 			required: [true, 'Please enter your full name'],
@@ -58,48 +58,33 @@ const userSchema = new Schema(
 		},
 	},
 	{ timestamps: true }
-)
+);
 
 userSchema.pre('save', function (next) {
 	try {
 		if (!this.username) {
-			this.username = generateUsername(this.name)
+			this.username = generateUsername(this.name);
 		}
-		next()
+		next();
 	} catch (error) {
-		console.error('Error in pre-save hook:', error)
-		next(error)
+		console.error('Error in pre-save hook:', error);
+		next(error);
 	}
-})
+});
 
 userSchema.pre('save', function (next) {
 	try {
 		if (this.avatar === '') {
-			this.avatar = generateAvatar(this.name)
-			console.log('Avatar generated successfully...')
+			this.avatar = generateAvatar(this.name);
+			console.log('Avatar generated successfully...');
 		}
-		next()
+		next();
 	} catch (error) {
-		console.error('Error generating avatar', error)
-		next(error)
+		console.error('Error generating avatar', error);
+		next(error);
 	}
-})
+});
 
-userSchema.post('save', async function (doc, next) {
-	// console.log('doc:', doc)
-	try {
-		if (doc.encryptedId === '') {
-			doc.encryptedId = encryptWithCryptoJS(doc._id.toString())
-			await doc.save()
-			console.log('EncryptedId saved successfully...')
-		}
-		next()
-	} catch (error) {
-		console.error('Error saving encryptedId: ', error)
-		next(error)
-	}
-})
+const User = model('User', userSchema);
 
-const User = model('User', userSchema)
-
-export default User
+export default User;

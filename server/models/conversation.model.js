@@ -1,7 +1,6 @@
-import { Schema, model } from 'mongoose'
-import Message from './message.model.js'
-import GroupMessage from './groupMessage.model.js'
-import { encryptWithCryptoJS } from '../helpers/crypto.helper.js'
+import { Schema, model } from 'mongoose';
+import GroupMessage from './groupMessage.model.js';
+import Message from './message.model.js';
 
 const unreadMsgCountSchema = new Schema({
 	senderId: {
@@ -21,7 +20,7 @@ const unreadMsgCountSchema = new Schema({
 		required: [true, 'unreadCount is required'],
 		default: 0,
 	},
-})
+});
 
 const conversationSchema = new Schema(
 	{
@@ -71,42 +70,46 @@ const conversationSchema = new Schema(
 		unreadMsgCount: [unreadMsgCountSchema],
 	},
 	{ timestamps: true }
-)
+);
 
 // Pre Hooks
-conversationSchema.pre('deleteOne', { document: true, query: false }, async function (next) {
-	try {
-		// console.log('Deleting conversation', this)
-		if (this.isGroup) {
-			// console.log('Deleting group messages...')
-			await GroupMessage.deleteMany({ _id: { $in: this.messages } })
-		} else {
-			// console.log('Deleting messages...')
-			await Message.deleteMany({ _id: { $in: this.messages } })
+conversationSchema.pre(
+	'deleteOne',
+	{ document: true, query: false },
+	async function (next) {
+		try {
+			// console.log('Deleting conversation', this)
+			if (this.isGroup) {
+				// console.log('Deleting group messages...')
+				await GroupMessage.deleteMany({ _id: { $in: this.messages } });
+			} else {
+				// console.log('Deleting messages...')
+				await Message.deleteMany({ _id: { $in: this.messages } });
+			}
+		} catch (error) {
+			console.log('Error deleting conversation: ', error.message);
+			next(error);
 		}
-	} catch (error) {
-		console.log('Error deleting conversation: ', error.message)
-		next(error)
 	}
-})
+);
 
 conversationSchema.post('save', async function (doc, next) {
 	try {
 		if (doc.isGroup && !doc.groupId) {
-			const encryptedGroupId = encryptWithCryptoJS(doc._id.toString())
-			await doc.updateOne({ groupId: encryptedGroupId })
-			console.log('GroupId saved successfully')
+			// Use MongoDB ID directly instead of encrypting
+			await doc.updateOne({ groupId: doc._id.toString() });
+			console.log('GroupId saved successfully');
 		} else {
-			console.log("GroupId already saved or it's not a group")
+			console.log("GroupId already saved or it's not a group");
 		}
-		next()
+		next();
 	} catch (error) {
-		console.error('Error saving groupId: ', error)
-		next(error)
+		console.error('Error saving groupId: ', error);
+		next(error);
 	}
-})
+});
 
-const Conversation = model('Conversation', conversationSchema)
+const Conversation = model('Conversation', conversationSchema);
 // const UnreadMsgCount = model('UnreadMsgCount', unreadMsgCountSchema)
 
-export { Conversation }
+export { Conversation };
