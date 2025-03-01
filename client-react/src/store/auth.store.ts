@@ -1,7 +1,8 @@
 import axios from 'axios';
+import { api } from '../utils/http';
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import type { AuthState, LoginCredentials, RegisterCredentials, User } from '../types/auth.types';
+import type { AuthState, LoginCredentials, RegisterCredentials, User, AuthResponse } from '../types/auth.types';
 
 interface AuthStore extends AuthState {
   // User data
@@ -47,9 +48,7 @@ export const useAuthStore = create<AuthStore>()(
       login: async (credentials) => {
         try {
           set({ isLoading: true, error: null });
-          const response = await axios.post('/api/auth/login', credentials, {
-            withCredentials: true,
-          });
+          const response = await api.post<AuthResponse, LoginCredentials>('/auth/login', credentials);
           const { user } = response.data;
           set({ user, isAuthenticated: true, isLoading: false });
         } catch (error) {
@@ -65,9 +64,7 @@ export const useAuthStore = create<AuthStore>()(
       register: async (credentials) => {
         try {
           set({ isLoading: true, error: null });
-          await axios.post('/api/auth/register', credentials, {
-            withCredentials: true,
-          });
+          await api.post<{ message: string }, RegisterCredentials>('/auth/register', credentials);
           set({ isLoading: false });
         } catch (error) {
           const errorMessage = 
@@ -82,7 +79,7 @@ export const useAuthStore = create<AuthStore>()(
       logout: async () => {
         try {
           set({ isLoading: true });
-          await axios.post('/api/auth/logout', {}, { withCredentials: true });
+          await api.post<{ message: string }, Record<string, never>>('/auth/logout', {});
           set({ user: null, token: null, isAuthenticated: false, isLoading: false });
         } catch (error) {
           console.error('Logout error:', error);
@@ -94,9 +91,7 @@ export const useAuthStore = create<AuthStore>()(
       fetchCurrentUser: async () => {
         try {
           set({ isLoading: true, error: null });
-          const response = await axios.get('/api/auth/user', {
-            withCredentials: true,
-          });
+          const response = await api.get<AuthResponse>('/auth/user');
           const { user } = response.data;
           set({ user, isAuthenticated: true, isLoading: false });
         } catch (error) {
@@ -107,7 +102,7 @@ export const useAuthStore = create<AuthStore>()(
       },
       
       loginWithGoogle: () => {
-        window.location.href = '/api/auth/login/google';
+        window.location.href = 'http://localhost:3001/api/auth/login/google';
       },
     }),
     {

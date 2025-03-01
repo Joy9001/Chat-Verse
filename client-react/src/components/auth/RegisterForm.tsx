@@ -1,7 +1,7 @@
 import { Button } from '@/components/ui/button'
 import { registerSchema, type RegisterFormData } from '@/schemas/auth.schema'
 import { useAuthStore } from '@/store/auth.store'
-import api from '@/services/api'
+import { api } from '@/utils/http'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useNavigate } from '@tanstack/react-router'
 import { useState } from 'react'
@@ -22,9 +22,14 @@ export function RegisterForm() {
 		resolver: zodResolver(registerSchema),
 	})
 
+	// Define the type for avatar API response
+	interface AvatarResponse {
+		avatar: string
+	}
+
 	const generateAvatar = async () => {
 		try {
-			const response = await api.get('/avatar/generate')
+			const response = await api.get<AvatarResponse>('/avatar/generate')
 			const data = response.data
 			setAvatarUrl(data.avatar)
 			setValue('avatar', data.avatar)

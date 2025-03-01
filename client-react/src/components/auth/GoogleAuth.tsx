@@ -2,11 +2,18 @@ import { Button } from '@/components/ui/button';
 import { useAuthStore } from '@/store/auth.store';
 import { useNavigate } from '@tanstack/react-router';
 import { useEffect } from 'react';
+import { api } from '@/utils/http';
+import type { User } from '@/types/auth.types';
 
 interface CredentialResponse {
   credential: string;
   select_by: string;
   client_id: string;
+}
+
+interface GoogleAuthResponse {
+  user: User;
+  message?: string;
 }
 
 interface GoogleOneTapConfig {
@@ -53,17 +60,12 @@ export function GoogleAuth() {
         callback: async (response: CredentialResponse) => {
           try {
             setLoading(true);
-            const res = await fetch('/api/auth/one-tap-google/callback', {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json',
-              },
-              body: JSON.stringify({ credential: response.credential }),
-              credentials: 'include', // Important for cookies
+            const res = await api.post<GoogleAuthResponse>('/auth/one-tap-google/callback', {
+              credential: response.credential
             });
             
-            const data = await res.json();
-            if (res.ok && data.user) {
+            const { data } = res;
+            if (data.user) {
               setUser(data.user);
               navigate({ to: '/chat' });
             } else {
