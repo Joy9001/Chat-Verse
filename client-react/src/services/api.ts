@@ -1,7 +1,6 @@
 import axios from 'axios';
-import { useAuthStore } from '../store/auth.store';
-import type { AuthResponse, LoginCredentials, RegisterCredentials } from '../types/auth.types';
 
+// Create axios instance with default config
 const api = axios.create({
   baseURL: '/api',
   withCredentials: true,
@@ -20,43 +19,17 @@ api.interceptors.response.use(
     if (error.response?.status === 403 && !originalRequest._retry) {
       originalRequest._retry = true;
 
-      try {
-        // Attempt to refresh the token
-        await axios.get('/auth/jwt/refresh-token');
-        
-        // Retry the original request
-        return api(originalRequest);
-      } catch (refreshError) {
-        // If refresh fails, logout the user
-        useAuthStore.getState().logout();
-        throw refreshError;
-      }
+      // Attempt to refresh the token and retry the original request
+      // If this fails, the error will propagate naturally
+      await axios.get('/api/auth/refresh-token', { withCredentials: true });
+      return api(originalRequest);
     }
 
     return Promise.reject(error);
   }
 );
 
-export const authApi = {
-  login: async (credentials: LoginCredentials): Promise<AuthResponse> => {
-    const response = await api.post<AuthResponse>('/auth/login', credentials);
-    return response.data;
-  },
-
-  register: async (credentials: RegisterCredentials): Promise<AuthResponse> => {
-    const response = await api.post<AuthResponse>('/auth/register', credentials);
-    return response.data;
-  },
-
-  logout: async (): Promise<void> => {
-    await api.post('/auth/logout');
-    useAuthStore.getState().logout();
-  },
-
-  getCurrentUser: async () => {
-    const response = await api.get<AuthResponse>('/auth/me');
-    return response.data;
-  },
-};
-
+// Export the API instance for direct use in components
 export default api;
+
+// We no longer need the authApi object as those methods are now in the auth store

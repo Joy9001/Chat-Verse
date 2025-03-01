@@ -1,15 +1,13 @@
 import { Button } from '@/components/ui/button'
 import { loginSchema, type LoginFormData } from '@/schemas/auth.schema'
-import { authApi } from '@/services/api'
 import { useAuthStore } from '@/store/auth.store'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useNavigate } from '@tanstack/react-router'
-import { useState } from 'react'
 import { useForm } from 'react-hook-form'
+import { GoogleAuthButton } from './GoogleAuthButton'
 
 export function LoginForm() {
-	const [isLoading, setIsLoading] = useState(false)
-	const setUser = useAuthStore((state) => state.setUser)
+	const { login, isLoading, error, clearError } = useAuthStore()
 	const navigate = useNavigate()
 
 	const {
@@ -22,15 +20,13 @@ export function LoginForm() {
 
 	const onSubmit = async (data: LoginFormData) => {
 		try {
-			setIsLoading(true)
-			const response = await authApi.login(data)
-			setUser(response.user)
+			clearError() // Clear any previous errors
+			await login(data)
 			navigate({ to: '/chat' })
-		} catch (error) {
-			console.error('Login failed:', error)
-			// Add toast notification here
-		} finally {
-			setIsLoading(false)
+		} catch (err) {
+			// Error is already set in the store by the login method
+			console.error('Login failed:', err)
+			// We could add toast notification here if needed
 		}
 	}
 
@@ -68,7 +64,20 @@ export function LoginForm() {
 				{isLoading ? 'Signing in...' : 'Sign in'}
 			</Button>
 
-			<div className='text-center text-sm'>
+			{error && <p className='text-sm text-red-500 mt-2'>{error}</p>}
+
+			<div className='relative my-4'>
+				<div className='absolute inset-0 flex items-center'>
+					<div className='w-full border-t border-gray-300'></div>
+				</div>
+				<div className='relative flex justify-center text-sm'>
+					<span className='bg-white px-2 text-gray-500'>Or</span>
+				</div>
+			</div>
+
+			<GoogleAuthButton />
+
+			<div className='text-center text-sm mt-4'>
 				<span className='text-gray-500'>Don't have an account?</span>{' '}
 				<Button variant='link' className='p-0' onClick={() => navigate({ to: '/register' })}>
 					Sign up

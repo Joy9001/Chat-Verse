@@ -1,13 +1,15 @@
 import { Button } from '@/components/ui/button'
 import { registerSchema, type RegisterFormData } from '@/schemas/auth.schema'
-import { authApi } from '@/services/api'
+import { useAuthStore } from '@/store/auth.store'
+import api from '@/services/api'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useNavigate } from '@tanstack/react-router'
 import { useState } from 'react'
 import { useForm } from 'react-hook-form'
+import { GoogleAuthButton } from './GoogleAuthButton'
 
 export function RegisterForm() {
-	const [isLoading, setIsLoading] = useState(false)
+	const { register: registerUser, isLoading, error, clearError } = useAuthStore()
 	const [avatarUrl, setAvatarUrl] = useState('')
 	const navigate = useNavigate()
 
@@ -22,8 +24,8 @@ export function RegisterForm() {
 
 	const generateAvatar = async () => {
 		try {
-			const response = await fetch('/api/get-avatar')
-			const data = await response.json()
+			const response = await api.get('/avatar/generate')
+			const data = response.data
 			setAvatarUrl(data.avatar)
 			setValue('avatar', data.avatar)
 		} catch (error) {
@@ -34,15 +36,14 @@ export function RegisterForm() {
 
 	const onSubmit = async (data: RegisterFormData) => {
 		try {
-			setIsLoading(true)
-			await authApi.register(data)
+			clearError() // Clear any previous errors
+			await registerUser(data)
 			navigate({ to: '/login' })
 			// Add success toast notification here
-		} catch (error) {
-			console.error('Registration failed:', error)
-			// Add error toast notification here
-		} finally {
-			setIsLoading(false)
+		} catch (err) {
+			// Error is already set in the store by the register method
+			console.error('Registration failed:', err)
+			// We could add toast notification here if needed
 		}
 	}
 
@@ -133,7 +134,20 @@ export function RegisterForm() {
 				{isLoading ? 'Creating account...' : 'Create account'}
 			</Button>
 
-			<div className='text-center text-sm'>
+			{error && <p className='text-sm text-red-500 mt-2'>{error}</p>}
+
+			<div className='relative my-4'>
+				<div className='absolute inset-0 flex items-center'>
+					<div className='w-full border-t border-gray-300'></div>
+				</div>
+				<div className='relative flex justify-center text-sm'>
+					<span className='bg-white px-2 text-gray-500'>Or</span>
+				</div>
+			</div>
+
+			<GoogleAuthButton />
+
+			<div className='text-center text-sm mt-4'>
 				<span className='text-gray-500'>Already have an account?</span>{' '}
 				<Button variant='link' className='p-0' onClick={() => navigate({ to: '/login' })}>
 					Sign in
