@@ -30,7 +30,12 @@ const server = http.createServer(app);
 
 const io = new Server(server, {
 	cors: {
-		origin: [process.env.DOMAIN, 'https://admin.socket.io'],
+		origin: [
+			process.env.DOMAIN,
+			'http://localhost:5172', // React client
+			'http://localhost:5173', // Backward compatibility
+			'https://admin.socket.io'
+		],
 		methods: ['GET', 'POST'],
 		credentials: true,
 	},
@@ -49,12 +54,13 @@ app.use(
 // cors with specific configuration for React client
 app.use(
 	cors({
-		origin:
-			process.env.NODE_ENV === 'production'
-				? process.env.DOMAIN
-				: 'http://localhost:5173',
+		origin: [
+			process.env.NODE_ENV === 'production' ? process.env.DOMAIN : 'http://localhost:5172',
+			'http://localhost:5173', // Keep this for backward compatibility
+		],
 		methods: ['GET', 'POST', 'PUT', 'DELETE'],
 		credentials: true,
+		allowedHeaders: ['Content-Type', 'Authorization'],
 	})
 );
 
