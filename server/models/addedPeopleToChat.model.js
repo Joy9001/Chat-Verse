@@ -1,4 +1,4 @@
-import { Schema, model } from 'mongoose'
+import { Schema, model } from 'mongoose';
 
 const addedPeopleToChatSchema = new Schema({
 	senderId: {
@@ -7,7 +7,7 @@ const addedPeopleToChatSchema = new Schema({
 		required: [true, 'senderId is required'],
 	},
 
-	recivers: [
+	receivers: [
 		{
 			type: Schema.Types.ObjectId,
 			ref: 'User',
@@ -22,8 +22,8 @@ const addedPeopleToChatSchema = new Schema({
 			default: [],
 		},
 	],
-})
+});
 
-const AddedPeopleToChat = model('AddedPeopleToChat', addedPeopleToChatSchema)
+const AddedPeopleToChat = model('AddedPeopleToChat', addedPeopleToChatSchema);
 
-export default AddedPeopleToChat
+export default AddedPeopleToChat;
