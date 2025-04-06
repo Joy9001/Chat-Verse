@@ -3,6 +3,7 @@ import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Separator } from '@/components/ui/separator'
+import { AUTH_ENDPOINTS, USER_ENDPOINTS } from '@/lib/config'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useNavigate } from '@tanstack/react-router'
 import { useEffect, useState } from 'react'
@@ -99,7 +100,7 @@ export default function RegisterPage() {
 
 			try {
 				// Try the API first
-				const response = await fetch('/api/get-avatar')
+				const response = await fetch(USER_ENDPOINTS.avatar)
 				if (!response.ok) throw new Error('Failed to fetch avatar')
 				const data = await response.json()
 				setAvatarUrl(data.avatar)
@@ -119,12 +120,13 @@ export default function RegisterPage() {
 	const onRegisterSubmit = async (data: RegisterFormData & DetailsFormData) => {
 		setIsSubmitting(true)
 		try {
-			const response = await fetch('/auth/register', {
+			const response = await fetch(AUTH_ENDPOINTS.register, {
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json',
 				},
 				body: JSON.stringify(data),
+				credentials: 'include', // Include cookies for session management
 			})
 
 			if (!response.ok) {
