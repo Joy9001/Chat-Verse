@@ -1,7 +1,6 @@
+import { fetchGroupMessages, fetchPrivateMessages } from '@/services/chatService';
+import { Message, useChatStore } from '@/store/chatStore';
 import { useQuery } from '@tanstack/react-query';
-import { fetchPrivateMessages, fetchGroupMessages } from '@/services/chatService';
-import { useChatStore, SelectedChat } from '@/store/chatStore';
-import { Message } from '@/store/chatStore'; // Import Message type
 
 // Define query keys for messages
 const messageKeys = {
