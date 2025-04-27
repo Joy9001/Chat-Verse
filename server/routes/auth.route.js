@@ -181,7 +181,7 @@ router.get(
 	'/google/callback',
 	passport.authenticate('google', {
 		failureRedirect: `${FRONTEND_DOMAIN}/auth/login`,
-		session: false,
+		session: true,
 	}),
 	async (req, res) => {
 		try {
