@@ -1,5 +1,5 @@
-import axios, { AxiosError, AxiosRequestConfig, AxiosResponse } from 'axios'
-import { useAuthStore } from '@/store/auth.store'
+import { useAuthStore } from '@/store/auth.store';
+import axios, { AxiosError, AxiosRequestConfig, AxiosResponse } from 'axios';
 
 /**
  * Consolidated HTTP client for API communication
@@ -66,20 +66,29 @@ http.interceptors.response.use(
     const originalRequest = error.config as AxiosRequestConfig & { _retry?: boolean }
 
     // Handle token expiration (401 Unauthorized)
-    if (error.response?.status === 401 && !originalRequest._retry) {
+    // Add check to prevent refresh attempt for the initial /auth/user check
+    if (error.response?.status === 401 && originalRequest.url !== '/auth/user' && !originalRequest._retry) {
       originalRequest._retry = true
+      console.log('Attempting token refresh for:', originalRequest.url);
 
       try {
         // Try to refresh the token
-        await axios.get(`${API_BASE_URL}/auth/refresh-token`, { withCredentials: true })
-
+        await axios.get(`${API_BASE_URL}/auth/jwt/refresh-token`, { withCredentials: true })
+        console.log('Token refresh successful, retrying original request.')
         // Retry the original request
         return http(originalRequest)
       } catch (refreshError) {
+        console.error('Token refresh failed:', refreshError);
         // If refresh fails, logout the user
-        useAuthStore.getState().logout()
+        const { isAuthenticated } = useAuthStore.getState();
+        if (isAuthenticated) {
+          useAuthStore.getState().logout(); // Call logout from the store
+        }
         return Promise.reject(refreshError)
       }
+    } else if (error.response?.status === 401 && originalRequest.url === '/auth/user') {
+      // If the specific /auth/user check fails with 401, don't try to refresh, just reject.
+      console.log('/auth/user returned 401, rejecting without refresh attempt.');
     }
 
     // Handle 403 Forbidden errors
@@ -103,8 +112,8 @@ http.interceptors.response.use(
     // Extract the most useful error message
     const errorResponse = error.response?.data as ErrorResponse
     const errorMessage =
-      errorResponse.error ||
-      errorResponse.message ||
+      errorResponse?.error ||
+      errorResponse?.message ||
       error.message ||
       'An unexpected error occurred'
 
