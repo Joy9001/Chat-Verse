@@ -7,22 +7,24 @@ import RightSideBar from './components/RightSideBar';
 
 export default function ChatPage() {
 	const { connectSocket, disconnectSocket } = useSocketStore();
-	const { isAuthenticated } = useAuthStore();
+	const { isAuthenticated, isLoading: isAuthLoading } = useAuthStore();
 
 	useEffect(() => {
-		if (isAuthenticated) {
-			console.log('ChatPage mounted and user authenticated, connecting socket...');
+		if (!isAuthLoading && isAuthenticated) {
+			console.log('ChatPage mounted, auth check complete, user authenticated. Connecting socket...');
 			connectSocket();
-		} else {
-			console.log('ChatPage mounted but user not authenticated.');
+		} else if (!isAuthLoading && !isAuthenticated) {
+			console.log('ChatPage mounted, auth check complete, user NOT authenticated.');
 			disconnectSocket();
+		} else {
+			console.log('ChatPage mounted, waiting for auth check to complete...');
 		}
 
 		return () => {
-			console.log('ChatPage unmounting or auth status changed, disconnecting socket...');
+			console.log('ChatPage unmounting or auth status/loading changed, disconnecting socket...');
 			disconnectSocket();
 		};
-	}, [isAuthenticated, connectSocket, disconnectSocket]);
+	}, [isAuthenticated, isAuthLoading, connectSocket, disconnectSocket]);
 
 	return (
 		// Mimic the structure from chat.ejs: chat-body and chat-main
