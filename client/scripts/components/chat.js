@@ -1,5 +1,4 @@
 import { handleHtmlOnlineUsers, onlineUsers } from '../socket/socket.js'
-import { deleteGroupMessage, handleSendRequestGroup, addChatPopupInitialState } from './groupChat.js'
 
 // convert utc to local time
 export const utcToLocal = (utcDate) => {
@@ -131,7 +130,7 @@ export const handleChats = (clickedUser) => {
 export const handleConversation = (receiverId) => {
 	let chat_end = document.getElementById('chats-end')
 
-	fetch('/conv-api/get-conversation', {
+	fetch('/conversations/get-conversation', {
 		method: 'POST',
 		headers: {
 			'Content-Type': 'application/json',

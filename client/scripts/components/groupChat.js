@@ -170,7 +170,7 @@ export const handleGroupChat = (clickedGroup) => {
 	_groupDescription.parentElement.dataset.tip = clickedGroup.groupDescription
 
 	// fetch conversation msgs
-	fetch('/group-chat-api/get-group-conversation', {
+	fetch('/group-chat/get-group-conversation', {
 		method: 'POST',
 		headers: {
 			'Content-Type': 'application/json',
