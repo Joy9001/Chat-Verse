@@ -12,6 +12,8 @@ import '../strategies/passport-jwt.strategy.js';
 import '../strategies/passport-local.strategy.js';
 const router = Router();
 
+const FRONTEND_DOMAIN = process.env.FRONTEND_DOMAIN || 'http://localhost:5172';
+
 router.get('/jwt/refresh-token', async (req, res) => {
 	const refreshToken = req.cookies.refreshToken;
 
@@ -164,19 +166,12 @@ router.get('/login/google', passport.authenticate('google'));
 router.get(
 	'/google/callback',
 	passport.authenticate('google', {
-		failureRedirect:
-			process.env.NODE_ENV === 'production'
-				? `${process.env.DOMAIN}/login`
-				: 'http://localhost:5173/login',
+		failureRedirect: `${FRONTEND_DOMAIN}/login`
 	}),
 	(req, res) => {
 		console.log('Google callback processed');
 		// Redirect to frontend app after successful authentication
-		res.redirect(
-			process.env.NODE_ENV === 'production'
-				? `${process.env.DOMAIN}`
-				: 'http://localhost:5173'
-		);
+		res.redirect(FRONTEND_DOMAIN);
 	}
 );
 
