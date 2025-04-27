@@ -82,12 +82,15 @@ router.get('/jwt/refresh-token', async (req, res) => {
 
 router.get('/user', limiter, isAuthenticated, (req, res) => {
 	if (req.user) {
+		console.log('User data: ', req.user);
 		// Return user data for authenticated users
 		return res.status(200).json({
 			isAuthenticated: true,
 			user: req.user,
 		});
 	}
+
+	console.log('User data: ', req.user);
 	// Return authentication status for non-authenticated users
 	return res.status(401).json({
 		isAuthenticated: false,
@@ -153,8 +156,21 @@ router.post('/login', (req, res, next) => {
 				maxAge: 1000 * 60 * 60 * 24 * 7, // 7 days
 			});
 
-			return res.status(200).json({ message: 'Login successful' });
+			// Return the user object along with the success message
+			return res.status(200).json({
+				message: 'Login successful',
+				user: { // Selectively return user fields (exclude password)
+					_id: user._id,
+					name: user.name,
+					username: user.username,
+					email: user.email,
+					avatar: user.avatar,
+					gender: user.gender,
+					// Add any other fields the frontend needs
+				}
+			});
 		} catch (tokenError) {
+			console.error("Token generation error:", tokenError); // Log the error
 			return res.status(500).json({ error: 'Token generation failed' });
 		}
 	})(req, res, next);
