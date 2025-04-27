@@ -9,6 +9,7 @@ import { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { FiLoader, FiLock, FiMail, FiMessageCircle } from 'react-icons/fi'
 import * as z from 'zod'
+import { GoogleAuthButton } from '@/components/auth/GoogleAuthButton'
 
 // Form validation schemas
 const registerSchema = z.object({
@@ -270,14 +271,9 @@ export default function RegisterPage() {
 							</div>
 						</div>
 
-						<Button
-							onClick={loginWithGoogle}
-							variant='outline'
-							className='border-primary hover:bg-primary/10 w-full max-w-sm justify-center border-2 transition-all hover:cursor-pointer'
-							type='button'>
-							<img src='/svgs/google-icon.svg' alt='google-icon' className='mr-2 h-5 w-5' />
-							Sign up with Google
-						</Button>
+						<div className="w-full max-w-sm">
+							<GoogleAuthButton />
+						</div>
 
 						<div className='text-center text-sm mt-4'>
 							<span className='text-gray-500'>Already have an account?</span>{' '}
