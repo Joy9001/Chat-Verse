@@ -82,7 +82,6 @@ router.get('/jwt/refresh-token', async (req, res) => {
 
 router.get('/user', limiter, isAuthenticated, (req, res) => {
 	if (req.user) {
-		console.log('User data: ', req.user);
 		// Return user data for authenticated users
 		return res.status(200).json({
 			isAuthenticated: true,
@@ -90,7 +89,6 @@ router.get('/user', limiter, isAuthenticated, (req, res) => {
 		});
 	}
 
-	console.log('User data: ', req.user);
 	// Return authentication status for non-authenticated users
 	return res.status(401).json({
 		isAuthenticated: false,
