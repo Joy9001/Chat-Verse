@@ -152,3 +152,4 @@ client/views/dist/
 # AI rules
 .windsurfrules
 .github/copilot-instructions.md
+.cursor/
