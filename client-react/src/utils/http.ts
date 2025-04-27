@@ -14,7 +14,7 @@ interface ErrorResponse {
 }
 
 // Environment-specific configuration
-const API_BASE_URL = 'http://localhost:3001/api'
+const API_BASE_URL = `${import.meta.env.VITE_API_BASE_URL}/api`
 
 // Default config for axios
 const axiosConfig: AxiosRequestConfig = {
@@ -42,7 +42,7 @@ http.interceptors.request.use(
     // if (token) {
     //   config.headers.Authorization = `Bearer ${token}`
     // }
-    
+
     // Add any request-specific headers or transformations
     return config
   },
@@ -64,15 +64,15 @@ http.interceptors.response.use(
   },
   async (error: AxiosError<ErrorResponse>) => {
     const originalRequest = error.config as AxiosRequestConfig & { _retry?: boolean }
-    
+
     // Handle token expiration (401 Unauthorized)
     if (error.response?.status === 401 && !originalRequest._retry) {
       originalRequest._retry = true
-      
+
       try {
         // Try to refresh the token
         await axios.get(`${API_BASE_URL}/auth/refresh-token`, { withCredentials: true })
-        
+
         // Retry the original request
         return http(originalRequest)
       } catch (refreshError) {
@@ -81,39 +81,39 @@ http.interceptors.response.use(
         return Promise.reject(refreshError)
       }
     }
-    
+
     // Handle 403 Forbidden errors
     if (error.response?.status === 403) {
       console.error('Permission denied')
       // You could redirect to a forbidden page or show a notification
     }
-    
+
     // Handle 404 Not Found errors
     if (error.response?.status === 404) {
       console.error('Resource not found')
       // You could redirect to a 404 page
     }
-    
+
     // Handle 500 Server Error
     if (error.response?.status && error.response.status >= 500) {
       console.error('Server error')
       // You could redirect to an error page or show a notification
     }
-    
+
     // Extract the most useful error message
     const errorResponse = error.response?.data as ErrorResponse
-    const errorMessage = 
+    const errorMessage =
       errorResponse.error ||
       errorResponse.message ||
       error.message ||
       'An unexpected error occurred'
-    
+
     // Enhance the error object with a more useful message
     const enhancedError = error
     if (axios.isAxiosError(enhancedError)) {
       enhancedError.message = errorMessage
     }
-    
+
     return Promise.reject(enhancedError)
   }
 )
@@ -128,12 +128,12 @@ export const api = {
   put: <T, D = Record<string, unknown>>(url: string, data?: D, config?: AxiosRequestConfig) => http.put<T>(url, data, config),
   delete: <T>(url: string, config?: AxiosRequestConfig) => http.delete<T>(url, config),
   patch: <T, D = Record<string, unknown>>(url: string, data?: D, config?: AxiosRequestConfig) => http.patch<T>(url, data, config),
-  
+
   // Additional helper methods
   uploadFile: (url: string, file: File, onProgress?: (percentage: number) => void) => {
     const formData = new FormData()
     formData.append('file', file)
-    
+
     return http.post(url, formData, {
       headers: {
         'Content-Type': 'multipart/form-data',
