@@ -1,0 +1,156 @@
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import { Skeleton } from "@/components/ui/skeleton"; // For loading state
+import { useFetchMessages } from '@/hooks/useFetchMessages'; // Import the messages hook
+import { cn } from '@/lib/utils'; // For conditional class names
+import { useAuthStore } from '@/store/auth.store'; // Import auth store
+import { useChatStore } from '@/store/chatStore'; // Import Message type
+import { format } from 'date-fns'; // For date formatting
+import React, { useEffect, useRef } from 'react';
+
+// Removed placeholder data
+
+// Function to format date
+const formatTimestamp = (timestamp: string): { time: string; date: string } => {
+    try {
+        const date = new Date(timestamp);
+        // Check if date is valid before formatting
+        if (isNaN(date.getTime())) {
+            console.warn("Invalid date timestamp received:", timestamp);
+            return { time: '--:--', date: 'Invalid Date' };
+        }
+        return {
+            time: format(date, 'HH:mm'),
+            date: format(date, 'dd MMM, yyyy'),
+        };
+    } catch (error) {
+        console.error("Error formatting timestamp:", timestamp, error);
+        return { time: '--:--', date: 'Error' };
+    }
+};
+
+export default function ChatArea() {
+    const { selectedChat, setMessages, messages: messagesFromStore } = useChatStore(); // Get store actions/state
+    const { user: currentUser } = useAuthStore();
+
+    // Use the hook to fetch messages
+    const {
+        data: fetchedMessages,
+        isLoading: isLoadingMessages, // Use loading state from query
+        isError: isErrorMessages,     // Use error state from query
+        error: messagesError,       // Use error object from query
+    } = useFetchMessages();
+
+    const scrollAreaRef = useRef<HTMLDivElement>(null);
+
+    // Update Zustand store when messages are successfully fetched
+    useEffect(() => {
+        if (fetchedMessages) {
+            console.log("Messages fetched via useQuery, updating store:", fetchedMessages);
+            setMessages(fetchedMessages);
+        }
+        // Optionally handle query error here if needed (e.g., global error state)
+        // if (isErrorMessages) { setError(messagesError?.message || 'Failed to load messages.') }
+    }, [fetchedMessages, setMessages]);
+
+    // Scroll to bottom effect (now depends on store messages and query loading state)
+    useEffect(() => {
+        if (!isLoadingMessages && scrollAreaRef.current) {
+            setTimeout(() => {
+                if (scrollAreaRef.current) {
+                    scrollAreaRef.current.scrollTo({ top: scrollAreaRef.current.scrollHeight, behavior: 'smooth' });
+                }
+            }, 100);
+        }
+        // Depend on messagesFromStore to scroll when new messages are added (e.g., via socket)
+    }, [messagesFromStore, isLoadingMessages]);
+
+    let lastMessageDate = '';
+
+    // Determine details for the profile section
+    const chatName = selectedChat?.name || '';
+    const chatAvatar = selectedChat ? (selectedChat.type === 'private' ? selectedChat.otherUser.avatar : selectedChat.avatar) : '';
+    const chatUsername = selectedChat?.type === 'private' ? selectedChat.otherUser.username : '';
+    const chatDescription = selectedChat?.type === 'group' ? selectedChat.description : '';
+
+    return (
+        <div className="flex-grow flex flex-col overflow-hidden">
+            {/* Profile Info Section (Only render if a chat is selected) */}
+            {selectedChat && (
+                <div className="flex flex-col items-center justify-around py-4 px-4 border-b border-border bg-background/50">
+                    <Avatar className="h-16 w-16 ring-2 ring-primary ring-offset-2 ring-offset-background mb-2">
+                        <AvatarImage src={chatAvatar} alt={chatName} />
+                        <AvatarFallback>{chatName.charAt(0).toUpperCase()}</AvatarFallback>
+                    </Avatar>
+                    <div className="text-center max-w-[80%]">
+                        <h1 className="truncate text-lg font-semibold text-foreground">{chatName}</h1>
+                        <p className="truncate text-sm text-muted-foreground">
+                            {selectedChat.type === 'private' ? `@${chatUsername}` : chatDescription}
+                        </p>
+                    </div>
+                </div>
+            )}
+
+            {/* Messages Area */}
+            <ScrollArea className="flex-grow p-4" ref={scrollAreaRef}>
+                <div className="flex flex-col space-y-4">
+                    {/* Loading Skeleton */}
+                    {isLoadingMessages && (
+                        <div className="space-y-4 p-4">
+                            {[...Array(5)].map((_, i) => (
+                                <div key={i} className={`flex items-end w-full ${i % 2 === 0 ? 'justify-end' : 'justify-start'}`}>
+                                    <Skeleton className={`h-12 rounded-lg ${i % 2 === 0 ? 'w-1/2' : 'w-2/3'}`} />
+                                </div>
+                            ))}
+                        </div>
+                    )}
+
+                    {/* Error Message */}
+                    {isErrorMessages && !isLoadingMessages && (
+                        <div className="flex justify-center items-center h-full">
+                            <p className="text-destructive">Error: {messagesError?.message || 'Failed to load messages.'}</p>
+                        </div>
+                    )}
+
+                    {/* No Messages Info */}
+                    {!isLoadingMessages && !isErrorMessages && messagesFromStore.length === 0 && selectedChat && (
+                        <div className="flex justify-center items-center h-full">
+                            <p className="text-muted-foreground">No messages yet. Start the conversation!</p>
+                        </div>
+                    )}
+
+                    {/* Render Messages */}
+                    {!isLoadingMessages && !isErrorMessages && messagesFromStore.map((msg) => {
+                        const { time, date } = formatTimestamp(msg.createdAt);
+                        const showDateSeparator = date !== lastMessageDate;
+                        if (showDateSeparator) lastMessageDate = date;
+                        // Use currentUser._id for comparison
+                        const isCurrentUser = msg.senderId === currentUser?._id || msg.senderId === 'currentUser';
+
+                        return (
+                            <React.Fragment key={msg._id}>
+                                {showDateSeparator && (
+                                    <div className="flex justify-center my-4">
+                                        <span className="px-3 py-1 text-xs text-muted-foreground bg-muted rounded-full">{date}</span>
+                                    </div>
+                                )}
+                                <div className={cn("flex items-end w-full", isCurrentUser ? "justify-end" : "justify-start")}>
+                                    <div className={cn(
+                                        "flex flex-col space-y-1 text-base max-w-[70%] px-4 py-2 rounded-lg",
+                                        isCurrentUser ? "bg-primary text-primary-foreground rounded-br-none" : "bg-muted text-muted-foreground rounded-bl-none"
+                                    )}>
+                                        {selectedChat?.type === 'group' && !isCurrentUser && (
+                                            <p className="text-xs font-medium text-foreground/70">{msg.senderName || 'Unknown User'}</p>
+                                        )}
+                                        <p className="whitespace-pre-wrap break-words">{msg.message}</p>
+                                        <span className={cn("text-xs self-end pt-1", isCurrentUser ? "text-primary-foreground/70" : "text-muted-foreground/70")}>{time}</span>
+                                    </div>
+                                </div>
+                            </React.Fragment>
+                        );
+                    })}
+                </div>
+            </ScrollArea>
+        </div>
+    );
+} 
