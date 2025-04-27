@@ -16,12 +16,24 @@ const loginRoute = createRoute({
 	getParentRoute: () => rootRoute,
 	path: '/auth/login',
 	component: LoginPage,
+	beforeLoad: () => {
+		const { isAuthenticated } = useAuthStore.getState()
+		if (isAuthenticated) {
+			throw redirect({ to: '/chat' })
+		}
+	},
 })
 
 const registerRoute = createRoute({
 	getParentRoute: () => rootRoute,
 	path: '/auth/register',
 	component: RegisterPage,
+	beforeLoad: () => {
+		const { isAuthenticated } = useAuthStore.getState()
+		if (isAuthenticated) {
+			throw redirect({ to: '/chat' })
+		}
+	},
 })
 
 // Chat routes
