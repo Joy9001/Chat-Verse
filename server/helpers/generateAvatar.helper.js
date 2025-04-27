@@ -1,22 +1,22 @@
-import { createAvatar } from '@dicebear/core'
-import * as avatars from '@dicebear/collection'
+import * as avatars from "@dicebear/collection";
+import { createAvatar } from "@dicebear/core";
 
 const generateAvatar = () => {
-	const avatar = createAvatar(avatars.adventurer, {
-		seed: Math.floor(Math.random() * 10000),
-	})
+  const avatar = createAvatar(avatars.adventurer, {
+    seed: Math.floor(Math.random() * 10000),
+  });
 
-	const dataUri = avatar.toDataUriSync()
-	return dataUri
-}
+  const dataUri = avatar.toDataUri();
+  return dataUri;
+};
 
 const generateGroupAvatar = () => {
-	const groupAvatar = createAvatar(avatars.thumbs, {
-		seed: Math.floor(Math.random() * 10000),
-	})
+  const groupAvatar = createAvatar(avatars.thumbs, {
+    seed: Math.floor(Math.random() * 10000),
+  });
 
-	const dataUri = groupAvatar.toDataUriSync()
-	return dataUri
-}
+  const dataUri = groupAvatar.toDataUriSync();
+  return dataUri;
+};
 
-export { generateAvatar, generateGroupAvatar }
+export { generateAvatar, generateGroupAvatar };
