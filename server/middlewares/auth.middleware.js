@@ -33,10 +33,7 @@ export const isAuthenticated = (req, res, next) => {
 
 				if (!refreshToken) {
 					console.log('No refresh token exists');
-					if (req.url === '/login' || req.url === '/register') {
-						return next();
-					}
-					return res.redirect('/auth/login');
+					return res.status(401).json({ error: 'Unauthorized: Missing token' });
 				}
 
 				const refreshtokendb = await Auth.findOne({
@@ -44,10 +41,7 @@ export const isAuthenticated = (req, res, next) => {
 				});
 				if (!refreshtokendb) {
 					console.log('Refresh token not found');
-					if (req.url === '/login' || req.url === '/register') {
-						return next();
-					}
-					return res.redirect('/auth/login');
+					return res.status(401).json({ error: 'Unauthorized: Invalid session' });
 				}
 
 				// Directly use the refresh token without decryption
@@ -110,7 +104,15 @@ export const isAuthenticated = (req, res, next) => {
 			}
 		}
 
-		console.log('Info in isAuthenticated: ', info.message);
-		next();
+		console.log('Info in isAuthenticated: ', info?.message);
+		if (!user && info?.message !== 'No auth token') {
+			console.log('JWT Auth failed:', info?.message || 'Unknown reason');
+			return res.status(401).json({ error: 'Unauthorized: Invalid token' });
+		}
+
+		if (!req.user) {
+			return res.status(401).json({ error: 'Unauthorized' });
+		}
+
 	})(req, res, next);
 };
