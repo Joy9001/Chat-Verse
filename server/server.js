@@ -32,6 +32,7 @@ const io = new Server(server, {
 	cors: {
 		origin: [
 			process.env.DOMAIN,
+			process.env.FRONTEND_DOMAIN,
 			'http://localhost:5172', // React client
 			'http://localhost:5173', // Backward compatibility
 			'https://admin.socket.io',
@@ -109,17 +110,23 @@ instrument(io, {
 
 io.engine.use(onlyForHandshake(sessionMiddleware));
 io.engine.use(onlyForHandshake(passport.session()));
+
+// Explicitly check if passport successfully attached the user to the request
 io.engine.use(
 	onlyForHandshake((req, res, next) => {
-		// console.log('req user is handshake: ', req.user)
 		if (req.user) {
-			next();
+			// User authenticated via session/passport
+			console.log('Socket handshake authorized for user:', req.user._id);
+			next(); // Allow connection
 		} else {
-			res.writeHead(401);
-			res.end();
+			// No authenticated user found by passport
+			console.error('Socket handshake UNAUTHORIZED: No req.user found after passport.session()');
+			res.writeHead(401, { 'Content-Type': 'application/json' });
+			res.end(JSON.stringify({ message: 'Socket Unauthorized' }));
 		}
 	})
 );
+
 io.engine.on('connection_error', (err) => {
 	console.error('Error connecting to socket.io: ', err.message);
 });
@@ -155,7 +162,7 @@ const getOnlineUsers = async (userSockets) => {
 };
 
 io.on('connection', async (socket) => {
-	// console.log('user in socket', socket.request.user)
+	console.log('user in socket', socket.request.user)
 	const userId = socket.request.user._id;
 	if (userId) {
 		userSockets[userId] = socket.id;
