@@ -16,7 +16,7 @@ export function GoogleAuthButton() {
     <Button
       type="button"
       variant="outline"
-      className="relative flex items-center justify-center gap-2 w-full border-gray-300 bg-white hover:bg-gray-50 hover:border-gray-400 text-gray-800 transition-colors"
+      className="relative flex items-center justify-center gap-3 w-full border-2 border-gray-300 bg-white text-gray-800 transition-all duration-300 hover:border-primary/60 hover:bg-gray-50 hover:shadow-md dark:bg-gray-900 dark:text-white dark:border-gray-700 dark:hover:border-primary/70 dark:hover:bg-gray-800 h-11 rounded-lg hover:cursor-pointer"
       onClick={handleClick}
       disabled={isLoading}
       onMouseEnter={() => setIsHovered(true)}
@@ -24,17 +24,20 @@ export function GoogleAuthButton() {
     >
       {isLoading ? (
         <>
-          <div className="h-5 w-5 mr-2">
+          <div className="h-5 w-5 mr-1 flex-shrink-0">
             <svg className="animate-spin h-5 w-5 text-primary" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
               <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
               <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
             </svg>
           </div>
-          Connecting...
+          <span className="animate-pulse">Connecting to Google...</span>
         </>
       ) : (
         <>
-          <div className={`transition-transform duration-300 ${isHovered ? 'scale-110' : 'scale-100'}`}>
+          <div
+            className={`transition-all duration-300 ${isHovered ? 'scale-110 rotate-3' : 'scale-100 rotate-0'
+              } flex-shrink-0`}
+          >
             <svg
               xmlns="http://www.w3.org/2000/svg"
               viewBox="0 0 24 24"
@@ -59,7 +62,15 @@ export function GoogleAuthButton() {
               />
             </svg>
           </div>
-          <span className="font-medium">Continue with Google</span>
+          <span className={`font-medium transition-transform duration-300 ${isHovered ? 'translate-x-1' : 'translate-x-0'
+            }`}>
+            Continue with Google
+          </span>
+          {isHovered && (
+            <span className="absolute right-4 opacity-70 transition-all duration-300">
+              →
+            </span>
+          )}
         </>
       )}
     </Button>
