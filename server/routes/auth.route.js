@@ -166,12 +166,57 @@ router.get('/login/google', passport.authenticate('google'));
 router.get(
 	'/google/callback',
 	passport.authenticate('google', {
-		failureRedirect: `${FRONTEND_DOMAIN}/login`
+		failureRedirect: `${FRONTEND_DOMAIN}/auth/login`,
+		session: false,
 	}),
-	(req, res) => {
-		console.log('Google callback processed');
-		// Redirect to frontend app after successful authentication
-		res.redirect(FRONTEND_DOMAIN);
+	async (req, res) => {
+		try {
+			if (!req.user) {
+				return res.redirect(`${FRONTEND_DOMAIN}/auth/login?error=Authentication failed`);
+			}
+
+			const userId = req.user._id;
+
+			const accessToken = jwt.sign(
+				{ user: userId },
+				process.env.ACCESS_TOKEN_SECRET,
+				{ expiresIn: '30m' }
+			);
+
+			const refreshToken = jwt.sign(
+				{ user: userId },
+				process.env.REFRESH_TOKEN_SECRET,
+				{ expiresIn: '7d' }
+			);
+
+			let authEntry = await Auth.findOne({ user: userId });
+			if (!authEntry) {
+				authEntry = new Auth({ user: userId, refreshToken });
+			} else {
+				authEntry.refreshToken = refreshToken;
+			}
+			await authEntry.save();
+
+			res.cookie('accessToken', accessToken, {
+				httpOnly: true,
+				secure: true,
+				sameSite: 'strict',
+				maxAge: 1000 * 60 * 30,
+			});
+
+			res.cookie('refreshToken', refreshToken, {
+				httpOnly: true,
+				secure: true,
+				sameSite: 'strict',
+				maxAge: 1000 * 60 * 60 * 24 * 7,
+			});
+
+			console.log('Google auth successful, tokens set, redirecting to frontend.');
+			res.redirect(FRONTEND_DOMAIN);
+		} catch (error) {
+			console.error('Error during Google callback token handling:', error);
+			res.redirect(`${FRONTEND_DOMAIN}/auth/login?error=Internal Server Error`);
+		}
 	}
 );
 
