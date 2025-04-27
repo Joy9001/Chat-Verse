@@ -97,14 +97,6 @@ app.use(sessionMiddleware);
 app.use(passport.initialize());
 app.use(passport.session());
 
-// static files - serve React client files
-app.use(
-	express.static(path.resolve('client-react/dist'), {
-		setHeaders: (res, path) => {
-			res.setHeader('Cache-Control', 'public, max-age=31536000'); // Cache static files for 1 year
-		},
-	})
-);
 
 // admin ui for socket.io
 instrument(io, {
@@ -267,11 +259,6 @@ app.use('/api', indexRouter);
 // API 404 route
 app.get('/api/*', function (req, res) {
 	return res.status(404).json({ error: 'API endpoint not found', code: 404 });
-});
-
-// Serve React app for all other routes (SPA catch-all route)
-app.get('*', function (req, res) {
-	res.sendFile(path.resolve('client-react/dist/index.html'));
 });
 
 server.listen(PORT, async () => {
