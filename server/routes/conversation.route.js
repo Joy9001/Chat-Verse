@@ -5,6 +5,87 @@ import User from '../models/users.model.js';
 
 const router = Router();
 
+router.get('/chats', async (req, res) => {
+	try {
+		const userId = req.user._id; // Assuming passport attaches user to req.user
+
+		if (!userId) {
+			return res.status(401).json({ message: 'User not authenticated' });
+		}
+
+		// Fetch all conversations (private and group) where the user is a participant
+		const conversations = await Conversation.find({ participants: userId })
+			.populate({
+				path: 'participants',
+				select: 'name username avatar _id', // Select necessary fields for users
+			})
+			// Optionally populate last message if needed, but keep it lean for list view
+			// .populate({ path: 'messages', options: { sort: { createdAt: -1 }, limit: 1 } })
+			.lean(); // Use .lean() for plain JS objects
+
+		const privateChats = [];
+		const groupChats = [];
+
+		for (const conv of conversations) {
+			// Calculate unread count for the current user
+			let unreadCount = 0;
+			const unreadInfo = conv.unreadMsgCount?.find(uc => uc.receivers.some(r => r.equals(userId)));
+			if (unreadInfo) {
+				unreadCount = unreadInfo.unreadCount;
+			}
+
+
+			if (conv.isGroup) {
+				// Format Group Chat
+				groupChats.push({
+					id: conv._id.toString(), // Use MongoDB _id as the chat ID
+					name: conv.groupName,
+					avatar: conv.groupAvatar,
+					description: conv.groupDescription,
+					participants: conv.participants.map(p => ({
+						id: p._id.toString(),
+						name: p.name,
+						username: p.username,
+						avatar: p.avatar,
+					})),
+					unreadCount: unreadCount,
+					type: 'group',
+					// Add other necessary fields for GroupChat type on frontend
+				});
+			} else {
+				// Format Private Chat
+				const otherParticipant = conv.participants.find(p => !p._id.equals(userId));
+				if (otherParticipant) { // Ensure there is another participant
+					privateChats.push({
+						id: conv._id.toString(), // Use MongoDB _id as the chat ID
+						// For private chats, name/avatar come from the other user
+						name: otherParticipant.name,
+						avatar: otherParticipant.avatar,
+						otherUser: {
+							id: otherParticipant._id.toString(),
+							name: otherParticipant.name,
+							username: otherParticipant.username,
+							avatar: otherParticipant.avatar,
+						},
+						unreadCount: unreadCount,
+						isBlocked: conv.isBlocked,
+						blockedByMe: conv.blockedBy?.equals(userId), // Check if current user blocked
+						amIBlocked: conv.isBlocked && !conv.blockedBy?.equals(userId), // Check if blocked by other
+						type: 'private',
+						// Add other necessary fields for PrivateChat type on frontend
+					});
+				}
+			}
+		}
+
+		res.status(200).json({ privateChats, groupChats });
+
+	} catch (error) {
+		console.error('Error fetching chats:', error);
+		res.status(500).json({ message: 'Internal server error fetching chats' });
+	}
+});
+
 router.post('/get-conversation', async (req, res) => {
 	const senderId = req.user._id;
 	let { receiverId } = req.body;
