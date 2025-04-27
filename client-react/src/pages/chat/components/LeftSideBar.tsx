@@ -11,10 +11,17 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/comp
 import { useAuthStore } from '@/store/auth.store';
 import { GroupChat, PrivateChat, useChatStore } from '@/store/chatStore';
 import { useSocketStore } from '@/store/socketStore';
+import { api } from '@/utils/http';
+import { useQuery } from "@tanstack/react-query";
 import { LogOut, UserPlus } from 'lucide-react';
 import React, { useEffect, useState } from 'react';
 import { toast } from "sonner";
 
+// Interface for the expected API response
+interface ChatsApiResponse {
+    privateChats: PrivateChat[];
+    groupChats: GroupChat[];
+}
 
 // Type for individual chat item props
 interface ChatItemProps {
@@ -68,41 +75,92 @@ const ChatListItem: React.FC<ChatItemProps> = ({ chat, isActive, isOnline, onCli
 export default function LeftSideBar() {
     const { user, setUser, logout: storeLogout } = useAuthStore();
     const {
-        privateChats,
-        groupChats,
         selectedChat,
         setSelectedChat,
-        // setPrivateChats, // Keep setters if needed for socket updates
-        // setGroupChats
+        setPrivateChats,
+        setGroupChats,
     } = useChatStore();
     const { onlineUsers } = useSocketStore();
 
     const [isChangeDetailsModalOpen, setIsChangeDetailsModalOpen] = useState(false);
-    const [editName, setEditName] = useState(user?.name || '');
-    const [editUsername, setEditUsername] = useState(user?.username || '');
-    const [editGender, setEditGender] = useState(user?.gender || 'male');
-    const [editAvatar, setEditAvatar] = useState(user?.avatar || '');
+    const [editName, setEditName] = useState('');
+    const [editUsername, setEditUsername] = useState('');
+    const [editGender, setEditGender] = useState<'male' | 'female' | 'other'>('male');
+    const [editAvatar, setEditAvatar] = useState('');
 
     useEffect(() => {
         if (user) {
+            console.log("[LeftSideBar] Updating edit form state from user:", user);
             setEditName(user.name);
             setEditUsername(user.username);
-            setEditGender(user.gender as 'male' | 'female' | 'other'); // Ensure type safety
+            const validGender = ['male', 'female', 'other'].includes(user.gender) ? user.gender as 'male' | 'female' | 'other' : 'male';
+            setEditGender(validGender);
             setEditAvatar(user.avatar);
+        } else {
+            setEditName('');
+            setEditUsername('');
+            setEditGender('male');
+            setEditAvatar('');
         }
-        // TODO: If not fetching initial chats via hook, how are lists populated?
     }, [user]);
 
-    const handleAvatarChange = async () => {
-        console.log("Fetching new avatar...");
+    const fetchChatsFn = async (): Promise<ChatsApiResponse> => {
         try {
-            const res = await fetch('/api/get-avatar');
-            if (!res.ok) throw new Error('Failed to fetch avatar');
-            const data = await res.json();
-            setEditAvatar(data.avatar); // Update local state for modal preview
-        } catch (err) {
-            console.error('Error fetching avatar:', err);
-            toast.error("Failed to fetch new avatar.");
+            console.log("[TanStack Query] Fetching initial chat lists via api.get...");
+            const response = await api.get<ChatsApiResponse>('/conversations/chats');
+            const data = response.data;
+            if (!data || !Array.isArray(data.privateChats) || !Array.isArray(data.groupChats)) {
+                console.error("[TanStack Query] Invalid chat data structure received:", data);
+                throw new Error("Invalid chat data format received from API.");
+            }
+            console.log("[TanStack Query] Fetched chats via api.get:", data);
+            return data;
+        } catch (error: any) {
+            console.error("[TanStack Query] Error in fetchChatsFn:", error);
+            throw new Error(error.message || 'Failed to fetch chats');
+        }
+    };
+
+    const { data: chatData, error: chatError, isLoading: isLoadingChats } = useQuery<ChatsApiResponse, Error>({
+        queryKey: ['chats', user?._id],
+        queryFn: fetchChatsFn,
+        enabled: !!user,
+        staleTime: 1000 * 60 * 5,
+        gcTime: 1000 * 60 * 15,
+        retry: 1,
+    });
+
+    useEffect(() => {
+        if (chatData) {
+            console.log("[LeftSideBar] Updating chat store with fetched data:", chatData);
+            setPrivateChats(chatData.privateChats);
+            setGroupChats(chatData.groupChats);
+        }
+    }, [chatData, setPrivateChats, setGroupChats]);
+
+    useEffect(() => {
+        if (chatError) {
+            console.error('[TanStack Query] Final error state after fetch/retry:', chatError);
+            toast.error(`Failed to load chat lists: ${chatError.message}`);
+        }
+    }, [chatError]);
+
+    useEffect(() => {
+        if (!user) {
+            console.log("[LeftSideBar] User logged out, clearing chat store.");
+            setPrivateChats([]);
+            setGroupChats([]);
+        }
+    }, [user, setPrivateChats, setGroupChats]);
+
+    const handleAvatarChange = async () => {
+        console.log("Fetching new avatar via api.get...");
+        try {
+            const response = await api.get<{ avatar: string }>('/get-avatar');
+            setEditAvatar(response.data.avatar);
+        } catch (error: any) {
+            console.error('Error fetching avatar:', error);
+            toast.error(error.message || "Failed to fetch new avatar.");
         }
     };
 
@@ -110,8 +168,6 @@ export default function LeftSideBar() {
         if (!user) return;
 
         const updatedDetails = {
-            // Use correct id field if it exists in your User type
-            // id: user.id, 
             name: editName,
             username: editUsername,
             gender: editGender,
@@ -120,21 +176,21 @@ export default function LeftSideBar() {
         console.log("Submitting changes:", updatedDetails);
 
         try {
-            // --- Placeholder Success Logic (Update with actual API call later) ---
             await new Promise(resolve => setTimeout(resolve, 500));
-            // Construct the updated user object based on your actual User type structure
-            const updatedUser = { ...user, ...updatedDetails };
-            const result = { success: true, user: updatedUser, message: 'Details updated successfully!' };
-            // --- End Placeholder --- 
+            const updatedAuthStoreUser = {
+                ...user,
+                ...updatedDetails
+            };
+            const result = { success: true, user: updatedAuthStoreUser, message: 'Details updated successfully!' };
 
             if (result.success) {
-                setUser(result.user); // Update the user in the Zustand store
+                setUser(result.user);
                 toast.success(result.message);
                 setIsChangeDetailsModalOpen(false);
             } else {
                 toast.error(result.message || 'Failed to update details.');
                 if (result.message === 'Username already taken') {
-                    setEditUsername(user.username); // Reset username from original store user
+                    setEditUsername(user.username);
                 }
             }
         } catch (err: any) {
@@ -151,34 +207,22 @@ export default function LeftSideBar() {
 
     const handleChatSelect = (chat: PrivateChat | GroupChat) => {
         console.log("Selected chat:", chat.id, chat.type);
-        setSelectedChat(chat); // Update the selected chat in the store
-        // TODO: Fetch messages for this chat -> this should trigger automatically
-        // when selectedChat changes if using useEffect in ChatArea or via a dedicated action
+        setSelectedChat(chat);
     };
 
+    const privateChats = useChatStore((state) => state.privateChats);
+    const groupChats = useChatStore((state) => state.groupChats);
+
     if (!user) {
-        // Render a loading state or redirect to login if not authenticated
-        // This depends on how initial auth check is handled
-        // return <div>Loading user...</div>; // Or redirect, or null
-        // For now, let's assume the parent route handles unauthorized access
-        // and just render nothing or a minimal sidebar if no user.
         return null;
     }
 
-    // --- DEBUGGING LOGS ---
-    console.log('[LeftSideBar] User object:', user);
-    console.log('[LeftSideBar] User avatar URL:', user?.avatar);
-    // --- END DEBUGGING LOGS ---
-
     return (
         <div className="relative flex h-full w-[35%] flex-col rounded-l-xl border-r border-border bg-background/80">
-            {/* Header section */}
             <div className="m-4 flex h-16 items-center justify-between rounded-lg border-2 border-primary bg-primary p-2 shadow-md">
-                {/* Title */}
                 <div className="ml-4 text-xl font-bold text-primary-foreground max-lg:text-lg max-md:text-base max-sm:text-sm">
                     <h1>ChatVerse</h1>
                 </div>
-                {/* Add User/Group Button & Dialog */}
                 <Dialog>
                     <TooltipProvider delayDuration={100}>
                         <Tooltip>
@@ -200,7 +244,6 @@ export default function LeftSideBar() {
                     <DialogContent className="sm:max-w-[425px] bg-card text-card-foreground">
                         <DialogHeader>
                             <DialogTitle>Add New Chat / Group</DialogTitle>
-                            {/* TODO: Implement Tabs from addUsers.ejs (New Chat / New Group) */}
                         </DialogHeader>
                         <div className="p-4">
                             Placeholder for Add User/Group Content
@@ -209,7 +252,6 @@ export default function LeftSideBar() {
                 </Dialog>
             </div>
 
-            {/* All messages title & User Details Trigger */}
             <div className="mx-5 mb-2 flex items-center justify-between text-foreground">
                 <h1 className="text-2xl font-bold max-lg:text-lg max-md:text-base max-sm:hidden">All Chats</h1>
                 <Dialog open={isChangeDetailsModalOpen} onOpenChange={setIsChangeDetailsModalOpen}>
@@ -219,25 +261,23 @@ export default function LeftSideBar() {
                                 <DialogTrigger asChild>
                                     <div className="avatar online cursor-pointer">
                                         <Avatar className="h-12 w-12 scale-100 transition delay-100 duration-200 ease-in-out hover:scale-110">
-                                            <AvatarImage src={user?.avatar} alt={user?.name} />
-                                            <AvatarFallback>{user?.name?.charAt(0).toUpperCase()}</AvatarFallback>
+                                            <AvatarImage src={user?.avatar || ''} alt={user?.name || 'User'} />
+                                            <AvatarFallback>{user?.name?.charAt(0).toUpperCase() || 'U'}</AvatarFallback>
                                         </Avatar>
                                     </div>
                                 </DialogTrigger>
                             </TooltipTrigger>
                             <TooltipContent side="left" className="bg-accent text-accent-foreground">
-                                <p>{user.name}</p>
+                                <p>{user?.name || 'User Profile'}</p>
                             </TooltipContent>
                         </Tooltip>
                     </TooltipProvider>
 
-                    {/* Change User Details Modal Content */}
                     <DialogContent className="sm:max-w-md bg-card text-card-foreground">
                         <DialogHeader>
                             <DialogTitle>Edit Profile</DialogTitle>
                         </DialogHeader>
                         <div className="flex flex-col items-center space-y-4 p-4">
-                            {/* Avatar */}
                             <div className="flex flex-col items-center space-y-3">
                                 <Label htmlFor="change-details-profilePic" className="text-lg font-semibold text-primary">
                                     Profile Picture
@@ -248,17 +288,14 @@ export default function LeftSideBar() {
                                 </Avatar>
                                 <Button variant="outline" size="sm" onClick={handleAvatarChange}>Change</Button>
                             </div>
-                            {/* Name Input */}
                             <div className="grid w-full max-w-sm items-center gap-1.5">
                                 <Label htmlFor="change-details-name" className="text-primary">Name</Label>
                                 <Input id="change-details-name" type="text" value={editName} onChange={(e) => setEditName(e.target.value)} placeholder="Enter your name" className="bg-background text-foreground focus:border-primary" />
                             </div>
-                            {/* Username Input */}
                             <div className="grid w-full max-w-sm items-center gap-1.5">
                                 <Label htmlFor="change-details-username" className="text-primary">Username</Label>
                                 <Input id="change-details-username" type="text" value={editUsername} onChange={(e) => setEditUsername(e.target.value)} placeholder="Enter your username" className="bg-background text-foreground focus:border-primary" />
                             </div>
-                            {/* Gender Select */}
                             <div className="grid w-full max-w-sm items-center gap-1.5">
                                 <Label htmlFor="change-details-gender" className="text-primary">Gender</Label>
                                 <Select value={editGender} onValueChange={(value) => setEditGender(value as 'male' | 'female' | 'other')}>
@@ -268,6 +305,7 @@ export default function LeftSideBar() {
                                     <SelectContent>
                                         <SelectItem value="male">Male</SelectItem>
                                         <SelectItem value="female">Female</SelectItem>
+                                        <SelectItem value="other">Other</SelectItem>
                                     </SelectContent>
                                 </Select>
                             </div>
@@ -285,20 +323,19 @@ export default function LeftSideBar() {
                 </Dialog>
             </div>
 
-            {/* Chat List Area - Render directly from store state */}
             <ScrollArea className="flex-grow px-2 mb-2">
                 <Accordion type="multiple" defaultValue={['private-chats', 'group-chats']} className="w-full">
                     <AccordionItem value="private-chats" className="border-b-0">
                         <AccordionTrigger className="px-4 py-2 text-lg font-bold hover:no-underline text-foreground/80">
-                            Private Chats
+                            Private Chats {isLoadingChats && <span className="ml-2 text-xs font-normal">(Loading...)</span>}
                         </AccordionTrigger>
                         <AccordionContent className="pb-0">
                             <div className="flex flex-col space-y-1 px-1">
-                                {privateChats.length === 0 ? (
+                                {privateChats.length === 0 && !isLoadingChats ? (
                                     <p className="p-4 text-center text-sm text-muted-foreground">No private chats yet.</p>
                                 ) : (
                                     privateChats.map((chat) => {
-                                        const isUserOnline = onlineUsers.includes(chat.otherUser.username);
+                                        const isUserOnline = chat.otherUser && onlineUsers.includes(chat.otherUser.username);
                                         return (
                                             <ChatListItem
                                                 key={chat.id}
@@ -316,11 +353,11 @@ export default function LeftSideBar() {
 
                     <AccordionItem value="group-chats" className="border-b-0">
                         <AccordionTrigger className="px-4 py-2 text-lg font-bold hover:no-underline text-foreground/80">
-                            Group Chats
+                            Group Chats {isLoadingChats && <span className="ml-2 text-xs font-normal">(Loading...)</span>}
                         </AccordionTrigger>
                         <AccordionContent className="pb-0">
                             <div className="flex flex-col space-y-1 px-1">
-                                {groupChats.length === 0 ? (
+                                {groupChats.length === 0 && !isLoadingChats ? (
                                     <p className="p-4 text-center text-sm text-muted-foreground">No group chats yet.</p>
                                 ) : (
                                     groupChats.map((chat) => (
@@ -337,21 +374,6 @@ export default function LeftSideBar() {
                     </AccordionItem>
                 </Accordion>
             </ScrollArea>
-
-            {/* Old Alert Section - Replaced by sonner toasts */}
-            {/*
-            {notification.show && (
-                 <div className="absolute bottom-0 left-0 right-0 p-4 pb-6 z-10">
-                    <Alert variant="default" className="bg-background border-primary text-primary">
-                        <Info className="h-4 w-4 stroke-primary" />
-                        <AlertTitle>Notification</AlertTitle>
-                        <AlertDescription>
-                            {notification.message}
-                         </AlertDescription>
-                    </Alert>
-                 </div>
-             )}
-             */}
         </div>
     );
 } 
