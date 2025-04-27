@@ -8,7 +8,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { useNavigate } from '@tanstack/react-router'
 import { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
-import { FiLoader, FiLock, FiMail } from 'react-icons/fi'
+import { FiLoader, FiLock, FiMail, FiMessageCircle } from 'react-icons/fi'
 import * as z from 'zod'
 
 // Form validation schemas
@@ -166,7 +166,7 @@ export default function RegisterPage() {
 			style={{
 				backgroundImage: 'url(/assets/bg-image.png)',
 			}}>
-			<div className='relative flex w-full max-w-4xl flex-col rounded-xl shadow-2xl backdrop-blur-2xl md:h-auto md:flex-row'>
+			<div className='relative flex w-full max-w-4xl flex-col rounded-xl shadow-2xl backdrop-blur-2xl md:h-auto md:flex-row overflow-hidden'>
 				{/* Side Image Section - Left side */}
 				<div className='hidden overflow-hidden rounded-l-xl md:block md:w-1/2 lg:w-3/5'>
 					<img
@@ -179,14 +179,18 @@ export default function RegisterPage() {
 				{/* Register Form Section - Right side */}
 				<div className='w-full rounded-xl md:w-1/2 md:rounded-l-none lg:w-2/5'>
 					<div className='flex h-full w-full flex-col items-center justify-center p-6 md:p-8'>
-						<div className='mb-4 flex flex-col items-center md:mb-6'>
-							<h1 className='mt-2 text-2xl font-bold text-black md:mt-4 md:text-3xl'>Register</h1>
-							<p className='mt-1 text-center text-sm text-gray-600'>Create your account to get started</p>
+						<div className='mb-6 flex flex-col items-center'>
+							<div className='flex items-center mb-2 md:hidden'>
+								<FiMessageCircle className='h-6 w-6 mr-2 text-primary' />
+								<h2 className='text-xl font-bold text-primary'>Chat App</h2>
+							</div>
+							<h1 className='text-2xl md:text-3xl font-bold text-gray-900'>Create Account</h1>
+							<p className='text-sm text-gray-600 mt-1 text-center'>Sign up to get started with Chat App</p>
 						</div>
 
-						<form className='w-full max-w-sm space-y-4 md:space-y-6' onSubmit={(e) => e.preventDefault()}>
+						<form className='w-full max-w-sm space-y-4' onSubmit={(e) => e.preventDefault()}>
 							<div className='space-y-2'>
-								<label htmlFor='email' className='text-base font-semibold text-black md:text-lg'>
+								<label htmlFor='email' className='text-base font-semibold text-gray-900 md:text-lg'>
 									Email
 								</label>
 								<div className='relative'>
@@ -209,7 +213,7 @@ export default function RegisterPage() {
 							</div>
 
 							<div className='space-y-2'>
-								<label htmlFor='password' className='text-base font-semibold text-black md:text-lg'>
+								<label htmlFor='password' className='text-base font-semibold text-gray-900 md:text-lg'>
 									Password
 								</label>
 								<div className='relative'>
@@ -234,7 +238,7 @@ export default function RegisterPage() {
 							<Button
 								onClick={handleOpenDetailsModal}
 								disabled={isLoading}
-								className='border-primary bg-primary hover:bg-primary/90 w-full border text-white transition-all'>
+								className='border-primary bg-primary hover:bg-primary/90 w-full border text-white transition-all mt-4'>
 								{isLoading ? (
 									<span className='flex items-center justify-center'>
 										<FiLoader className='mr-2 h-4 w-4 animate-spin' />
@@ -258,7 +262,14 @@ export default function RegisterPage() {
 							isAvatarLoading={isAvatarLoading}
 						/>
 
-						<Separator className='my-4 w-full max-w-sm bg-gray-300 md:my-6' />
+						<div className='relative my-4 w-full max-w-sm'>
+							<div className='absolute inset-0 flex items-center'>
+								<div className='w-full border-t border-gray-300'></div>
+							</div>
+							<div className='relative flex justify-center text-sm'>
+								<span className='bg-white px-2 text-gray-500'>Or</span>
+							</div>
+						</div>
 
 						<Button
 							onClick={loginWithGoogle}
@@ -269,18 +280,18 @@ export default function RegisterPage() {
 							Sign up with Google
 						</Button>
 
-						<p className='mt-4 text-sm text-black md:text-base'>
-							Already have an account?{' '}
-							<a href='/auth/login' className='text-primary font-medium hover:underline'>
+						<div className='text-center text-sm mt-4'>
+							<span className='text-gray-500'>Already have an account?</span>{' '}
+							<Button variant='link' className='p-0 hover:cursor-pointer' onClick={() => navigate({ to: '/auth/login' })}>
 								Login
-							</a>
-						</p>
+							</Button>
+						</div>
 					</div>
 				</div>
 
 				{/* Alert - Fixed at the bottom center with a z-index */}
 				{alert.show && (
-					<div className='fixed right-0 bottom-4 left-0 z-50 flex justify-center'>
+					<div className='fixed bottom-4 left-0 right-0 z-50 flex justify-center'>
 						<Alert
 							className={`w-auto max-w-md rounded-md px-6 py-3 shadow-lg ${alert.type === 'success' ? 'bg-green-600' : 'bg-red-600'
 								} text-white`}>
