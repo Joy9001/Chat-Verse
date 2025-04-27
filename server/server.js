@@ -55,9 +55,8 @@ app.use(
 app.use(
 	cors({
 		origin: [
-			process.env.NODE_ENV === 'production'
-				? process.env.DOMAIN
-				: 'http://localhost:5172',
+			process.env.DOMAIN,
+			process.env.FRONTEND_DOMAIN || 'http://localhost:5172',
 			'http://localhost:5173', // Keep this for backward compatibility
 		],
 		methods: ['GET', 'POST', 'PUT', 'DELETE'],
