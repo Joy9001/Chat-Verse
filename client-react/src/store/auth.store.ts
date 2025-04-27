@@ -1,8 +1,9 @@
-import axios from 'axios';
-import { api } from '../utils/http';
+// import axios from 'axios'; // Use api object instead
+import axios from 'axios'; // Keep axios import for type checking if needed
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import type { AuthState, LoginCredentials, RegisterCredentials, User, AuthResponse } from '../types/auth.types';
+import type { AuthResponse, AuthState, LoginCredentials, RegisterCredentials, User } from '../types/auth.types';
+import { api } from '../utils/http'; // Use the interceptor-equipped api instance
 
 interface AuthStore extends AuthState {
   // User data
@@ -27,9 +28,11 @@ interface AuthStore extends AuthState {
   clearError: () => void;
 }
 
+// const API_BASE_URL = `${import.meta.env.VITE_API_BASE_URL}/api` // Not needed here anymore
+
 export const useAuthStore = create<AuthStore>()(
   persist(
-    (set) => ({
+    (set, get) => ({
       // State
       user: null,
       token: null,
@@ -44,70 +47,78 @@ export const useAuthStore = create<AuthStore>()(
       setError: (error) => set({ error }),
       clearError: () => set({ error: null }),
 
-      // API methods
-      login: async (credentials) => {
+      // API methods using 'api' object
+      login: async (credentials: LoginCredentials) => {
         try {
           set({ isLoading: true, error: null });
+          // Use api.post with correct type arguments
           const response = await api.post<AuthResponse, LoginCredentials>('/auth/login', credentials);
           const { user } = response.data;
           set({ user, isAuthenticated: true, isLoading: false });
         } catch (error) {
-          const errorMessage =
-            axios.isAxiosError(error) && error.response?.data?.error
-              ? error.response.data.error
-              : 'Login failed. Please try again.';
+          // Error handling can rely more on the interceptor now
+          const errorData = axios.isAxiosError(error) ? error.response?.data as { error?: string } : null;
+          const errorMessage = errorData?.error || (error as Error).message || 'Login failed. Please try again.';
           set({ error: errorMessage, isLoading: false });
           throw new Error(errorMessage);
         }
       },
 
-      register: async (credentials) => {
+      register: async (credentials: RegisterCredentials) => {
         try {
           set({ isLoading: true, error: null });
+          // Use api.post with correct type arguments
           await api.post<{ message: string }, RegisterCredentials>('/auth/register', credentials);
           set({ isLoading: false });
         } catch (error) {
-          const errorMessage =
-            axios.isAxiosError(error) && error.response?.data?.error
-              ? error.response.data.error
-              : 'Registration failed. Please try again.';
+          const errorData = axios.isAxiosError(error) ? error.response?.data as { error?: string } : null;
+          const errorMessage = errorData?.error || (error as Error).message || 'Registration failed. Please try again.';
           set({ error: errorMessage, isLoading: false });
           throw new Error(errorMessage);
         }
       },
 
       logout: async () => {
+        const wasAuthenticated = get().isAuthenticated; // Check before potentially clearing state
         try {
           set({ isLoading: true });
-          await api.post<{ message: string }, Record<string, never>>('/auth/logout', {});
-          set({ user: null, token: null, isAuthenticated: false, isLoading: false });
+          // Use api.post - interceptor handles logout on severe errors if needed
+          await api.post('/auth/logout', {});
+          // Clear state after successful API call
+          set({ user: null, token: null, isAuthenticated: false, isLoading: false, error: null });
         } catch (error) {
-          console.error('Logout error:', error);
-          // Still clear user data even if API call fails
-          set({ user: null, token: null, isAuthenticated: false, isLoading: false });
+          console.error('Logout API call error:', error);
+          // Even if API fails, clear the frontend state
+          set({ user: null, token: null, isAuthenticated: false, isLoading: false, error: null });
         }
       },
 
       fetchCurrentUser: async () => {
+        // if (get().isAuthenticated) return; // Optional optimization
+        set({ isLoading: true, error: null });
         try {
-          set({ isLoading: true, error: null });
+          // Use api.get - interceptor will now handle 401 correctly for this route
           const response = await api.get<AuthResponse>('/auth/user');
           const { user } = response.data;
           set({ user, isAuthenticated: true, isLoading: false });
         } catch (error) {
-          // Don't set error on user fetch - just clear auth state
-          console.log(error);
+          // Interceptor handles refresh logic; if it still fails (e.g., 401 on /auth/user), set unauthenticated
+          if (axios.isAxiosError(error) && error.response?.status === 401) {
+            console.log('fetchCurrentUser failed after interceptor (expected if unauthenticated).');
+          } else {
+            console.error('fetchCurrentUser error after interceptor:', error);
+          }
           set({ user: null, isAuthenticated: false, isLoading: false });
         }
       },
 
       loginWithGoogle: () => {
-        window.location.href = 'http://localhost:3001/api/auth/login/google';
+        // This remains the same
+        window.location.href = `${import.meta.env.VITE_API_BASE_URL}/api/auth/login/google`;
       },
     }),
     {
       name: 'auth-storage',
-      // Only persist these fields
       partialize: (state) => ({
         user: state.user,
         isAuthenticated: state.isAuthenticated,
