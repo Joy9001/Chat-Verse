@@ -23,5 +23,5 @@ export const CHAT_ENDPOINTS = {
 export const USER_ENDPOINTS = {
 	search: `${API_BASE_URL}/search`,
 	profile: `${API_BASE_URL}/user/profile`,
-	avatar: `${API_BASE_URL}/avatar`,
+	avatar: `${API_BASE_URL}/api/user/get-avatar`,
 }
