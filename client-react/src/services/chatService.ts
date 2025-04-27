@@ -18,7 +18,7 @@ interface PrivateConversationResponse {
  */
 export const fetchPrivateMessages = async (receiverId: string): Promise<PrivateConversationResponse> => {
     try {
-        const response = await api.post<PrivateConversationResponse>('/conv-api/get-conversation', { receiverId });
+        const response = await api.post<PrivateConversationResponse>('/conversations/get-conversation', { receiverId });
         return response.data;
     } catch (error) {
         console.error(`Error fetching private messages for ${receiverId}:`, error);
@@ -40,7 +40,7 @@ interface GroupConversationResponse {
 export const fetchGroupMessages = async (groupId: string): Promise<GroupConversationResponse> => {
     try {
         // Assuming '/group-chat-api' base path from EJS code structure
-        const response = await api.post<GroupConversationResponse>('/group-chat-api/get-group-conversation', { groupId });
+        const response = await api.post<GroupConversationResponse>('/group-chat/get-group-conversation', { groupId });
         return response.data;
     } catch (error) {
         console.error(`Error fetching group messages for ${groupId}:`, error);
