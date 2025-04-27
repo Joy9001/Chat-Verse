@@ -32,7 +32,7 @@ interface AuthStore extends AuthState {
 
 export const useAuthStore = create<AuthStore>()(
   persist(
-    (set, get) => ({
+    (set) => ({
       // State
       user: null,
       token: null,
@@ -79,7 +79,6 @@ export const useAuthStore = create<AuthStore>()(
       },
 
       logout: async () => {
-        const wasAuthenticated = get().isAuthenticated; // Check before potentially clearing state
         try {
           set({ isLoading: true });
           // Use api.post - interceptor handles logout on severe errors if needed
