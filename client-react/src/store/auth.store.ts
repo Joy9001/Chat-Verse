@@ -11,13 +11,13 @@ interface AuthStore extends AuthState {
   isAuthenticated: boolean;
   isLoading: boolean;
   error: string | null;
-  
+
   // Auth methods
   setUser: (user: User | null) => void;
   setToken: (token: string | null) => void;
   setLoading: (isLoading: boolean) => void;
   setError: (error: string | null) => void;
-  
+
   // API methods
   login: (credentials: LoginCredentials) => Promise<void>;
   register: (credentials: RegisterCredentials) => Promise<void>;
@@ -36,14 +36,14 @@ export const useAuthStore = create<AuthStore>()(
       isAuthenticated: false,
       isLoading: false,
       error: null,
-      
+
       // State setters
       setUser: (user) => set({ user, isAuthenticated: !!user }),
       setToken: (token) => set({ token, isAuthenticated: !!token }),
       setLoading: (isLoading) => set({ isLoading }),
       setError: (error) => set({ error }),
       clearError: () => set({ error: null }),
-      
+
       // API methods
       login: async (credentials) => {
         try {
@@ -52,7 +52,7 @@ export const useAuthStore = create<AuthStore>()(
           const { user } = response.data;
           set({ user, isAuthenticated: true, isLoading: false });
         } catch (error) {
-          const errorMessage = 
+          const errorMessage =
             axios.isAxiosError(error) && error.response?.data?.error
               ? error.response.data.error
               : 'Login failed. Please try again.';
@@ -60,14 +60,14 @@ export const useAuthStore = create<AuthStore>()(
           throw new Error(errorMessage);
         }
       },
-      
+
       register: async (credentials) => {
         try {
           set({ isLoading: true, error: null });
           await api.post<{ message: string }, RegisterCredentials>('/auth/register', credentials);
           set({ isLoading: false });
         } catch (error) {
-          const errorMessage = 
+          const errorMessage =
             axios.isAxiosError(error) && error.response?.data?.error
               ? error.response.data.error
               : 'Registration failed. Please try again.';
@@ -75,7 +75,7 @@ export const useAuthStore = create<AuthStore>()(
           throw new Error(errorMessage);
         }
       },
-      
+
       logout: async () => {
         try {
           set({ isLoading: true });
@@ -87,7 +87,7 @@ export const useAuthStore = create<AuthStore>()(
           set({ user: null, token: null, isAuthenticated: false, isLoading: false });
         }
       },
-      
+
       fetchCurrentUser: async () => {
         try {
           set({ isLoading: true, error: null });
@@ -100,7 +100,7 @@ export const useAuthStore = create<AuthStore>()(
           set({ user: null, isAuthenticated: false, isLoading: false });
         }
       },
-      
+
       loginWithGoogle: () => {
         window.location.href = 'http://localhost:3001/api/auth/login/google';
       },

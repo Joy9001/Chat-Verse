@@ -3,7 +3,7 @@ import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Separator } from '@/components/ui/separator'
-import { AUTH_ENDPOINTS, USER_ENDPOINTS } from '@/lib/config'
+import { useAuthStore } from '@/store/auth.store'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useNavigate } from '@tanstack/react-router'
 import { useEffect, useState } from 'react'
@@ -31,8 +31,8 @@ type DetailsFormData = z.infer<typeof detailsSchema>
 
 export default function RegisterPage() {
 	const navigate = useNavigate()
+	const { register: registerAuth, isLoading, error, clearError, loginWithGoogle } = useAuthStore()
 	const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false)
-	const [isSubmitting, setIsSubmitting] = useState(false)
 	const [isAvatarLoading, setIsAvatarLoading] = useState(false)
 	const [alert, setAlert] = useState<{ message: string; show: boolean; type: 'success' | 'error' }>({
 		message: '',
@@ -87,6 +87,14 @@ export default function RegisterPage() {
 		}
 	}, [alert.show])
 
+	// Show alert when auth store has an error
+	useEffect(() => {
+		if (error) {
+			showAlert(error, 'error')
+			clearError()
+		}
+	}, [error, clearError])
+
 	const showAlert = (message: string, type: 'success' | 'error' = 'error') => {
 		setAlert({ message, show: true, type })
 	}
@@ -100,7 +108,7 @@ export default function RegisterPage() {
 
 			try {
 				// Try the API first
-				const response = await fetch(USER_ENDPOINTS.avatar)
+				const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/user/get-avatar`)
 				if (!response.ok) throw new Error('Failed to fetch avatar')
 				const data = await response.json()
 				setAvatarUrl(data.avatar)
@@ -118,24 +126,8 @@ export default function RegisterPage() {
 	}
 
 	const onRegisterSubmit = async (data: RegisterFormData & DetailsFormData) => {
-		setIsSubmitting(true)
 		try {
-			const response = await fetch(AUTH_ENDPOINTS.register, {
-				method: 'POST',
-				headers: {
-					'Content-Type': 'application/json',
-				},
-				body: JSON.stringify(data),
-				credentials: 'include', // Include cookies for session management
-			})
-
-			if (!response.ok) {
-				const result = await response.json()
-				throw new Error(result.error || 'Registration failed')
-			}
-
-			const result = await response.json()
-			console.log(result)
+			await registerAuth(data)
 			showAlert('Registered successfully', 'success')
 
 			// Give the user time to see the success message before redirecting
@@ -143,9 +135,7 @@ export default function RegisterPage() {
 				navigate({ to: '/auth/login' })
 			}, 1500)
 		} catch (error) {
-			showAlert(error instanceof Error ? error.message : 'Registration failed', 'error')
-		} finally {
-			setIsSubmitting(false)
+			// Error is handled by the auth store and displayed via the useEffect
 		}
 	}
 
@@ -243,9 +233,9 @@ export default function RegisterPage() {
 
 							<Button
 								onClick={handleOpenDetailsModal}
-								disabled={isSubmitting}
+								disabled={isLoading}
 								className='border-primary bg-primary hover:bg-primary/90 w-full border text-white transition-all'>
-								{isSubmitting ? (
+								{isLoading ? (
 									<span className='flex items-center justify-center'>
 										<FiLoader className='mr-2 h-4 w-4 animate-spin' />
 										Processing...
@@ -271,7 +261,7 @@ export default function RegisterPage() {
 						<Separator className='my-4 w-full max-w-sm bg-gray-300 md:my-6' />
 
 						<Button
-							onClick={() => (window.location.href = '/auth/login/google')}
+							onClick={loginWithGoogle}
 							variant='outline'
 							className='border-primary hover:bg-primary/10 w-full max-w-sm justify-center border-2 transition-all hover:cursor-pointer'
 							type='button'>
@@ -292,9 +282,8 @@ export default function RegisterPage() {
 				{alert.show && (
 					<div className='fixed right-0 bottom-4 left-0 z-50 flex justify-center'>
 						<Alert
-							className={`w-auto max-w-md rounded-md px-6 py-3 shadow-lg ${
-								alert.type === 'success' ? 'bg-green-600' : 'bg-red-600'
-							} text-white`}>
+							className={`w-auto max-w-md rounded-md px-6 py-3 shadow-lg ${alert.type === 'success' ? 'bg-green-600' : 'bg-red-600'
+								} text-white`}>
 							<AlertDescription>{alert.message}</AlertDescription>
 						</Alert>
 					</div>
