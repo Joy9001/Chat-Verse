@@ -31,7 +31,7 @@ type DetailsFormData = z.infer<typeof detailsSchema>
 
 export default function RegisterPage() {
 	const navigate = useNavigate()
-	const { register: registerAuth, isLoading, error, clearError, loginWithGoogle } = useAuthStore()
+	const { register: registerAuth, isLoading, error, clearError } = useAuthStore()
 	const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false)
 	const [isAvatarLoading, setIsAvatarLoading] = useState(false)
 	const [alert, setAlert] = useState<{ message: string; show: boolean; type: 'success' | 'error' }>({
