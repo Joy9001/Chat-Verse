@@ -174,7 +174,7 @@ export const useSocketStore = create<SocketState>((set, get) => {
       console.log("Creating new socket instance and connecting...");
       socketInstance = io(SOCKET_URL, {
         withCredentials: true,
-        autoConnect: false, // *** Use autoConnect: false ***
+        autoConnect: true, // *** Use autoConnect: false ***
         // Optional: Add reconnection attempts/delay
         // reconnectionAttempts: 5,
         // reconnectionDelay: 1000,
@@ -182,7 +182,6 @@ export const useSocketStore = create<SocketState>((set, get) => {
 
       set({ socket: socketInstance });
       setupListeners(); // Setup listeners for the new instance
-      socketInstance.connect(); // *** Manually connect ***
     },
 
     disconnectSocket: () => {
