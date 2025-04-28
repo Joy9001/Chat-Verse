@@ -1,52 +1,41 @@
 import { Message, User } from "@/store/chatStore"; // Corrected path and import Message type
 import { api } from "@/utils/http"; // Assuming you have an api utility like in auth.store.ts
 
-// --- Fetch Messages --- //
-
-// Response type for private conversation (adjust based on actual backend response)
+// Response type for private conversation
 interface PrivateConversationResponse {
   messages: Message[];
   isBlocked: boolean;
-  blockedBy: string | null; // User ID of who blocked
-  senderId: string; // Current user's ID from backend perspective
-  // Add other fields if the backend sends them
+  blockedBy: string | null;
+  senderId: string;
 }
 
-/**
- * Fetches messages for a private conversation.
- * @param receiverId - The encrypted ID of the other user.
- */
 export const fetchPrivateMessages = async (
-  receiverId: string,
+  conversationId: string,
 ): Promise<PrivateConversationResponse> => {
   try {
     const response = await api.post<PrivateConversationResponse>(
       "/conversations/get-conversation",
-      { receiverId },
+      { conversationId },
     );
     return response.data;
   } catch (error) {
-    console.error(`Error fetching private messages for ${receiverId}:`, error);
+    console.error(
+      `Error fetching private messages for conversation ${conversationId}:`,
+      error,
+    );
     throw new Error("Failed to fetch private messages.");
   }
 };
 
-// Response type for group conversation (adjust based on actual backend response)
 interface GroupConversationResponse {
   groupMessages: Message[];
-  requesterId: string; // Current user's ID
-  // Add other fields if needed
+  requesterId: string;
 }
 
-/**
- * Fetches messages for a group conversation.
- * @param groupId - The ID of the group.
- */
 export const fetchGroupMessages = async (
   groupId: string,
 ): Promise<GroupConversationResponse> => {
   try {
-    // Assuming '/group-chat-api' base path from EJS code structure
     const response = await api.post<GroupConversationResponse>(
       "/group-chat/get-group-conversation",
       { groupId },
@@ -58,9 +47,8 @@ export const fetchGroupMessages = async (
   }
 };
 
-// --- Search ---
 interface SearchPeopleResponse {
-  people: User[]; // Assuming the backend returns users matching the User type
+  people: User[];
 }
 export const searchPeople = async (
   queryText: string,
@@ -257,23 +245,3 @@ export const fetchGroupMembers = async (
 
 // TODO: Add create group function
 // export const createGroup = async (groupData: ...) => { ... }
-
-// REMOVE DUPLICATE fetchInitialChats
-/*
-export const fetchInitialChats = async (): Promise<InitialChatsResponse> => {
-    try {
-        // TODO: Verify the actual endpoint from backend routes
-        // Referring to `chat.route.js` and `groupChat.route.js` doesn't immediately show
-        // a combined endpoint. Assuming one exists or needs to be created at `/api/chats/initial`.
-        const response = await api.get<InitialChatsResponse>('/chats/initial');
-        // It's crucial to map the backend response to the frontend types (PrivateChat, GroupChat)
-        // This might involve transforming fields (e.g., backend _id -> frontend id, etc.)
-        // For now, assuming the backend response structure matches the frontend types.
-        return response.data;
-    } catch (error) {
-        console.error("Error fetching initial chats:", error);
-        // Re-throw the error to be handled by react-query
-        throw new Error('Failed to fetch initial chats.');
-    }
-};
-*/
