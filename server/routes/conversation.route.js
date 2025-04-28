@@ -1,168 +1,167 @@
-import { Router } from 'express';
-import { getConversation } from '../helpers/conversation.helper.js';
-import { Conversation } from '../models/conversation.model.js';
-import User from '../models/users.model.js';
+import { Router } from "express";
+import { getConversation } from "../helpers/conversation.helper.js";
+import { Conversation } from "../models/conversation.model.js";
+import User from "../models/users.model.js";
 
 const router = Router();
 
-router.get('/chats', async (req, res) => {
-	try {
-		const userId = req.user._id; // Assuming passport attaches user to req.user
+router.get("/chats", async (req, res) => {
+  try {
+    const userId = req.user._id; // Assuming passport attaches user to req.user
 
-		if (!userId) {
-			return res.status(401).json({ message: 'User not authenticated' });
-		}
+    if (!userId) {
+      return res.status(401).json({ message: "User not authenticated" });
+    }
 
-		// Fetch all conversations (private and group) where the user is a participant
-		const conversations = await Conversation.find({ participants: userId })
-			.populate({
-				path: 'participants',
-				select: 'name username avatar _id', // Select necessary fields for users
-			})
-			// Optionally populate last message if needed, but keep it lean for list view
-			// .populate({ path: 'messages', options: { sort: { createdAt: -1 }, limit: 1 } })
-			.lean(); // Use .lean() for plain JS objects
+    // Fetch all conversations (private and group) where the user is a participant
+    const conversations = await Conversation.find({ participants: userId })
+      .populate({
+        path: "participants",
+        select: "name username avatar _id",
+      })
+      .lean();
 
-		const privateChats = [];
-		const groupChats = [];
+    const privateChats = [];
+    const groupChats = [];
 
-		for (const conv of conversations) {
-			// Calculate unread count for the current user
-			let unreadCount = 0;
-			const unreadInfo = conv.unreadMsgCount?.find(uc => uc.receivers.some(r => r.equals(userId)));
-			if (unreadInfo) {
-				unreadCount = unreadInfo.unreadCount;
-			}
+    for (const conv of conversations) {
+      // Calculate unread count for the current user
+      let unreadCount = 0;
+      const unreadInfo = conv.unreadMsgCount?.find((uc) =>
+        uc.receivers.some((r) => r.equals(userId)),
+      );
+      if (unreadInfo) {
+        unreadCount = unreadInfo.unreadCount;
+      }
 
+      if (conv.isGroup) {
+        // Format Group Chat
+        groupChats.push({
+          id: conv._id.toString(),
+          name: conv.groupName,
+          avatar: conv.groupAvatar,
+          description: conv.groupDescription,
+          participants: conv.participants.map((p) => ({
+            id: p._id.toString(),
+            name: p.name,
+            username: p.username,
+            avatar: p.avatar,
+          })),
+          unreadCount: unreadCount,
+          type: "group",
+        });
+      } else {
+        // Format Private Chat
+        const otherParticipant = conv.participants.find(
+          (p) => !p._id.equals(userId),
+        );
+        if (otherParticipant) {
+          // Ensure there is another participant
+          privateChats.push({
+            id: conv._id.toString(),
+            // For private chats, name/avatar come from the other user
+            name: otherParticipant.name,
+            avatar: otherParticipant.avatar,
+            otherUser: {
+              id: otherParticipant._id.toString(),
+              name: otherParticipant.name,
+              username: otherParticipant.username,
+              avatar: otherParticipant.avatar,
+            },
+            unreadCount: unreadCount,
+            isBlocked: conv.isBlocked,
+            blockedByMe: conv.blockedBy?.equals(userId), // Check if current user blocked
+            amIBlocked: conv.isBlocked && !conv.blockedBy?.equals(userId), // Check if blocked by other
+            type: "private",
+          });
+        }
+      }
+    }
 
-			if (conv.isGroup) {
-				// Format Group Chat
-				groupChats.push({
-					id: conv._id.toString(), // Use MongoDB _id as the chat ID
-					name: conv.groupName,
-					avatar: conv.groupAvatar,
-					description: conv.groupDescription,
-					participants: conv.participants.map(p => ({
-						id: p._id.toString(),
-						name: p.name,
-						username: p.username,
-						avatar: p.avatar,
-					})),
-					unreadCount: unreadCount,
-					type: 'group',
-					// Add other necessary fields for GroupChat type on frontend
-				});
-			} else {
-				// Format Private Chat
-				const otherParticipant = conv.participants.find(p => !p._id.equals(userId));
-				if (otherParticipant) { // Ensure there is another participant
-					privateChats.push({
-						id: conv._id.toString(), // Use MongoDB _id as the chat ID
-						// For private chats, name/avatar come from the other user
-						name: otherParticipant.name,
-						avatar: otherParticipant.avatar,
-						otherUser: {
-							id: otherParticipant._id.toString(),
-							name: otherParticipant.name,
-							username: otherParticipant.username,
-							avatar: otherParticipant.avatar,
-						},
-						unreadCount: unreadCount,
-						isBlocked: conv.isBlocked,
-						blockedByMe: conv.blockedBy?.equals(userId), // Check if current user blocked
-						amIBlocked: conv.isBlocked && !conv.blockedBy?.equals(userId), // Check if blocked by other
-						type: 'private',
-						// Add other necessary fields for PrivateChat type on frontend
-					});
-				}
-			}
-		}
-
-		res.status(200).json({ privateChats, groupChats });
-
-	} catch (error) {
-		console.error('Error fetching chats:', error);
-		res.status(500).json({ message: 'Internal server error fetching chats' });
-	}
+    res.status(200).json({ privateChats, groupChats });
+  } catch (error) {
+    console.error("Error fetching chats:", error);
+    res.status(500).json({ message: "Internal server error fetching chats" });
+  }
 });
 
-router.post('/get-conversation', async (req, res) => {
-	const senderId = req.user._id;
-	let { receiverId } = req.body;
-	console.log('senderId', senderId, 'receiverId', receiverId);
-	// console.log('type of receiverId: ', typeof receiverId)
+router.post("/get-conversation", async (req, res) => {
+  const senderId = req.user._id;
+  let { receiverId } = req.body;
+  console.log("senderId", senderId, "receiverId", receiverId);
+  // console.log('type of receiverId: ', typeof receiverId)
 
-	try {
-		const findConversation = await Conversation.findOne({
-			participants: { $all: [senderId, receiverId] },
-			isGroup: false,
-		});
-		// console.log("findConversation", findConversation);
-		if (findConversation) {
-			if (findConversation.messages.length === 0) {
-				return res.status(200).json({
-					messages: [],
-					isBlocked: findConversation.isBlocked,
-					blockedBy: findConversation.blockedBy,
-					senderId: senderId,
-				});
-			} else {
-				try {
-					findConversation.unreadMsgCount.forEach((obj) => {
-						if (obj.senderId.toString() === receiverId.toString()) {
-							// console.log("obj unreadCount", obj.unreadCount);
-							obj.unreadCount = 0;
-						}
-					});
-					await findConversation.save();
-					const conversation = await getConversation(findConversation.messages);
+  try {
+    const findConversation = await Conversation.findOne({
+      participants: { $all: [senderId, receiverId] },
+      isGroup: false,
+    });
+    // console.log("findConversation", findConversation);
+    if (findConversation) {
+      if (findConversation.messages.length === 0) {
+        return res.status(200).json({
+          messages: [],
+          isBlocked: findConversation.isBlocked,
+          blockedBy: findConversation.blockedBy,
+          senderId: senderId,
+        });
+      } else {
+        try {
+          findConversation.unreadMsgCount.forEach((obj) => {
+            if (obj.senderId.toString() === receiverId.toString()) {
+              // console.log("obj unreadCount", obj.unreadCount);
+              obj.unreadCount = 0;
+            }
+          });
+          await findConversation.save();
+          const conversation = await getConversation(findConversation.messages);
 
-					return res.status(200).json({
-						messages: conversation,
-						isBlocked: findConversation.isBlocked,
-						blockedBy: findConversation.blockedBy,
-						senderId: senderId,
-					});
-				} catch (error) {
-					console.log('Error getting conversation: ', error.message);
-				}
-			}
-		} else {
-			return res
-				.status(200)
-				.json({ messages: [], isBlocked: false, blockedBy: null });
-		}
-	} catch (error) {
-		console.log('Error getting conversation: ', error.message);
-	}
+          return res.status(200).json({
+            messages: conversation,
+            isBlocked: findConversation.isBlocked,
+            blockedBy: findConversation.blockedBy,
+            senderId: senderId,
+          });
+        } catch (error) {
+          console.log("Error getting conversation: ", error.message);
+        }
+      }
+    } else {
+      return res
+        .status(200)
+        .json({ messages: [], isBlocked: false, blockedBy: null });
+    }
+  } catch (error) {
+    console.log("Error getting conversation: ", error.message);
+  }
 });
 
-router.post('/user-details', async (req, res) => {
-	const { username } = req.body;
-	// console.log('inside /user-details username', username)
-	// console.log('inside /user-details username type', typeof username)
-	try {
-		let user = await User.findOne(
-			{ username },
-			{
-				_id: 1,
-				name: 1,
-				username: 1,
-				gender: 1,
-				avatar: 1,
-			}
-		).lean();
+router.post("/user-details", async (req, res) => {
+  const { username } = req.body;
+  // console.log('inside /user-details username', username)
+  // console.log('inside /user-details username type', typeof username)
+  try {
+    let user = await User.findOne(
+      { username },
+      {
+        _id: 1,
+        name: 1,
+        username: 1,
+        gender: 1,
+        avatar: 1,
+      },
+    ).lean();
 
-		if (user) {
-			console.log('inside /user-details', user.username);
-			return res.status(200).json(user);
-		}
+    if (user) {
+      console.log("inside /user-details", user.username);
+      return res.status(200).json(user);
+    }
 
-		return res.status(400).json({ error: 'User not found' });
-	} catch (err) {
-		console.log('Error getting user details: ', err.message);
-		return res.status(400).json({ error: err.message });
-	}
+    return res.status(400).json({ error: "User not found" });
+  } catch (err) {
+    console.log("Error getting user details: ", err.message);
+    return res.status(400).json({ error: err.message });
+  }
 });
 
 export default router;
