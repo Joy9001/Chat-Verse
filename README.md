@@ -41,28 +41,28 @@ Its MVC architecture and modular design ensure scalability, while an integrated 
 ## Features
 
 - **Real-time chat (with Socket.io)**
-    1. Send Message
-    2. Receive Message
-    3. Delete Message (For Both)
-    4. Delete Conversation (For Both)
-    5. Block & Unblock user
-    6. Unread message status
+  1. Send Message
+  2. Receive Message
+  3. Delete Message (For Both)
+  4. Delete Conversation (For Both)
+  5. Block & Unblock user
+  6. Unread message status
 - **Group Chat Functionality**
-    1. Create new group chats
-    2. Send and receive messages in group chats in real-time
-    3. Delete your own messages in group chats
-    4. Join groups via invitation links
-    5. Leave groups (group remains for other members)
-    6. View group member list
+  1. Create new group chats
+  2. Send and receive messages in group chats in real-time
+  3. Delete your own messages in group chats
+  4. Join groups via invitation links
+  5. Leave groups (group remains for other members)
+  6. View group member list
 - Real-time notifications for private and group chats
 - Real-time user online status
 - Real-time other user's changed details reflection
 - User profile (With exciting avatars)
 - User search
 - **User authentication**
-    1. JWT
-    2. Google
-    3. Google One Tap SignIn
+  1. JWT
+  2. Google
+  3. Google One Tap SignIn
 - CSRF
 - XSS
 - CORS
@@ -115,40 +115,40 @@ Its MVC architecture and modular design ensure scalability, while an integrated 
 
 1. Clone the repository
 
-    ```bash
-    git clone https://github.com/Joy9001/Chat-Verse.git
-    ```
+   ```bash
+   git clone https://github.com/Joy9001/Chat-Verse.git
+   ```
 
 2. Install dependencies
 
-    ```bash
-    npm install
-    ```
+   ```bash
+   npm install
+   ```
 
 3. Create a `.env` file in the root directory and add the following environment variables
 
-    ```env
-    PORT=3001
-    DOMAIN=http://localhost:3001
-    MONGODB_URI=mongodb://localhost:27017/chat-app (Add a Atlas Cluster URL)
-    NODE_ENV=production
-    SESSION_SECRET=your_session_secret
-    ACCESS_TOKEN_SECRET=your_access_token_secret
-    REFRESH_TOKEN_SECRET=your_refresh_token_secret
-    CRYPTO_SECRET=your_crypto_secret
-    ADMIN_EMAIL=your_email
-    ADMIN_HASHED_PASSWORD=your_hashed_password
-    GOOGLE_CLIENT_ID=your_google_client_id
-    GOOGLE_CLIENT_SECRET=your_google_client_secret
-    GOOGLE_CALLBACK_URL=http://localhost:3001/auth/google/callback
-    GOOGLE_ONE_TAP_CALLBACK_URL=http://localhost:3001/auth/google/one-tap/callback
-    ```
+   ```env
+   PORT=3001
+   DOMAIN=http://localhost:3001
+   MONGODB_URI=mongodb://localhost:27017/chat-app (Add a Atlas Cluster URL)
+   NODE_ENV=production
+   SESSION_SECRET=your_session_secret
+   ACCESS_TOKEN_SECRET=your_access_token_secret
+   REFRESH_TOKEN_SECRET=your_refresh_token_secret
+   CRYPTO_SECRET=your_crypto_secret
+   ADMIN_EMAIL=your_email
+   ADMIN_HASHED_PASSWORD=your_hashed_password
+   GOOGLE_CLIENT_ID=your_google_client_id
+   GOOGLE_CLIENT_SECRET=your_google_client_secret
+   GOOGLE_CALLBACK_URL=http://localhost:3001/auth/google/callback
+   GOOGLE_ONE_TAP_CALLBACK_URL=http://localhost:3001/auth/google/one-tap/callback
+   ```
 
 4. Start the server
 
-    ```bash
-    npm start
-    ```
+   ```bash
+   npm start
+   ```
 
 5. Open the browser and go to `http://localhost:3001`
 
@@ -206,11 +206,11 @@ Its MVC architecture and modular design ensure scalability, while an integrated 
 
 - Blocked User
 
-    ![Blocked User](./screenshots/blocked.png)
+  ![Blocked User](./screenshots/blocked.png)
 
 - Blocked by User
 
-    ![Blocked by User](./screenshots/gotBlocked.png)
+  ![Blocked by User](./screenshots/gotBlocked.png)
 
 ### Google One Tap Sign In
 
