@@ -77,10 +77,10 @@ const ChatListItem: React.FC<ChatItemProps> = ({
     <div
       key={chat.id}
       onClick={() => onClick(chat)}
-      className={`flex items-center p-3 hover:bg-muted cursor-pointer rounded-md group transition-colors duration-150 ${isActive ? "bg-muted" : ""}`}
+      className={`hover:bg-muted group flex cursor-pointer items-center rounded-md p-3 transition-colors duration-150 ${isActive ? "bg-muted" : ""}`}
     >
       <div
-        className={`relative mr-3 ${isOnline ? 'after:content-[""] after:absolute after:bottom-0 after:right-0 after:w-3 after:h-3 after:bg-green-500 after:rounded-full after:border-2 after:border-background' : ""}`}
+        className={`relative mr-3 ${isOnline ? 'after:border-background after:absolute after:right-0 after:bottom-0 after:h-3 after:w-3 after:rounded-full after:border-2 after:bg-green-500 after:content-[""]' : ""}`}
       >
         <Avatar className="h-12 w-12">
           <AvatarImage src={getAvatarUrl(chat)} alt={getName(chat)} />
@@ -89,11 +89,11 @@ const ChatListItem: React.FC<ChatItemProps> = ({
           </AvatarFallback>
         </Avatar>
       </div>
-      <div className="flex-grow overflow-hidden mr-2">
-        <h4 className="text-sm font-semibold truncate text-foreground group-hover:text-foreground">
+      <div className="mr-2 flex-grow overflow-hidden">
+        <h4 className="text-foreground group-hover:text-foreground truncate text-sm font-semibold">
           {getName(chat)}
         </h4>
-        <h4 className="text-xs text-muted-foreground truncate group-hover:text-muted-foreground">
+        <h4 className="text-muted-foreground group-hover:text-muted-foreground truncate text-xs">
           {getSecondaryText(chat)}
         </h4>
       </div>
@@ -276,9 +276,9 @@ export default function LeftSideBar() {
   }
 
   return (
-    <div className="relative flex h-full w-[35%] flex-col overflow-hidden rounded-l-xl border-r border-border bg-background/80">
-      <div className="m-4 flex h-16 items-center justify-between rounded-lg border-2 border-primary bg-primary p-2 shadow-md">
-        <div className="ml-4 text-xl font-bold text-primary-foreground max-lg:text-lg max-md:text-base max-sm:text-sm">
+    <div className="border-border relative flex h-full w-[35%] flex-col overflow-hidden rounded-l-xl border-r">
+      <div className="border-secondary bg-secondary m-4 flex h-16 items-center justify-between rounded-lg border-2 p-2 shadow-md">
+        <div className="text-primary ml-4 text-xl font-bold max-lg:text-lg max-md:text-base max-sm:text-sm">
           <h1>ChatVerse</h1>
         </div>
         <Dialog>
@@ -289,9 +289,9 @@ export default function LeftSideBar() {
                   <Button
                     variant="ghost"
                     size="icon"
-                    className="mr-2 h-10 w-10 hover:bg-primary-foreground/10 group"
+                    className="hover:bg-primary/80 bg-primary group mr-2 h-10 w-10"
                   >
-                    <UserPlus className="h-6 w-6 text-primary-foreground group-hover:text-primary-foreground" />
+                    <UserPlus className="text-primary-foreground group-hover:text-primary-foreground h-6 w-6" />
                   </Button>
                 </DialogTrigger>
               </TooltipTrigger>
@@ -303,7 +303,7 @@ export default function LeftSideBar() {
               </TooltipContent>
             </Tooltip>
           </TooltipProvider>
-          <DialogContent className="sm:max-w-[425px] bg-card text-card-foreground">
+          <DialogContent className="bg-card text-card-foreground sm:max-w-[425px]">
             <DialogHeader>
               <DialogTitle>Add New Chat / Group</DialogTitle>
             </DialogHeader>
@@ -312,7 +312,7 @@ export default function LeftSideBar() {
         </Dialog>
       </div>
 
-      <div className="mx-5 mb-2 flex items-center justify-between text-foreground">
+      <div className="text-foreground mx-5 mb-2 flex items-center justify-between">
         <h1 className="text-2xl font-bold max-lg:text-lg max-md:text-base max-sm:hidden">
           All Chats
         </h1>
@@ -343,7 +343,7 @@ export default function LeftSideBar() {
             </Tooltip>
           </TooltipProvider>
 
-          <DialogContent className="sm:max-w-md bg-card text-card-foreground">
+          <DialogContent className="bg-card text-card-foreground sm:max-w-md">
             <DialogHeader>
               <DialogTitle>Edit Profile</DialogTitle>
             </DialogHeader>
@@ -351,11 +351,11 @@ export default function LeftSideBar() {
               <div className="flex flex-col items-center space-y-3">
                 <Label
                   htmlFor="change-details-profilePic"
-                  className="text-lg font-semibold text-primary"
+                  className="text-primary text-lg font-semibold"
                 >
                   Profile Picture
                 </Label>
-                <Avatar className="h-24 w-24 ring-2 ring-primary ring-offset-2 ring-offset-background">
+                <Avatar className="ring-primary ring-offset-background h-24 w-24 ring-2 ring-offset-2">
                   <AvatarImage
                     id="change-details-profilePic"
                     src={editAvatar || ""}
@@ -414,7 +414,7 @@ export default function LeftSideBar() {
                 >
                   <SelectTrigger
                     id="change-details-gender"
-                    className="w-full bg-background text-foreground focus:ring-primary"
+                    className="bg-background text-foreground focus:ring-primary w-full"
                   >
                     <SelectValue placeholder="Select gender" />
                   </SelectTrigger>
@@ -446,23 +446,23 @@ export default function LeftSideBar() {
         </Dialog>
       </div>
 
-      <ScrollArea className="flex-grow px-2 mb-2 max-h-[calc(100vh-220px)] overflow-y-auto">
+      <ScrollArea className="mb-2 max-h-[calc(100vh-220px)] flex-grow overflow-y-auto px-2">
         <Accordion
           type="multiple"
           defaultValue={["private-chats", "group-chats"]}
           className="w-full"
         >
           <AccordionItem value="private-chats" className="border-b-0">
-            <AccordionTrigger className="px-4 py-2 text-lg font-bold hover:no-underline text-foreground/80">
+            <AccordionTrigger className="text-foreground/80 px-4 py-2 text-lg font-bold hover:no-underline">
               Private Chats{" "}
               {isLoadingChats && (
                 <span className="ml-2 text-xs font-normal">(Loading...)</span>
               )}
             </AccordionTrigger>
-            <AccordionContent className="pb-0 overflow-y-auto">
+            <AccordionContent className="overflow-y-auto pb-0">
               <div className="flex flex-col space-y-1 px-1">
                 {privateChats.length === 0 && !isLoadingChats ? (
-                  <p className="p-4 text-center text-sm text-muted-foreground">
+                  <p className="text-muted-foreground p-4 text-center text-sm">
                     No private chats yet.
                   </p>
                 ) : (
@@ -486,16 +486,16 @@ export default function LeftSideBar() {
           </AccordionItem>
 
           <AccordionItem value="group-chats" className="border-b-0">
-            <AccordionTrigger className="px-4 py-2 text-lg font-bold hover:no-underline text-foreground/80">
+            <AccordionTrigger className="text-foreground/80 px-4 py-2 text-lg font-bold hover:no-underline">
               Group Chats{" "}
               {isLoadingChats && (
                 <span className="ml-2 text-xs font-normal">(Loading...)</span>
               )}
             </AccordionTrigger>
-            <AccordionContent className="pb-0 overflow-y-auto">
+            <AccordionContent className="overflow-y-auto pb-0">
               <div className="flex flex-col space-y-1 px-1">
                 {groupChats.length === 0 && !isLoadingChats ? (
-                  <p className="p-4 text-center text-sm text-muted-foreground">
+                  <p className="text-muted-foreground p-4 text-center text-sm">
                     No group chats yet.
                   </p>
                 ) : (

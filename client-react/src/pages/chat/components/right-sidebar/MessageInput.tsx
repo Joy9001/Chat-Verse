@@ -14,8 +14,7 @@ import { useSendMessage } from "@/hooks/useSendMessage"; // Import the mutation 
 import { useAuthStore } from "@/store/auth.store"; // Import auth store
 import { useChatStore } from "@/store/chatStore"; // Import chat store
 import { useSocketStore } from "@/store/socketStore"; // Import socket store
-import data from "@emoji-mart/data";
-import Picker from "@emoji-mart/react";
+import EmojiPicker, { Theme } from "emoji-picker-react"; // Add this line
 import { Loader2, Send, Smile } from "lucide-react";
 import React, { useRef, useState } from "react";
 import TextareaAutosize from "react-textarea-autosize";
@@ -32,20 +31,21 @@ export default function MessageInput() {
   const { mutate: sendMessageMutate, isPending: isSendingMessage } =
     useSendMessage();
 
-  const handleEmojiSelect = (emoji: any) => {
+  const handleEmojiClick = (emojiData: { emoji: string }) => {
+    // Rename and update signature
     const textarea = textareaRef.current;
     if (textarea) {
       const start = textarea.selectionStart;
       const end = textarea.selectionEnd;
       const text = textarea.value;
       const newText =
-        text.substring(0, start) + emoji.native + text.substring(end);
+        text.substring(0, start) + emojiData.emoji + text.substring(end); // Use emojiData.emoji
       setMessage(newText);
       // Move cursor after inserted emoji
       // Use setTimeout to ensure state update is processed before setting cursor
       setTimeout(() => {
         textarea.selectionStart = textarea.selectionEnd =
-          start + emoji.native.length;
+          start + emojiData.emoji.length; // Use emojiData.emoji.length
         textarea.focus();
       }, 0);
     }
@@ -106,7 +106,7 @@ export default function MessageInput() {
 
   return (
     <div
-      className={`flex items-center p-4 border-t border-border ${isDisabled ? "opacity-50 pointer-events-none" : ""}`}
+      className={`border-border flex items-center border-t p-4 ${isDisabled ? "pointer-events-none opacity-50" : ""}`}
     >
       {/* Emoji Picker Button/Popover */}
       <Popover>
@@ -115,7 +115,7 @@ export default function MessageInput() {
             <TooltipTrigger asChild>
               <PopoverTrigger asChild disabled={isDisabled}>
                 <Button variant="ghost" size="icon" className="mr-2">
-                  <Smile className="h-6 w-6 text-muted-foreground" />
+                  <Smile className="text-muted-foreground h-6 w-6" />
                 </Button>
               </PopoverTrigger>
             </TooltipTrigger>
@@ -124,13 +124,17 @@ export default function MessageInput() {
             </TooltipContent>
           </Tooltip>
         </TooltipProvider>
-        <PopoverContent className="w-auto p-0 border-0 mb-2">
-          <Picker
-            data={data}
-            onEmojiSelect={handleEmojiSelect}
-            theme="light"
-            maxFrequentRows={1}
-            disabled={isDisabled} // Disable picker if no chat selected
+        <PopoverContent className="mb-2 w-auto border-0 p-0">
+          <EmojiPicker
+            onEmojiClick={handleEmojiClick} // Use onEmojiClick and the renamed handler
+            theme={Theme.LIGHT} // Use Theme enum
+            // width="100%" // Optional: Adjust width/height if needed
+            // height={400} // Optional: Adjust height
+            lazyLoadEmojis={true}
+            previewConfig={{ showPreview: false }} // Optional: Hide preview if desired
+            searchDisabled={true} // Optional: Disable search
+            skinTonesDisabled={true} // Optional: Disable skin tones
+            // disabled={isDisabled} // Control via PopoverTrigger
           />
         </PopoverContent>
       </Popover>
@@ -150,7 +154,7 @@ export default function MessageInput() {
                 ? "Select a chat"
                 : "Type a message..."
         }
-        className="flex-grow resize-none border-none bg-transparent focus:outline-none focus:ring-0 p-2 text-sm max-h-32 overflow-y-auto text-foreground placeholder:text-muted-foreground"
+        className="text-foreground placeholder:text-muted-foreground max-h-32 flex-grow resize-none overflow-y-auto border-none bg-transparent p-2 text-sm focus:ring-0 focus:outline-none"
         maxRows={5}
         minRows={1}
         disabled={isDisabled} // Disable textarea if no chat selected
@@ -168,9 +172,9 @@ export default function MessageInput() {
               disabled={isDisabled || message.trim() === ""} // Disable if message empty or connection issues
             >
               {isSendingMessage ? (
-                <Loader2 className="h-6 w-6 text-muted-foreground animate-spin" />
+                <Loader2 className="text-muted-foreground h-6 w-6 animate-spin" />
               ) : (
-                <Send className="h-6 w-6 text-muted-foreground" />
+                <Send className="text-muted-foreground h-6 w-6" />
               )}
             </Button>
           </TooltipTrigger>

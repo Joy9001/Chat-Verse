@@ -90,19 +90,19 @@ export default function ChatArea() {
     selectedChat?.type === "group" ? selectedChat.description : "";
 
   return (
-    <div className="flex-grow flex flex-col overflow-hidden">
+    <div className="flex flex-grow flex-col overflow-hidden">
       {/* Profile Info Section (Only render if a chat is selected) */}
       {selectedChat && (
-        <div className="flex flex-col items-center justify-around py-4 px-4 border-b border-border bg-background/50">
-          <Avatar className="h-16 w-16 ring-2 ring-primary ring-offset-2 ring-offset-background mb-2">
+        <div className="flex flex-col items-center justify-around px-4 py-4">
+          <Avatar className="ring-primary ring-offset-background mb-2 h-16 w-16 ring-2 ring-offset-2">
             <AvatarImage src={chatAvatar} alt={chatName} />
             <AvatarFallback>{chatName.charAt(0).toUpperCase()}</AvatarFallback>
           </Avatar>
-          <div className="text-center max-w-[80%]">
-            <h1 className="truncate text-lg font-semibold text-foreground">
+          <div className="max-w-[80%] text-center">
+            <h1 className="text-foreground truncate text-lg font-semibold">
               {chatName}
             </h1>
-            <p className="truncate text-sm text-muted-foreground">
+            <p className="text-muted-foreground truncate text-sm">
               {selectedChat.type === "private"
                 ? `@${chatUsername}`
                 : chatDescription}
@@ -120,7 +120,7 @@ export default function ChatArea() {
               {[...Array(5)].map((_, i) => (
                 <div
                   key={i}
-                  className={`flex items-end w-full ${i % 2 === 0 ? "justify-end" : "justify-start"}`}
+                  className={`flex w-full items-end ${i % 2 === 0 ? "justify-end" : "justify-start"}`}
                 >
                   <Skeleton
                     className={`h-12 rounded-lg ${i % 2 === 0 ? "w-1/2" : "w-2/3"}`}
@@ -132,7 +132,7 @@ export default function ChatArea() {
 
           {/* Error Message */}
           {isErrorMessages && !isLoadingMessages && (
-            <div className="flex justify-center items-center h-full">
+            <div className="flex h-full items-center justify-center">
               <p className="text-destructive">
                 Error: {messagesError?.message || "Failed to load messages."}
               </p>
@@ -144,7 +144,7 @@ export default function ChatArea() {
             !isErrorMessages &&
             messagesFromStore.length === 0 &&
             selectedChat && (
-              <div className="flex justify-center items-center h-full">
+              <div className="flex h-full items-center justify-center">
                 <p className="text-muted-foreground">
                   No messages yet. Start the conversation!
                 </p>
@@ -166,37 +166,37 @@ export default function ChatArea() {
               return (
                 <React.Fragment key={msg._id}>
                   {showDateSeparator && (
-                    <div className="flex justify-center my-4">
-                      <span className="px-3 py-1 text-xs text-muted-foreground bg-muted rounded-full">
+                    <div className="my-4 flex justify-center">
+                      <span className="text-muted-foreground bg-muted rounded-full px-3 py-1 text-xs">
                         {date}
                       </span>
                     </div>
                   )}
                   <div
                     className={cn(
-                      "flex items-end w-full",
+                      "flex w-full items-end",
                       isCurrentUser ? "justify-end" : "justify-start",
                     )}
                   >
                     <div
                       className={cn(
-                        "flex flex-col space-y-1 text-base max-w-[70%] px-4 py-2 rounded-lg",
+                        "flex max-w-[70%] flex-col space-y-1 rounded-lg px-4 py-2 text-base",
                         isCurrentUser
                           ? "bg-primary text-primary-foreground rounded-br-none"
                           : "bg-muted text-muted-foreground rounded-bl-none",
                       )}
                     >
                       {selectedChat?.type === "group" && !isCurrentUser && (
-                        <p className="text-xs font-medium text-foreground/70">
+                        <p className="text-foreground/70 text-xs font-medium">
                           {msg.senderName || "Unknown User"}
                         </p>
                       )}
-                      <p className="whitespace-pre-wrap break-words">
+                      <p className="break-words whitespace-pre-wrap">
                         {msg.message}
                       </p>
                       <span
                         className={cn(
-                          "text-xs self-end pt-1",
+                          "self-end pt-1 text-xs",
                           isCurrentUser
                             ? "text-primary-foreground/70"
                             : "text-muted-foreground/70",

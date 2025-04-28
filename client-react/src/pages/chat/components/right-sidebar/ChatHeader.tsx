@@ -63,7 +63,7 @@ export default function ChatHeader() {
   // Return null or a placeholder if no chat is selected
   if (!selectedChat) {
     return (
-      <div className="h-16 border-b border-border flex items-center justify-between px-4 m-4 rounded-md bg-primary shadow-sm">
+      <div className="border-border bg-primary m-4 flex h-16 items-center justify-between rounded-md border-b px-4 shadow-sm">
         {/* Placeholder when no chat is selected */}
       </div>
     );
@@ -139,18 +139,18 @@ export default function ChatHeader() {
     isBlockingUnblocking || isDeletingConversation || isLeavingGroup;
 
   return (
-    <div className="h-16 border-b border-border flex items-center justify-between px-4 m-4 rounded-md bg-primary shadow-sm">
+    <div className="border-border bg-secondary m-4 flex h-16 items-center justify-between rounded-md border-b px-4 shadow-sm">
       {/* Left side: Avatar, Name, Copy Link Button */}
       <div className="flex items-center space-x-3">
         <div
-          className={`relative ${isOnline ? 'after:content-[""] after:absolute after:bottom-0 after:right-0 after:w-3 after:h-3 after:bg-green-500 after:rounded-full after:border-2 after:border-primary' : ""}`}
+          className={`relative ${isOnline ? 'after:border-primary after:absolute after:right-0 after:bottom-0 after:h-3 after:w-3 after:rounded-full after:border-2 after:bg-green-500 after:content-[""]' : ""}`}
         >
-          <Avatar className="h-10 w-10 border-2 border-primary-foreground/50">
+          <Avatar className="border-primary-foreground/50 h-10 w-10 border-2">
             <AvatarImage src={chatAvatar} alt={chatName} />
             <AvatarFallback>{chatName.charAt(0).toUpperCase()}</AvatarFallback>
           </Avatar>
         </div>
-        <div className="text-lg font-semibold text-primary-foreground">
+        <div className="text-primary text-lg font-semibold">
           <h1>{chatName}</h1>
         </div>
         {selectedChat.type === "group" && (
@@ -161,9 +161,9 @@ export default function ChatHeader() {
                   onClick={handleCopyLink}
                   variant="ghost"
                   size="icon"
-                  className="h-8 w-8 group hover:bg-primary-foreground/10"
+                  className="group hover:bg-primary-foreground/10 h-8 w-8"
                 >
-                  <Link2 className="h-5 w-5 text-primary-foreground group-hover:text-primary-foreground" />
+                  <Link2 className="text-primary-foreground group-hover:text-primary-foreground h-5 w-5" />
                 </Button>
               </TooltipTrigger>
               <TooltipContent className="bg-accent text-accent-foreground">
@@ -183,9 +183,9 @@ export default function ChatHeader() {
                 <Button
                   variant="ghost"
                   size="icon"
-                  className="h-9 w-9 group hover:bg-primary-foreground/10"
+                  className="group bg-primary hover:bg-primary/80 h-9 w-9 hover:cursor-pointer"
                 >
-                  <Info className="h-6 w-6 text-primary-foreground group-hover:text-primary-foreground" />
+                  <Info className="text-primary-foreground group-hover:text-primary-foreground h-6 w-6" />
                 </Button>
               </DialogTrigger>
             </TooltipTrigger>
@@ -195,7 +195,7 @@ export default function ChatHeader() {
           </Tooltip>
         </TooltipProvider>
 
-        <DialogContent className="sm:max-w-xs bg-card text-card-foreground p-0">
+        <DialogContent className="bg-card text-card-foreground p-0 sm:max-w-xs">
           {/* Info Header with Avatar/Name */}
           <DialogHeader className="p-4 pb-2">
             <div className="flex items-center space-x-3">
@@ -209,7 +209,7 @@ export default function ChatHeader() {
                 <DialogTitle className="truncate text-base font-bold">
                   {chatName}
                 </DialogTitle>
-                <p className="text-sm text-muted-foreground truncate">
+                <p className="text-muted-foreground truncate text-sm">
                   {selectedChat.type === "private"
                     ? `@${chatUsername}`
                     : chatDescription}
@@ -226,19 +226,19 @@ export default function ChatHeader() {
                 {!amIBlocked ? (
                   <Button
                     variant="ghost"
-                    className="w-full justify-start h-10 text-base font-semibold hover:bg-muted group"
+                    className="hover:bg-muted group h-10 w-full justify-start text-base font-semibold hover:cursor-pointer"
                     onClick={handleBlockUnblock}
                     disabled={isActionPending}
                   >
                     {isBlockingUnblocking ? (
                       <Loader2 className="mr-2 h-5 w-5 animate-spin" />
                     ) : (
-                      <UserX className="mr-2 h-5 w-5 text-destructive group-hover:text-destructive" />
+                      <UserX className="text-destructive group-hover:text-destructive mr-2 h-5 w-5" />
                     )}
                     {blockedByMe ? "Unblock" : "Block"}
                   </Button>
                 ) : (
-                  <div className="flex items-center p-3 text-sm text-destructive font-semibold">
+                  <div className="text-destructive flex items-center p-3 text-sm font-semibold">
                     <UserX className="mr-2 h-5 w-5" /> You have been blocked
                   </div>
                 )}
@@ -246,14 +246,14 @@ export default function ChatHeader() {
                 {!amIBlocked && (
                   <Button
                     variant="ghost"
-                    className="w-full justify-start h-10 text-base font-semibold hover:bg-muted text-destructive group"
+                    className="hover:bg-muted text-destructive group h-10 w-full justify-start text-base font-semibold hover:cursor-pointer"
                     onClick={handleDeleteConversation}
                     disabled={isActionPending}
                   >
                     {isDeletingConversation ? (
                       <Loader2 className="mr-2 h-5 w-5 animate-spin" />
                     ) : (
-                      <Trash2 className="mr-2 h-5 w-5 group-hover:text-destructive" />
+                      <Trash2 className="group-hover:text-destructive mr-2 h-5 w-5" />
                     )}
                     Delete Conversation
                   </Button>
@@ -265,14 +265,14 @@ export default function ChatHeader() {
                 {/* Leave Group Button */}
                 <Button
                   variant="ghost"
-                  className="w-full justify-start h-10 text-base font-semibold hover:bg-muted text-destructive group"
+                  className="hover:bg-muted text-destructive group h-10 w-full justify-start text-base font-semibold"
                   onClick={handleLeaveGroup}
                   disabled={isActionPending}
                 >
                   {isLeavingGroup ? (
                     <Loader2 className="mr-2 h-5 w-5 animate-spin" />
                   ) : (
-                    <DoorClosed className="mr-2 h-5 w-5 group-hover:text-destructive" />
+                    <DoorClosed className="group-hover:text-destructive mr-2 h-5 w-5" />
                   )}
                   Leave and Delete Group
                 </Button>
@@ -281,16 +281,16 @@ export default function ChatHeader() {
                   <DropdownMenuTrigger asChild>
                     <Button
                       variant="ghost"
-                      className="w-full justify-start h-10 text-base font-semibold hover:bg-muted group"
+                      className="hover:bg-muted group h-10 w-full justify-start text-base font-semibold"
                     >
-                      <Users className="mr-2 h-5 w-5 group-hover:text-foreground" />
+                      <Users className="group-hover:text-foreground mr-2 h-5 w-5" />
                       Show All Members
                       <Badge variant="secondary" className="ml-auto">
                         {selectedChat.participants.length}
                       </Badge>
                     </Button>
                   </DropdownMenuTrigger>
-                  <DropdownMenuContent className="w-60 max-h-60 mr-2 overflow-hidden p-0 bg-card border-border">
+                  <DropdownMenuContent className="bg-card border-border mr-2 max-h-60 w-60 overflow-hidden p-0">
                     <DropdownMenuLabel className="p-2 text-base font-semibold">
                       All Members ({selectedChat.participants.length})
                     </DropdownMenuLabel>
@@ -299,10 +299,10 @@ export default function ChatHeader() {
                         {selectedChat.participants.map((member) => (
                           <DropdownMenuItem
                             key={member.id}
-                            className="flex items-center p-2 cursor-pointer hover:bg-muted"
+                            className="hover:bg-muted flex cursor-pointer items-center p-2"
                             onSelect={() => handleSelectParticipant(member.id)}
                           >
-                            <Avatar className="h-8 w-8 mr-2">
+                            <Avatar className="mr-2 h-8 w-8">
                               <AvatarImage
                                 src={member.avatar}
                                 alt={member.name}
@@ -312,10 +312,10 @@ export default function ChatHeader() {
                               </AvatarFallback>
                             </Avatar>
                             <div className="flex-grow overflow-hidden">
-                              <p className="text-sm font-medium truncate">
+                              <p className="truncate text-sm font-medium">
                                 {member.name}
                               </p>
-                              <p className="text-xs text-muted-foreground truncate">
+                              <p className="text-muted-foreground truncate text-xs">
                                 @{member.username}
                               </p>
                             </div>
