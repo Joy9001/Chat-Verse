@@ -10,11 +10,11 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { useSendMessage } from "@/hooks/useSendMessage"; // Import the mutation hook
-import { useAuthStore } from "@/store/auth.store"; // Import auth store
-import { useChatStore } from "@/store/chatStore"; // Import chat store
-import { useSocketStore } from "@/store/socketStore"; // Import socket store
-import EmojiPicker, { Theme } from "emoji-picker-react"; // Add this line
+import { useSendMessage } from "@/hooks/useSendMessage";
+import { useAuthStore } from "@/store/auth.store";
+import { useChatStore } from "@/store/chatStore";
+import { useSocketStore } from "@/store/socketStore";
+import EmojiPicker, { Theme } from "emoji-picker-react";
 import { Loader2, Send, Smile } from "lucide-react";
 import React, { useRef, useState } from "react";
 import TextareaAutosize from "react-textarea-autosize";
@@ -25,7 +25,7 @@ export default function MessageInput() {
   const [message, setMessage] = useState("");
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   // Get selected chat and current user from stores
-  const { selectedChat, addMessage: addMessageToStore } = useChatStore();
+  const { selectedChat } = useChatStore();
   const { user: currentUser } = useAuthStore();
   const { socket } = useSocketStore();
   const { mutate: sendMessageMutate, isPending: isSendingMessage } =
@@ -59,35 +59,22 @@ export default function MessageInput() {
       !currentUser ||
       isSendingMessage
     )
-      return; // Prevent sending if pending
-
-    // Optimistic UI update: Add message immediately to the store
-    // Create a temporary message object (backend might override _id, createdAt)
-    const optimisticMessage = {
-      _id: `optimistic-${Date.now()}`,
-      senderId: currentUser._id,
-      senderName: currentUser.name, // Add sender name for group chats
-      message: trimmedMessage,
-      createdAt: new Date().toISOString(),
-      // Add groupId/receiverId if needed by Message type definition
-      groupId: selectedChat.type === "group" ? selectedChat.id : undefined,
-      receiverId: selectedChat.type === "private" ? selectedChat.id : undefined,
-    };
-    // Ensure optimisticMessage matches the store's Message type
-    addMessageToStore(optimisticMessage as any); // Use type assertion carefully or refine types
+      return;
 
     setMessage("");
 
     console.log(
-      `Calling mutation to send message to ${selectedChat.type} chat ${selectedChat.id}:`,
+      `Calling mutation to send message:`,
+      selectedChat,
       trimmedMessage,
     );
 
-    // Call the mutation instead of socket.emit
     sendMessageMutate({
       chatId: selectedChat.id,
       chatType: selectedChat.type,
       message: trimmedMessage,
+      receiverId:
+        selectedChat.type === "private" ? selectedChat.otherUser.id : undefined,
     });
   };
 
