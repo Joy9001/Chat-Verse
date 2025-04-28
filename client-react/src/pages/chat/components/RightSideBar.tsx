@@ -11,15 +11,17 @@ export default function RightSideBar() {
   const { selectedChat } = useChatStore();
 
   return (
-    <div className="relative flex h-full w-[65%] flex-col rounded-r-xl bg-background/60">
+    <div className="relative flex h-full w-[65%] flex-col rounded-r-xl bg-background/60 overflow-hidden">
       {/* Use selectedChat from store for conditional rendering */}
       {selectedChat ? (
-        <>
+        <div className="flex flex-col h-full">
           {/* Render ChatHeader, ChatArea, MessageInput when a chat is selected */}
           <ChatHeader />
-          <ChatArea />
+          <div className="flex-1 overflow-auto">
+            <ChatArea />
+          </div>
           <MessageInput />
-        </>
+        </div>
       ) : (
         <div className="flex h-full items-center justify-center">
           <p className="text-muted-foreground">

@@ -1,6 +1,5 @@
 import { useAuthStore } from "@/store/auth.store";
 import { useSocketStore } from "@/store/socketStore";
-import { Outlet } from "@tanstack/react-router";
 import { useEffect } from "react";
 import LeftSideBar from "./components/LeftSideBar";
 import RightSideBar from "./components/RightSideBar";
@@ -38,7 +37,7 @@ export default function ChatPage() {
     // Mimic the structure from chat.ejs: chat-body and chat-main
     <div
       className="flex h-screen items-center justify-center bg-cover bg-center"
-      style={{ backgroundImage: "url('/assets/backImage.avif')" }}
+      style={{ backgroundImage: "url('/assets/bg-image.png')" }}
     >
       {/* Mimic chat-main */}
       <div className="flex h-[95vh] w-[90vw] max-w-screen-xl rounded-xl backdrop-blur-xl bg-background/70 shadow-lg border border-border">
@@ -46,8 +45,7 @@ export default function ChatPage() {
         <LeftSideBar />
         {/* Placeholder for RightSideBar */}
         <RightSideBar />
-        {/* Outlet might be used later if we add nested routes for specific chats */}
-        <Outlet />
+        {/* Outlet removed to fix overflow issue */}
       </div>
     </div>
   );

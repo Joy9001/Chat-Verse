@@ -276,7 +276,7 @@ export default function LeftSideBar() {
   }
 
   return (
-    <div className="relative flex h-full w-[35%] flex-col rounded-l-xl border-r border-border bg-background/80">
+    <div className="relative flex h-full w-[35%] flex-col overflow-hidden rounded-l-xl border-r border-border bg-background/80">
       <div className="m-4 flex h-16 items-center justify-between rounded-lg border-2 border-primary bg-primary p-2 shadow-md">
         <div className="ml-4 text-xl font-bold text-primary-foreground max-lg:text-lg max-md:text-base max-sm:text-sm">
           <h1>ChatVerse</h1>
@@ -446,7 +446,7 @@ export default function LeftSideBar() {
         </Dialog>
       </div>
 
-      <ScrollArea className="flex-grow px-2 mb-2">
+      <ScrollArea className="flex-grow px-2 mb-2 max-h-[calc(100vh-220px)] overflow-y-auto">
         <Accordion
           type="multiple"
           defaultValue={["private-chats", "group-chats"]}
@@ -459,7 +459,7 @@ export default function LeftSideBar() {
                 <span className="ml-2 text-xs font-normal">(Loading...)</span>
               )}
             </AccordionTrigger>
-            <AccordionContent className="pb-0">
+            <AccordionContent className="pb-0 overflow-y-auto">
               <div className="flex flex-col space-y-1 px-1">
                 {privateChats.length === 0 && !isLoadingChats ? (
                   <p className="p-4 text-center text-sm text-muted-foreground">
@@ -492,7 +492,7 @@ export default function LeftSideBar() {
                 <span className="ml-2 text-xs font-normal">(Loading...)</span>
               )}
             </AccordionTrigger>
-            <AccordionContent className="pb-0">
+            <AccordionContent className="pb-0 overflow-y-auto">
               <div className="flex flex-col space-y-1 px-1">
                 {groupChats.length === 0 && !isLoadingChats ? (
                   <p className="p-4 text-center text-sm text-muted-foreground">
