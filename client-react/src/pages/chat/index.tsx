@@ -34,18 +34,13 @@ export default function ChatPage() {
   }, [isAuthenticated, isAuthLoading]);
 
   return (
-    // Mimic the structure from chat.ejs: chat-body and chat-main
     <div
       className="flex h-screen items-center justify-center bg-cover bg-center"
       style={{ backgroundImage: "url('/assets/bg-image.png')" }}
     >
-      {/* Mimic chat-main */}
-      <div className="flex h-[95vh] w-[90vw] max-w-screen-xl rounded-xl backdrop-blur-xl bg-background/70 shadow-lg border border-border">
-        {/* Placeholder for LeftSideBar */}
+      <div className="flex h-[95vh] w-[90vw] max-w-screen-xl rounded-xl shadow-lg backdrop-blur-xl">
         <LeftSideBar />
-        {/* Placeholder for RightSideBar */}
         <RightSideBar />
-        {/* Outlet removed to fix overflow issue */}
       </div>
     </div>
   );
