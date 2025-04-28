@@ -46,10 +46,21 @@ const chatRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/chat",
   component: ChatPage,
-  beforeLoad: () => {
-    const { isAuthenticated } = useAuthStore.getState();
+  beforeLoad: async () => {
+    const { isAuthenticated, fetchCurrentUser } = useAuthStore.getState();
+
     if (!isAuthenticated) {
-      throw new Error("Unauthorized");
+      try {
+        await fetchCurrentUser();
+
+        const { isAuthenticated: updatedAuth } = useAuthStore.getState();
+
+        if (!updatedAuth) {
+          throw new Error("Unauthorized");
+        }
+      } catch {
+        throw new Error("Unauthorized");
+      }
     }
   },
   errorComponent: () => {
