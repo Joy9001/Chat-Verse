@@ -28,9 +28,9 @@ export default function MessageInput() {
   // Get selected chat and current user from stores
   const { selectedChat, addMessage: addMessageToStore } = useChatStore();
   const { user: currentUser } = useAuthStore();
-  const { socket } = useSocketStore(); // Get socket instance
+  const { socket } = useSocketStore();
   const { mutate: sendMessageMutate, isPending: isSendingMessage } =
-    useSendMessage(); // Use the mutation hook
+    useSendMessage();
 
   const handleEmojiSelect = (emoji: any) => {
     const textarea = textareaRef.current;
@@ -99,12 +99,14 @@ export default function MessageInput() {
     }
   };
 
-  // Disable input if no chat is selected or socket is not connected
-  const isDisabled = !selectedChat || !socket?.connected || isSendingMessage;
+  // Store specific disabled states for better handling
+  const noSelectedChat = !selectedChat;
+  const socketDisconnected = !socket?.connected;
+  const isDisabled = noSelectedChat || socketDisconnected || isSendingMessage;
 
   return (
     <div
-      className={`flex items-center p-4 border-t border-border ${!selectedChat || !socket?.connected ? "opacity-50 pointer-events-none" : ""}`}
+      className={`flex items-center p-4 border-t border-border ${isDisabled ? "opacity-50 pointer-events-none" : ""}`}
     >
       {/* Emoji Picker Button/Popover */}
       <Popover>
@@ -140,13 +142,13 @@ export default function MessageInput() {
         onChange={(e) => setMessage(e.target.value)}
         onKeyDown={handleKeyDown}
         placeholder={
-          isDisabled
-            ? isSendingMessage
-              ? "Sending..."
-              : socket?.connected
+          isSendingMessage
+            ? "Sending..."
+            : socketDisconnected
+              ? "Connecting..."
+              : noSelectedChat
                 ? "Select a chat"
-                : "Connecting..."
-            : "Type a message..."
+                : "Type a message..."
         }
         className="flex-grow resize-none border-none bg-transparent focus:outline-none focus:ring-0 p-2 text-sm max-h-32 overflow-y-auto text-foreground placeholder:text-muted-foreground"
         maxRows={5}
