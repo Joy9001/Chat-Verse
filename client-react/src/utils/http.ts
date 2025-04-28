@@ -1,5 +1,5 @@
-import { useAuthStore } from '@/store/auth.store';
-import axios, { AxiosError, AxiosRequestConfig, AxiosResponse } from 'axios';
+import { useAuthStore } from "@/store/auth.store";
+import axios, { AxiosError, AxiosRequestConfig, AxiosResponse } from "axios";
 
 /**
  * Consolidated HTTP client for API communication
@@ -14,21 +14,21 @@ interface ErrorResponse {
 }
 
 // Environment-specific configuration
-const API_BASE_URL = `${import.meta.env.VITE_API_BASE_URL}/api`
+const API_BASE_URL = `${import.meta.env.VITE_API_BASE_URL}/api`;
 
 // Default config for axios
 const axiosConfig: AxiosRequestConfig = {
   baseURL: API_BASE_URL,
   withCredentials: true, // Important for cookies/sessions
   headers: {
-    'Content-Type': 'application/json',
-    'Accept': 'application/json',
+    "Content-Type": "application/json",
+    Accept: "application/json",
   },
   timeout: 15000, // 15 seconds timeout
-}
+};
 
 // Create axios instance
-const http = axios.create(axiosConfig)
+const http = axios.create(axiosConfig);
 
 /**
  * Request interceptor
@@ -44,13 +44,13 @@ http.interceptors.request.use(
     // }
 
     // Add any request-specific headers or transformations
-    return config
+    return config;
   },
   (error) => {
-    console.error('Request error:', error)
-    return Promise.reject(error)
-  }
-)
+    console.error("Request error:", error);
+    return Promise.reject(error);
+  },
+);
 
 /**
  * Response interceptor
@@ -60,102 +60,135 @@ http.interceptors.request.use(
  */
 http.interceptors.response.use(
   (response: AxiosResponse) => {
-    return response
+    return response;
   },
   async (error: AxiosError<ErrorResponse>) => {
-    const originalRequest = error.config as AxiosRequestConfig & { _retry?: boolean }
+    const originalRequest = error.config as AxiosRequestConfig & {
+      _retry?: boolean;
+    };
 
     // Handle token expiration (401 Unauthorized)
     // Add check to prevent refresh attempt for the initial /auth/user check
-    if (error.response?.status === 401 && originalRequest.url !== '/auth/user' && !originalRequest._retry) {
-      originalRequest._retry = true
-      console.log('Attempting token refresh for:', originalRequest.url);
+    if (
+      error.response?.status === 401 &&
+      originalRequest.url !== "/auth/user" &&
+      !originalRequest._retry
+    ) {
+      originalRequest._retry = true;
+      console.log("Attempting token refresh for:", originalRequest.url);
 
       try {
         // Try to refresh the token
-        await axios.get(`${API_BASE_URL}/auth/jwt/refresh-token`, { withCredentials: true })
-        console.log('Token refresh successful, retrying original request.')
+        await axios.get(`${API_BASE_URL}/auth/jwt/refresh-token`, {
+          withCredentials: true,
+        });
+        console.log("Token refresh successful, retrying original request.");
         // Retry the original request
-        return http(originalRequest)
+        return http(originalRequest);
       } catch (refreshError) {
-        console.error('Token refresh failed:', refreshError);
+        console.error("Token refresh failed:", refreshError);
         // If refresh fails, logout the user
         const { isAuthenticated } = useAuthStore.getState();
         if (isAuthenticated) {
           useAuthStore.getState().logout(); // Call logout from the store
         }
-        return Promise.reject(refreshError)
+        return Promise.reject(refreshError);
       }
-    } else if (error.response?.status === 401 && originalRequest.url === '/auth/user') {
+    } else if (
+      error.response?.status === 401 &&
+      originalRequest.url === "/auth/user"
+    ) {
       // If the specific /auth/user check fails with 401, don't try to refresh, just reject.
-      console.log('/auth/user returned 401, rejecting without refresh attempt.');
+      console.log(
+        "/auth/user returned 401, rejecting without refresh attempt.",
+      );
     }
 
     // Handle 403 Forbidden errors
     if (error.response?.status === 403) {
-      console.error('Permission denied')
+      console.error("Permission denied");
       // You could redirect to a forbidden page or show a notification
     }
 
     // Handle 404 Not Found errors
     if (error.response?.status === 404) {
-      console.error('Resource not found')
+      console.error("Resource not found");
       // You could redirect to a 404 page
     }
 
     // Handle 500 Server Error
     if (error.response?.status && error.response.status >= 500) {
-      console.error('Server error')
+      console.error("Server error");
       // You could redirect to an error page or show a notification
     }
 
     // Extract the most useful error message
-    const errorResponse = error.response?.data as ErrorResponse
+    const errorResponse = error.response?.data as ErrorResponse;
     const errorMessage =
       errorResponse?.error ||
       errorResponse?.message ||
       error.message ||
-      'An unexpected error occurred'
+      "An unexpected error occurred";
 
     // Enhance the error object with a more useful message
-    const enhancedError = error
+    const enhancedError = error;
     if (axios.isAxiosError(enhancedError)) {
-      enhancedError.message = errorMessage
+      enhancedError.message = errorMessage;
     }
 
-    return Promise.reject(enhancedError)
-  }
-)
+    return Promise.reject(enhancedError);
+  },
+);
 
 /**
  * API helper methods for common operations
  */
 export const api = {
   // Basic CRUD operations
-  get: <T>(url: string, config?: AxiosRequestConfig) => http.get<T>(url, config),
-  post: <T, D = Record<string, unknown>>(url: string, data?: D, config?: AxiosRequestConfig) => http.post<T>(url, data, config),
-  put: <T, D = Record<string, unknown>>(url: string, data?: D, config?: AxiosRequestConfig) => http.put<T>(url, data, config),
-  delete: <T>(url: string, config?: AxiosRequestConfig) => http.delete<T>(url, config),
-  patch: <T, D = Record<string, unknown>>(url: string, data?: D, config?: AxiosRequestConfig) => http.patch<T>(url, data, config),
+  get: <T>(url: string, config?: AxiosRequestConfig) =>
+    http.get<T>(url, config),
+  post: <T, D = Record<string, unknown>>(
+    url: string,
+    data?: D,
+    config?: AxiosRequestConfig,
+  ) => http.post<T>(url, data, config),
+  put: <T, D = Record<string, unknown>>(
+    url: string,
+    data?: D,
+    config?: AxiosRequestConfig,
+  ) => http.put<T>(url, data, config),
+  delete: <T>(url: string, config?: AxiosRequestConfig) =>
+    http.delete<T>(url, config),
+  patch: <T, D = Record<string, unknown>>(
+    url: string,
+    data?: D,
+    config?: AxiosRequestConfig,
+  ) => http.patch<T>(url, data, config),
 
   // Additional helper methods
-  uploadFile: (url: string, file: File, onProgress?: (percentage: number) => void) => {
-    const formData = new FormData()
-    formData.append('file', file)
+  uploadFile: (
+    url: string,
+    file: File,
+    onProgress?: (percentage: number) => void,
+  ) => {
+    const formData = new FormData();
+    formData.append("file", file);
 
     return http.post(url, formData, {
       headers: {
-        'Content-Type': 'multipart/form-data',
+        "Content-Type": "multipart/form-data",
       },
       onUploadProgress: (progressEvent) => {
         if (onProgress && progressEvent.total) {
-          const percentage = Math.round((progressEvent.loaded * 100) / progressEvent.total)
-          onProgress(percentage)
+          const percentage = Math.round(
+            (progressEvent.loaded * 100) / progressEvent.total,
+          );
+          onProgress(percentage);
         }
       },
-    })
+    });
   },
-}
+};
 
 // Default export for backward compatibility
-export default http
+export default http;

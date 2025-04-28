@@ -123,7 +123,7 @@ export default function LeftSideBar() {
 
   useEffect(() => {
     if (user) {
-      console.log("[LeftSideBar] Updating edit form state from user:", user);
+      // console.log("[LeftSideBar] Updating edit form state from user:", user);
       setEditName(user.name);
       setEditUsername(user.username);
       const validGender = ["male", "female", "other"].includes(user.gender)
