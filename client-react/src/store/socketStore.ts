@@ -159,39 +159,24 @@ export const useSocketStore = create<SocketState>((set, get) => {
       // Avoid creating multiple instances if connectSocket is called rapidly
       if (socketInstance && socketInstance.active) {
         console.log("Socket instance already exists and is active.");
-        // Optionally trigger connect if somehow disconnected but instance exists
         if (!get().isConnected) socketInstance.connect();
-        return;
-      }
-      // If instance exists but is not active (e.g., after disconnectSocket), reuse it
-      if (socketInstance && !socketInstance.active) {
-        console.log("Reusing existing socket instance. Connecting...");
-        // Listeners should still be attached if setupListeners was called before
-        socketInstance.connect();
         return;
       }
 
       console.log("Creating new socket instance and connecting...");
       socketInstance = io(SOCKET_URL, {
         withCredentials: true,
-        autoConnect: true, // *** Use autoConnect: false ***
-        // Optional: Add reconnection attempts/delay
-        // reconnectionAttempts: 5,
-        // reconnectionDelay: 1000,
       });
 
       set({ socket: socketInstance });
-      setupListeners(); // Setup listeners for the new instance
+      setupListeners();
     },
 
     disconnectSocket: () => {
       if (socketInstance) {
         console.log("Disconnecting socket and cleaning up listeners...");
-        cleanupListeners(); // *** Clean up listeners ***
+        cleanupListeners();
         socketInstance.disconnect();
-        // Consider if nullifying the instance is always desired.
-        // Keeping it allows reuse in connectSocket if called again.
-        // socketInstance = null; // Optional: Uncomment to force new instance creation next time
       }
       // Ensure state reflects disconnection regardless
       set({ socket: null, isConnected: false, onlineUsers: [] });
