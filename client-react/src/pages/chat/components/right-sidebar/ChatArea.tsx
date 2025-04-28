@@ -6,13 +6,11 @@ import { cn } from "@/lib/utils";
 import { useAuthStore } from "@/store/auth.store";
 import { useChatStore } from "@/store/chatStore";
 import { format } from "date-fns";
-import React, { useEffect, useRef } from "react";
+import { useEffect, useRef } from "react";
 
-// Function to format date
 const formatTimestamp = (timestamp: string): { time: string; date: string } => {
   try {
     const date = new Date(timestamp);
-    // Check if date is valid before formatting
     if (isNaN(date.getTime())) {
       console.warn("Invalid date timestamp received:", timestamp);
       return { time: "--:--", date: "Invalid Date" };
@@ -32,22 +30,20 @@ export default function ChatArea() {
     selectedChat,
     setMessages,
     messages: messagesFromStore,
-  } = useChatStore(); // Get store actions/state
+  } = useChatStore();
   const { user: currentUser } = useAuthStore();
 
-  // Use the hook to fetch messages
   const {
     data: fetchedMessages,
-    isLoading: isLoadingMessages, // Use loading state from query
-    isError: isErrorMessages, // Use error state from query
-    error: messagesError, // Use error object from query
+    isLoading: isLoadingMessages,
+    isError: isErrorMessages,
+    error: messagesError,
   } = useFetchMessages();
 
   console.log("fetchedMessages", fetchedMessages);
 
   const scrollAreaRef = useRef<HTMLDivElement>(null);
 
-  // Update Zustand store when messages are successfully fetched
   useEffect(() => {
     if (fetchedMessages) {
       console.log(
@@ -56,28 +52,32 @@ export default function ChatArea() {
       );
       setMessages(fetchedMessages);
     }
-    // Optionally handle query error here if needed (e.g., global error state)
-    // if (isErrorMessages) { setError(messagesError?.message || 'Failed to load messages.') }
   }, [fetchedMessages, setMessages]);
 
-  // Scroll to bottom effect (now depends on store messages and query loading state)
   useEffect(() => {
-    if (!isLoadingMessages && scrollAreaRef.current) {
-      setTimeout(() => {
-        if (scrollAreaRef.current) {
+    if (!isLoadingMessages) {
+      const timerId = setTimeout(() => {
+        const lastMessageElement =
+          scrollAreaRef.current?.querySelector("#last-message");
+
+        if (lastMessageElement) {
+          lastMessageElement.scrollIntoView({
+            behavior: "smooth",
+          });
+        } else if (scrollAreaRef.current && messagesFromStore.length > 0) {
           scrollAreaRef.current.scrollTo({
             top: scrollAreaRef.current.scrollHeight,
             behavior: "smooth",
           });
         }
       }, 100);
+
+      return () => clearTimeout(timerId);
     }
-    // Depend on messagesFromStore to scroll when new messages are added (e.g., via socket)
-  }, [messagesFromStore, isLoadingMessages]);
+  }, [messagesFromStore, isLoadingMessages, selectedChat]);
 
   let lastMessageDate = "";
 
-  // Determine details for the profile section
   const chatName = selectedChat?.name || "";
   const chatAvatar = selectedChat
     ? selectedChat.type === "private"
@@ -91,7 +91,6 @@ export default function ChatArea() {
 
   return (
     <div className="flex flex-grow flex-col overflow-hidden">
-      {/* Profile Info Section (Only render if a chat is selected) */}
       {selectedChat && (
         <div className="flex flex-col items-center justify-around px-4 py-4">
           <Avatar className="ring-primary ring-offset-background mb-2 h-16 w-16 ring-2 ring-offset-2">
@@ -111,10 +110,8 @@ export default function ChatArea() {
         </div>
       )}
 
-      {/* Messages Area */}
       <ScrollArea className="flex-grow p-4" ref={scrollAreaRef}>
         <div className="flex flex-col space-y-4">
-          {/* Loading Skeleton */}
           {isLoadingMessages && (
             <div className="space-y-4 p-4">
               {[...Array(5)].map((_, i) => (
@@ -130,7 +127,6 @@ export default function ChatArea() {
             </div>
           )}
 
-          {/* Error Message */}
           {isErrorMessages && !isLoadingMessages && (
             <div className="flex h-full items-center justify-center">
               <p className="text-destructive">
@@ -139,7 +135,6 @@ export default function ChatArea() {
             </div>
           )}
 
-          {/* No Messages Info */}
           {!isLoadingMessages &&
             !isErrorMessages &&
             messagesFromStore.length === 0 &&
@@ -151,20 +146,22 @@ export default function ChatArea() {
               </div>
             )}
 
-          {/* Render Messages */}
           {!isLoadingMessages &&
             !isErrorMessages &&
-            messagesFromStore.map((msg) => {
+            messagesFromStore.map((msg, index) => {
               const { time, date } = formatTimestamp(msg.createdAt);
               const showDateSeparator = date !== lastMessageDate;
               if (showDateSeparator) lastMessageDate = date;
-              // Use currentUser._id for comparison
               const isCurrentUser =
                 msg.senderId === currentUser?._id ||
                 msg.senderId === "currentUser";
+              const isLastMessage = index === messagesFromStore.length - 1;
 
               return (
-                <React.Fragment key={msg._id}>
+                <div
+                  key={msg._id}
+                  id={isLastMessage ? "last-message" : undefined}
+                >
                   {showDateSeparator && (
                     <div className="my-4 flex justify-center">
                       <span className="text-muted-foreground bg-muted rounded-full px-3 py-1 text-xs">
@@ -206,7 +203,7 @@ export default function ChatArea() {
                       </span>
                     </div>
                   </div>
-                </React.Fragment>
+                </div>
               );
             })}
         </div>
