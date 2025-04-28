@@ -231,7 +231,7 @@ router.get(
       console.log(
         "Google auth successful, tokens set, redirecting to frontend.",
       );
-      res.redirect(FRONTEND_DOMAIN);
+      res.redirect(`${FRONTEND_DOMAIN}/chat`);
     } catch (error) {
       console.error("Error during Google callback token handling:", error);
       res.redirect(`${FRONTEND_DOMAIN}/auth/login?error=Internal Server Error`);
