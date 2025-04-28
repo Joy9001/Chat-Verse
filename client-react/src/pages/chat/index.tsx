@@ -6,10 +6,11 @@ import LeftSideBar from "./components/LeftSideBar";
 import RightSideBar from "./components/RightSideBar";
 
 export default function ChatPage() {
-  const { connectSocket, disconnectSocket } = useSocketStore();
   const { isAuthenticated, isLoading: isAuthLoading } = useAuthStore();
 
   useEffect(() => {
+    const { connectSocket, disconnectSocket } = useSocketStore.getState();
+
     if (!isAuthLoading && isAuthenticated) {
       console.log(
         "ChatPage mounted, auth check complete, user authenticated. Connecting socket...",
@@ -25,12 +26,13 @@ export default function ChatPage() {
     }
 
     return () => {
+      const { disconnectSocket } = useSocketStore.getState();
       console.log(
         "ChatPage unmounting or auth status/loading changed, disconnecting socket...",
       );
       disconnectSocket();
     };
-  }, [isAuthenticated, isAuthLoading, connectSocket, disconnectSocket]);
+  }, [isAuthenticated, isAuthLoading]);
 
   return (
     // Mimic the structure from chat.ejs: chat-body and chat-main
