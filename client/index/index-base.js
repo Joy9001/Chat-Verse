@@ -1,1 +1,1 @@
-import '../styles/base-output.css'
+import "../styles/base-output.css";

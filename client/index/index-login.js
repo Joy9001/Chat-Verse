@@ -1,1 +1,1 @@
-import '../scripts/components/login.js'
+import "../scripts/components/login.js";
