@@ -325,15 +325,12 @@ export default function LeftSideBar() {
               <TooltipTrigger asChild>
                 <DialogTrigger asChild>
                   <div className="avatar online cursor-pointer">
-                    <Avatar className="h-12 w-12 scale-100 transition delay-100 duration-200 ease-in-out hover:scale-110">
-                      <AvatarImage
+                    <div className="h-12 w-12 scale-100 transition delay-100 duration-200 ease-in-out hover:scale-110">
+                      <img
                         src={user?.avatar || ""}
                         alt={user?.name || "User"}
                       />
-                      <AvatarFallback>
-                        {user?.name?.charAt(0).toUpperCase() || "U"}
-                      </AvatarFallback>
-                    </Avatar>
+                    </div>
                   </div>
                 </DialogTrigger>
               </TooltipTrigger>
