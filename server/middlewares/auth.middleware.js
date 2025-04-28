@@ -93,11 +93,9 @@ export const isAuthenticated = (req, res, next) => {
           );
           res.clearCookie("accessToken");
           res.clearCookie("refreshToken");
-          return res
-            .status(401)
-            .json({
-              error: "Unauthorized: User associated with token not found",
-            });
+          return res.status(401).json({
+            error: "Unauthorized: User associated with token not found",
+          });
         }
 
         req.user = fullUser;

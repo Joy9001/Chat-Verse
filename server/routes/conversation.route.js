@@ -93,14 +93,16 @@ router.post("/get-conversation", async (req, res) => {
   try {
     // Find the conversation directly by its ID
     const findConversation = await Conversation.findById(conversationId);
-    
+
     if (!findConversation) {
       return res.status(404).json({ message: "Conversation not found" });
     }
-    
+
     // Check if the user is actually a participant in this conversation
     if (!findConversation.participants.includes(senderId)) {
-      return res.status(403).json({ message: "Not authorized to access this conversation" });
+      return res
+        .status(403)
+        .json({ message: "Not authorized to access this conversation" });
     }
 
     console.log("findConversation", findConversation);
@@ -116,15 +118,18 @@ router.post("/get-conversation", async (req, res) => {
         try {
           // Reset unread count for the other participant's messages
           const otherParticipant = findConversation.participants.find(
-            p => !p.equals(senderId)
+            (p) => !p.equals(senderId),
           );
-          
+
           findConversation.unreadMsgCount.forEach((obj) => {
-            if (otherParticipant && obj.senderId.toString() === otherParticipant.toString()) {
+            if (
+              otherParticipant &&
+              obj.senderId.toString() === otherParticipant.toString()
+            ) {
               obj.unreadCount = 0;
             }
           });
-          
+
           await findConversation.save();
           const conversation = await getConversation(findConversation.messages);
 
@@ -136,7 +141,10 @@ router.post("/get-conversation", async (req, res) => {
           });
         } catch (error) {
           console.log("Error getting conversation: ", error.message);
-          return res.status(500).json({ message: "Error processing conversation", error: error.message });
+          return res.status(500).json({
+            message: "Error processing conversation",
+            error: error.message,
+          });
         }
       }
     } else {
@@ -146,7 +154,9 @@ router.post("/get-conversation", async (req, res) => {
     }
   } catch (error) {
     console.log("Error getting conversation: ", error.message);
-    return res.status(500).json({ message: "Error fetching conversation", error: error.message });
+    return res
+      .status(500)
+      .json({ message: "Error fetching conversation", error: error.message });
   }
 });
 
