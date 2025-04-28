@@ -71,22 +71,22 @@ export function LoginForm() {
     <>
       <form
         onSubmit={handleSubmit(onSubmit)}
-        className="space-y-4 w-full max-w-sm"
+        className="w-full max-w-sm space-y-4"
       >
         <div className="space-y-2">
           <label
             htmlFor="email"
-            className="text-base md:text-lg font-semibold text-black"
+            className="text-base font-semibold text-black md:text-lg"
           >
             Email
           </label>
           <div className="relative">
-            <FiMail className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500" />
+            <FiMail className="absolute top-1/2 left-3 -translate-y-1/2 text-gray-500" />
             <Input
               {...register("email")}
               type="email"
               id="email"
-              className="border-primary pl-10 text-black focus-visible:ring-primary/50"
+              className="border-primary focus-visible:ring-primary/50 pl-10 text-black"
               placeholder="Enter your email"
               aria-invalid={!!errors.email}
               aria-describedby={errors.email ? "email-error" : undefined}
@@ -102,17 +102,17 @@ export function LoginForm() {
         <div className="space-y-2">
           <label
             htmlFor="password"
-            className="text-base md:text-lg font-semibold text-black"
+            className="text-base font-semibold text-black md:text-lg"
           >
             Password
           </label>
           <div className="relative">
-            <FiLock className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500" />
+            <FiLock className="absolute top-1/2 left-3 -translate-y-1/2 text-gray-500" />
             <Input
               {...register("password")}
               type={showPassword ? "text" : "password"}
               id="password"
-              className="border-primary pl-10 pr-10 text-black focus-visible:ring-primary/50"
+              className="border-primary focus-visible:ring-primary/50 pr-10 pl-10 text-black"
               placeholder="Enter your password"
               aria-invalid={!!errors.password}
               aria-describedby={errors.password ? "password-error" : undefined}
@@ -120,7 +120,7 @@ export function LoginForm() {
             <button
               type="button"
               onClick={togglePasswordVisibility}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700 focus:outline-none"
+              className="absolute top-1/2 right-3 -translate-y-1/2 text-gray-500 hover:text-gray-700 focus:outline-none"
               aria-label={showPassword ? "Hide password" : "Show password"}
             >
               {showPassword ? <FiEyeOff /> : <FiEye />}
@@ -142,7 +142,7 @@ export function LoginForm() {
         <Button
           type="submit"
           disabled={isLoading}
-          className="border-primary bg-primary w-full border text-white transition-all hover:bg-primary/90 hover:cursor-pointer mt-4"
+          className="border-primary bg-primary hover:bg-primary/90 mt-4 w-full border text-white transition-all hover:cursor-pointer"
         >
           {isLoading ? (
             <span className="flex items-center justify-center">
@@ -165,7 +165,7 @@ export function LoginForm() {
 
         <GoogleAuthButton />
 
-        <div className="text-center text-sm mt-4">
+        <div className="mt-4 text-center text-sm">
           <span className="text-gray-500">Don't have an account?</span>{" "}
           <Button
             variant="link"
@@ -179,7 +179,7 @@ export function LoginForm() {
 
       {/* Alert - Fixed at the bottom center with a z-index */}
       {alert.show && (
-        <div className="fixed bottom-4 left-0 right-0 z-50 flex justify-center">
+        <div className="fixed right-0 bottom-4 left-0 z-50 flex justify-center">
           <Alert
             className={`w-auto max-w-md rounded-md px-6 py-3 shadow-lg ${
               alert.type === "success" ? "bg-green-600" : "bg-red-600"

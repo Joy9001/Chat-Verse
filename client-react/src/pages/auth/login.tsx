@@ -9,9 +9,9 @@ export default function LoginPage() {
         backgroundImage: "url(/assets/bg-image.png)",
       }}
     >
-      <div className="relative flex w-full max-w-4xl flex-col rounded-xl shadow-2xl backdrop-blur-2xl md:flex-row md:h-auto overflow-hidden">
+      <div className="relative flex w-full max-w-4xl flex-col overflow-hidden rounded-xl shadow-2xl backdrop-blur-2xl md:h-auto md:flex-row">
         {/* Side Image Section - Left side */}
-        <div className="hidden md:block md:w-1/2 lg:w-3/5 rounded-l-xl overflow-hidden">
+        <div className="hidden overflow-hidden rounded-l-xl md:block md:w-1/2 lg:w-3/5">
           <img
             src="/assets/side-image.png"
             alt="login"
@@ -20,17 +20,17 @@ export default function LoginPage() {
         </div>
 
         {/* Login Form Section - Right side */}
-        <div className="w-full rounded-xl md:w-1/2 lg:w-2/5 md:rounded-l-none">
+        <div className="w-full rounded-xl md:w-1/2 md:rounded-l-none lg:w-2/5">
           <div className="flex h-full w-full flex-col items-center justify-center p-6 md:p-8">
             <div className="mb-6 flex flex-col items-center">
-              <div className="flex items-center mb-2 md:hidden">
-                <FiMessageCircle className="h-6 w-6 mr-2 text-primary" />
-                <h2 className="text-xl font-bold text-primary">Chat App</h2>
+              <div className="mb-2 flex items-center md:hidden">
+                <FiMessageCircle className="text-primary mr-2 h-6 w-6" />
+                <h2 className="text-primary text-xl font-bold">Chat App</h2>
               </div>
-              <h1 className="text-2xl md:text-3xl font-bold text-gray-900">
+              <h1 className="text-2xl font-bold text-gray-900 md:text-3xl">
                 Welcome Back
               </h1>
-              <p className="text-sm text-gray-600 mt-1 text-center">
+              <p className="mt-1 text-center text-sm text-gray-600">
                 Login to your account to continue
               </p>
             </div>

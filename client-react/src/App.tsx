@@ -9,7 +9,7 @@ function App() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-background font-dm">
+    <div className="bg-background font-dm min-h-screen">
       <Outlet /> {/* This will render the matched route */}
     </div>
   );

@@ -16,7 +16,7 @@ export function GoogleAuthButton() {
     <Button
       type="button"
       variant="outline"
-      className="relative flex items-center justify-center gap-3 w-full border-2 border-gray-300 bg-white text-gray-800 transition-all duration-300 hover:border-primary/60 hover:bg-gray-50 hover:shadow-md dark:bg-gray-900 dark:text-white dark:border-gray-700 dark:hover:border-primary/70 dark:hover:bg-gray-800 h-11 rounded-lg hover:cursor-pointer"
+      className="hover:border-primary/60 dark:hover:border-primary/70 relative flex h-11 w-full items-center justify-center gap-3 rounded-lg border-2 border-gray-300 bg-white text-gray-800 transition-all duration-300 hover:cursor-pointer hover:bg-gray-50 hover:shadow-md dark:border-gray-700 dark:bg-gray-900 dark:text-white dark:hover:bg-gray-800"
       onClick={handleClick}
       disabled={isLoading}
       onMouseEnter={() => setIsHovered(true)}
@@ -24,9 +24,9 @@ export function GoogleAuthButton() {
     >
       {isLoading ? (
         <>
-          <div className="h-5 w-5 mr-1 flex-shrink-0">
+          <div className="mr-1 h-5 w-5 flex-shrink-0">
             <svg
-              className="animate-spin h-5 w-5 text-primary"
+              className="text-primary h-5 w-5 animate-spin"
               xmlns="http://www.w3.org/2000/svg"
               fill="none"
               viewBox="0 0 24 24"

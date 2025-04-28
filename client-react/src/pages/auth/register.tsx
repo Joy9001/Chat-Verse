@@ -178,7 +178,7 @@ export default function RegisterPage() {
         backgroundImage: "url(/assets/bg-image.png)",
       }}
     >
-      <div className="relative flex w-full max-w-4xl flex-col rounded-xl shadow-2xl backdrop-blur-2xl md:h-auto md:flex-row overflow-hidden">
+      <div className="relative flex w-full max-w-4xl flex-col overflow-hidden rounded-xl shadow-2xl backdrop-blur-2xl md:h-auto md:flex-row">
         {/* Side Image Section - Left side */}
         <div className="hidden overflow-hidden rounded-l-xl md:block md:w-1/2 lg:w-3/5">
           <img
@@ -192,14 +192,14 @@ export default function RegisterPage() {
         <div className="w-full rounded-xl md:w-1/2 md:rounded-l-none lg:w-2/5">
           <div className="flex h-full w-full flex-col items-center justify-center p-6 md:p-8">
             <div className="mb-6 flex flex-col items-center">
-              <div className="flex items-center mb-2 md:hidden">
-                <FiMessageCircle className="h-6 w-6 mr-2 text-primary" />
-                <h2 className="text-xl font-bold text-primary">Chat App</h2>
+              <div className="mb-2 flex items-center md:hidden">
+                <FiMessageCircle className="text-primary mr-2 h-6 w-6" />
+                <h2 className="text-primary text-xl font-bold">Chat App</h2>
               </div>
-              <h1 className="text-2xl md:text-3xl font-bold text-gray-900">
+              <h1 className="text-2xl font-bold text-gray-900 md:text-3xl">
                 Create Account
               </h1>
-              <p className="text-sm text-gray-600 mt-1 text-center">
+              <p className="mt-1 text-center text-sm text-gray-600">
                 Sign up to get started with Chat App
               </p>
             </div>
@@ -267,7 +267,7 @@ export default function RegisterPage() {
               <Button
                 onClick={handleOpenDetailsModal}
                 disabled={isLoading}
-                className="border-primary bg-primary hover:bg-primary/90 w-full border text-white transition-all mt-4"
+                className="border-primary bg-primary hover:bg-primary/90 mt-4 w-full border text-white transition-all"
               >
                 {isLoading ? (
                   <span className="flex items-center justify-center">
@@ -305,7 +305,7 @@ export default function RegisterPage() {
               <GoogleAuthButton />
             </div>
 
-            <div className="text-center text-sm mt-4">
+            <div className="mt-4 text-center text-sm">
               <span className="text-gray-500">Already have an account?</span>{" "}
               <Button
                 variant="link"
@@ -320,7 +320,7 @@ export default function RegisterPage() {
 
         {/* Alert - Fixed at the bottom center with a z-index */}
         {alert.show && (
-          <div className="fixed bottom-4 left-0 right-0 z-50 flex justify-center">
+          <div className="fixed right-0 bottom-4 left-0 z-50 flex justify-center">
             <Alert
               className={`w-auto max-w-md rounded-md px-6 py-3 shadow-lg ${
                 alert.type === "success" ? "bg-green-600" : "bg-red-600"

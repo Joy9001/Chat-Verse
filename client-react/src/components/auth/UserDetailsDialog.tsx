@@ -59,9 +59,9 @@ function UserDetailsForm({
   return (
     <form onSubmit={onSubmit} className={`space-y-5 ${className}`}>
       {/* Avatar section at the top */}
-      <div className="flex flex-col items-center space-y-4 mb-2">
+      <div className="mb-2 flex flex-col items-center space-y-4">
         <div className="relative">
-          <div className="h-24 w-24 rounded-full overflow-hidden border-2 border-primary">
+          <div className="border-primary h-24 w-24 overflow-hidden rounded-full border-2">
             <img
               src={avatarUrl}
               alt="Profile Avatar"
@@ -72,12 +72,12 @@ function UserDetailsForm({
             type="button"
             onClick={onChangeAvatar}
             disabled={isAvatarLoading}
-            className="absolute -bottom-1 -right-1 rounded-full p-2 h-8 w-8 bg-primary text-white hover:bg-primary/90"
+            className="bg-primary hover:bg-primary/90 absolute -right-1 -bottom-1 h-8 w-8 rounded-full p-2 text-white"
             aria-label="Change avatar"
           >
             {isAvatarLoading ? (
               <svg
-                className="animate-spin h-4 w-4 text-white"
+                className="h-4 w-4 animate-spin text-white"
                 xmlns="http://www.w3.org/2000/svg"
                 fill="none"
                 viewBox="0 0 24 24"
@@ -101,7 +101,7 @@ function UserDetailsForm({
             )}
           </Button>
         </div>
-        <p className="text-sm text-gray-500 mt-1">
+        <p className="mt-1 text-sm text-gray-500">
           Choose an avatar for your profile
         </p>
       </div>
@@ -110,11 +110,11 @@ function UserDetailsForm({
       <div className="space-y-2">
         <label className="text-sm font-medium text-gray-700">Name</label>
         <div className="relative">
-          <FiUser className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500" />
+          <FiUser className="absolute top-1/2 left-3 -translate-y-1/2 text-gray-500" />
           <Input
             {...register("name")}
             placeholder="Enter your name"
-            className="pl-10 border-gray-300 focus-visible:ring-primary/50"
+            className="focus-visible:ring-primary/50 border-gray-300 pl-10"
           />
         </div>
         {errors.name && (
@@ -125,11 +125,11 @@ function UserDetailsForm({
       <div className="space-y-2">
         <label className="text-sm font-medium text-gray-700">Username</label>
         <div className="relative">
-          <FiUserCheck className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500" />
+          <FiUserCheck className="absolute top-1/2 left-3 -translate-y-1/2 text-gray-500" />
           <Input
             {...register("username")}
             placeholder="Enter your username"
-            className="pl-10 border-gray-300 focus-visible:ring-primary/50"
+            className="focus-visible:ring-primary/50 border-gray-300 pl-10"
           />
         </div>
         {errors.username && (
@@ -145,7 +145,7 @@ function UserDetailsForm({
             setValue("gender", value)
           }
         >
-          <SelectTrigger className="border-gray-300 bg-white text-gray-900 focus:ring-primary/50">
+          <SelectTrigger className="focus:ring-primary/50 border-gray-300 bg-white text-gray-900">
             <SelectValue placeholder="Select gender" />
           </SelectTrigger>
           <SelectContent>
@@ -157,7 +157,7 @@ function UserDetailsForm({
 
       <Button
         type="submit"
-        className="bg-primary w-full text-white hover:bg-primary/90 mt-4"
+        className="bg-primary hover:bg-primary/90 mt-4 w-full text-white"
       >
         Complete Registration
       </Button>
@@ -172,7 +172,7 @@ export function UserDetailsDialog(props: UserDetailsDialogProps) {
   if (isDesktop) {
     return (
       <Dialog open={isOpen} onOpenChange={onOpenChange}>
-        <DialogContent className="bg-white sm:max-w-[425px] p-6">
+        <DialogContent className="bg-white p-6 sm:max-w-[425px]">
           <DialogHeader className="pb-4">
             <DialogTitle className="text-xl font-bold text-gray-900">
               Complete Your Profile
@@ -187,15 +187,15 @@ export function UserDetailsDialog(props: UserDetailsDialogProps) {
   return (
     <Drawer open={isOpen} onOpenChange={onOpenChange}>
       <DrawerContent>
-        <DrawerHeader className="text-left border-b pb-4">
+        <DrawerHeader className="border-b pb-4 text-left">
           <DrawerTitle className="text-xl font-bold text-gray-900">
             Complete Your Profile
           </DrawerTitle>
         </DrawerHeader>
-        <div className="px-4 py-6 overflow-y-auto max-h-[70vh]">
+        <div className="max-h-[70vh] overflow-y-auto px-4 py-6">
           <UserDetailsForm {...props} />
         </div>
-        <DrawerFooter className="pt-2 border-t">
+        <DrawerFooter className="border-t pt-2">
           <DrawerClose asChild>
             <Button variant="outline" className="w-full">
               Cancel
