@@ -81,7 +81,7 @@ const onNewMessage = (
     // AND the other participant matches the current user.
     // Note: Backend might send private messages differently (e.g., only to involved parties)
     else if (selectedChat.type === "private") {
-      const otherUserId = selectedChat.id; // selectedChat.id is the other user's encryptedId
+      const otherUserId = selectedChat.otherUser.id; // selectedChat.id is the other user's encryptedId
       const myId = currentUser._id;
       // Check if message involves the current user and the other user in the selected chat
       if (
