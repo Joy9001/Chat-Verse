@@ -1,11 +1,20 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useDeleteMessage } from "@/hooks/useDeleteMessage";
 import { useFetchMessages } from "@/hooks/useFetchMessages";
 import { cn } from "@/lib/utils";
 import { useAuthStore } from "@/store/auth.store";
 import { useChatStore } from "@/store/chatStore";
 import { format } from "date-fns";
+import { MoreVertical } from "lucide-react";
 import { useEffect, useRef } from "react";
 
 const formatTimestamp = (timestamp: string): { time: string; date: string } => {
@@ -32,6 +41,7 @@ export default function ChatArea() {
     messages: messagesFromStore,
   } = useChatStore();
   const { user: currentUser } = useAuthStore();
+  const { mutate: deleteMessage } = useDeleteMessage();
 
   const {
     data: fetchedMessages,
@@ -81,6 +91,16 @@ export default function ChatArea() {
       return () => clearTimeout(timerId);
     }
   }, [messagesFromStore, isLoadingMessages, selectedChat]);
+
+  const handleDeleteMessage = (messageId: string) => {
+    if (!selectedChat) return;
+
+    deleteMessage({
+      messageId,
+      chatId: selectedChat.id,
+      chatType: selectedChat.type,
+    });
+  };
 
   let lastMessageDate = "";
 
@@ -177,37 +197,85 @@ export default function ChatArea() {
                   )}
                   <div
                     className={cn(
-                      "flex w-full items-end",
+                      "flex w-full items-end gap-2",
                       isCurrentUser ? "justify-end" : "justify-start",
                     )}
                   >
-                    <div
-                      className={cn(
-                        "flex max-w-[70%] flex-col space-y-1 rounded-lg px-4 py-2 text-base",
-                        isCurrentUser
-                          ? "bg-primary text-primary-foreground rounded-br-none"
-                          : "bg-muted text-muted-foreground rounded-bl-none",
-                      )}
-                    >
-                      {selectedChat?.type === "group" && !isCurrentUser && (
-                        <p className="text-foreground/70 text-xs font-medium">
-                          {msg.senderName || "Unknown User"}
-                        </p>
-                      )}
-                      <p className="break-words whitespace-pre-wrap">
-                        {msg.message}
-                      </p>
-                      <span
+                    {isCurrentUser ? (
+                      <div className="flex items-start justify-end gap-2">
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <Button
+                              size="icon"
+                              variant="ghost"
+                              className="h-8 w-8 rounded-full opacity-70 transition-opacity hover:bg-white/10 hover:opacity-100"
+                            >
+                              <MoreVertical className="h-4 w-4 text-gray-600" />
+                            </Button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent
+                            align="start"
+                            className="w-36 rounded-lg border border-slate-600/50 bg-zinc-700/95 p-1 shadow-lg backdrop-blur-sm"
+                          >
+                            <DropdownMenuItem className="cursor-pointer rounded-md px-3 py-2.5 text-sm text-slate-200 transition-colors hover:bg-zinc-600/80 focus:bg-zinc-600/80">
+                              Reply
+                            </DropdownMenuItem>
+                            <DropdownMenuItem className="cursor-pointer rounded-md px-3 py-2.5 text-sm text-slate-200 transition-colors hover:bg-zinc-600/80 focus:bg-zinc-600/80">
+                              Forward
+                            </DropdownMenuItem>
+                            <DropdownMenuItem className="cursor-pointer rounded-md px-3 py-2.5 text-sm text-slate-200 transition-colors hover:bg-zinc-600/80 focus:bg-zinc-600/80">
+                              Copy
+                            </DropdownMenuItem>
+                            <DropdownMenuItem className="cursor-pointer rounded-md px-3 py-2.5 text-sm text-slate-200 transition-colors hover:bg-zinc-600/80 focus:bg-zinc-600/80">
+                              Report
+                            </DropdownMenuItem>
+                            <DropdownMenuItem
+                              className="cursor-pointer rounded-md px-3 py-2.5 text-sm text-slate-200 transition-colors hover:bg-zinc-600/80 focus:bg-zinc-600/80"
+                              onClick={() => handleDeleteMessage(msg._id)}
+                            >
+                              Delete
+                            </DropdownMenuItem>
+                          </DropdownMenuContent>
+                        </DropdownMenu>
+                        <div
+                          className={cn(
+                            "relative max-w-[70%] flex-col space-y-1 rounded-lg px-4 py-2 text-base",
+                            "bg-primary text-primary-foreground rounded-br-none",
+                          )}
+                        >
+                          {selectedChat?.type === "group" && (
+                            <p className="text-foreground/70 text-xs font-medium">
+                              {msg.senderName || "Unknown User"}
+                            </p>
+                          )}
+                          <p className="break-words whitespace-pre-wrap">
+                            {msg.message}
+                          </p>
+                          <span className="text-primary-foreground/70 block text-right text-xs">
+                            {time}
+                          </span>
+                        </div>
+                      </div>
+                    ) : (
+                      <div
                         className={cn(
-                          "self-end pt-1 text-xs",
-                          isCurrentUser
-                            ? "text-primary-foreground/70"
-                            : "text-muted-foreground/70",
+                          "relative max-w-[70%] flex-col space-y-1 rounded-lg px-4 py-2 text-base",
+                          "bg-muted text-muted-foreground rounded-bl-none",
                         )}
                       >
-                        {time}
-                      </span>
-                    </div>
+                        {selectedChat?.type === "group" && (
+                          <p className="text-foreground/70 text-xs font-medium">
+                            {msg.senderName || "Unknown User"}
+                          </p>
+                        )}
+                        <p className="break-words whitespace-pre-wrap">
+                          {msg.message}
+                        </p>
+                        <span className="text-muted-foreground/70 block text-right text-xs">
+                          {time}
+                        </span>
+                      </div>
+                    )}
                   </div>
                 </div>
               );
