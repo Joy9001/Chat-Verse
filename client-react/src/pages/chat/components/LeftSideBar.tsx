@@ -36,7 +36,7 @@ import { useAuthStore } from "@/store/auth.store";
 import { GroupChat, PrivateChat, useChatStore } from "@/store/chatStore";
 import { useSocketStore } from "@/store/socketStore";
 import { api } from "@/utils/http";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { LogOut, UserPlus } from "lucide-react";
 import React, { useEffect, useState } from "react";
 import { toast } from "sonner";
@@ -111,6 +111,8 @@ export default function LeftSideBar() {
   const { selectedChat, setSelectedChat, setPrivateChats, setGroupChats } =
     useChatStore();
   const { onlineUsers } = useSocketStore();
+  // Move useQueryClient to the top level of the component
+  const queryClient = useQueryClient();
 
   const [isChangeDetailsModalOpen, setIsChangeDetailsModalOpen] =
     useState(false);
@@ -265,6 +267,11 @@ export default function LeftSideBar() {
 
   const handleChatSelect = (chat: PrivateChat | GroupChat) => {
     console.log("Selected chat:", chat.id, chat.type);
+
+    // Reset the query cache for this chat to force a fresh fetch
+    queryClient.invalidateQueries({ queryKey: ["messages", chat.id] });
+
+    // Set the selected chat in the store
     setSelectedChat(chat);
   };
 

@@ -124,8 +124,8 @@ export const useChatStore = create<ChatState>((set) => ({
 
     set({
       selectedChat: chat,
-      messages: [],
-      isLoadingMessages: false,
+      messages: [], // Clear messages for immediate UI feedback
+      isLoadingMessages: true, // Set to true to indicate messages are loading
       chatError: null,
     });
   },

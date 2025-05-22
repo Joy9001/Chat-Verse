@@ -54,6 +54,12 @@ export default function ChatArea() {
     }
   }, [fetchedMessages, setMessages]);
 
+  // Add an additional effect to manage loading state based on query state
+  useEffect(() => {
+    const { setLoadingMessages } = useChatStore.getState();
+    setLoadingMessages(isLoadingMessages);
+  }, [isLoadingMessages]);
+
   useEffect(() => {
     if (!isLoadingMessages) {
       const timerId = setTimeout(() => {

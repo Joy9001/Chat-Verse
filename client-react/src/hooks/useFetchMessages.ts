@@ -15,7 +15,7 @@ const messageKeys = {
  * Custom hook to fetch messages for the currently selected chat using TanStack Query.
  */
 export const useFetchMessages = () => {
-  const { selectedChat } = useChatStore();
+  const { selectedChat, setLoadingMessages } = useChatStore();
 
   const chatId = selectedChat?.id;
   const chatType = selectedChat?.type;
@@ -30,6 +30,10 @@ export const useFetchMessages = () => {
         // Should not happen if enabled correctly, but provides type safety
         return [];
       }
+
+      // Indicate loading has started
+      setLoadingMessages(true);
+
       if (chatType === "private") {
         // Assuming the backend response structure needs mapping
         const response = await fetchPrivateMessages(chatId);
@@ -47,6 +51,8 @@ export const useFetchMessages = () => {
     enabled: !!chatId && !!chatType,
     staleTime: 1000 * 60 * 1, // Messages can become stale faster, e.g., 1 minute
     refetchOnWindowFocus: true,
+    // Force a refetch when the chatId changes
+    refetchOnMount: true,
     // Keep previous data while fetching new data for smoother transitions
     // keepPreviousData: true, // Consider enabling this
   });

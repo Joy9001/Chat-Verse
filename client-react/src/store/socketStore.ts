@@ -64,8 +64,12 @@ const onNewMessage = (
   callback: Function,
 ) => {
   console.log("Received newMessage event:", message);
-  const { selectedChat, addMessage: addMessageToStore } =
-    useChatStore.getState();
+  const {
+    selectedChat,
+    addMessage: addMessageToStore,
+    setLoadingMessages,
+    setMessages,
+  } = useChatStore.getState();
   const currentUser = useAuthStore.getState().user;
 
   let belongsToSelectedChat = false;
@@ -97,7 +101,16 @@ const onNewMessage = (
     // Ensure message object matches the Message type expected by addMessage
     // You might need to map fields from NewMessagePayload to Message
     const formattedMessage: Message = { ...message }; // Basic spread, adjust if mapping needed
-    addMessageToStore(formattedMessage);
+
+    // Check if the message already exists in the messages array
+    const { messages } = useChatStore.getState();
+    const messageExists = messages.some((msg) => msg._id === message._id);
+
+    if (!messageExists) {
+      // Only add the message if it doesn't already exist
+      addMessageToStore(formattedMessage);
+    }
+
     // No need to manually invalidate cache - the message is already in the local state
     if (callback) callback({ status: "success" });
   } else {
