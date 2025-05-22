@@ -98,10 +98,32 @@ const onNewMessage = (
     // You might need to map fields from NewMessagePayload to Message
     const formattedMessage: Message = { ...message }; // Basic spread, adjust if mapping needed
     addMessageToStore(formattedMessage);
-    // TODO: Invalidate message query cache?
+    // No need to manually invalidate cache - the message is already in the local state
     if (callback) callback({ status: "success" });
   } else {
-    // TODO: Handle unread count update
+    // Handle unread count update for non-active chat
+    if (message.groupId) {
+      // Update unread count for group chat
+      const { setGroupChats, groupChats } = useChatStore.getState();
+      const updatedGroupChats = groupChats.map((chat) => {
+        if (chat.id === message.groupId) {
+          return { ...chat, unreadCount: chat.unreadCount + 1 };
+        }
+        return chat;
+      });
+      setGroupChats(updatedGroupChats);
+    } else if (message.senderId) {
+      // Update unread count for private chat
+      const { setPrivateChats, privateChats } = useChatStore.getState();
+      const updatedPrivateChats = privateChats.map((chat) => {
+        if (chat.type === "private" && chat.otherUser.id === message.senderId) {
+          return { ...chat, unreadCount: chat.unreadCount + 1 };
+        }
+        return chat;
+      });
+      setPrivateChats(updatedPrivateChats);
+    }
+
     console.log("Received message for non-active chat from:", senderUsername);
     if (callback) callback({ status: "unread" });
   }
@@ -111,8 +133,8 @@ const onDeleteMessage = (deletedMsgId: string, chatId: string) => {
   console.log(
     `Received deleteMessage event for msg ${deletedMsgId} in chat ${chatId}`,
   );
-  // TODO: Implement removeMessage in chatStore
-  // useChatStore.getState().removeMessage(deletedMsgId, chatId);
+  // Use the removeMessage function we added to chatStore to remove the message
+  useChatStore.getState().removeMessage(deletedMsgId);
 };
 
 // --- Store Definition ---

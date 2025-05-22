@@ -76,6 +76,7 @@ interface ChatState {
   // New actions
   removePrivateChat: (userId: string) => void;
   removeGroupChat: (groupId: string) => void;
+  removeMessage: (messageId: string) => void;
 }
 
 export const useChatStore = create<ChatState>((set) => ({
@@ -118,7 +119,7 @@ export const useChatStore = create<ChatState>((set) => ({
   addMessage: (message) =>
     set((state) => ({
       messages: [...state.messages, message],
-      // TODO: Update unread count if message is for non-selected chat?
+      // Note: Unread count for non-selected chats is handled in socketStore's onNewMessage function
     })),
   clearSelectedChat: () => set({ selectedChat: null, messages: [] }),
   setLoadingMessages: (loading) => set({ isLoadingMessages: loading }),
@@ -167,6 +168,12 @@ export const useChatStore = create<ChatState>((set) => ({
       selectedChat:
         state.selectedChat?.id === groupId ? null : state.selectedChat,
       messages: state.selectedChat?.id === groupId ? [] : state.messages, // Clear messages too
+    })),
+
+  // Remove a specific message from the messages array
+  removeMessage: (messageId) =>
+    set((state) => ({
+      messages: state.messages.filter((msg) => msg._id !== messageId),
     })),
 
   // TODO: Implement more complex actions combining state updates and API calls
