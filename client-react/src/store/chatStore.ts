@@ -92,21 +92,36 @@ export const useChatStore = create<ChatState>((set) => ({
   setPrivateChats: (chats) => set({ privateChats: chats }),
   setGroupChats: (chats) => set({ groupChats: chats }),
   setSelectedChat: (chat) => {
-    // Also update the specific chat in the list if block status changes
-    if (chat && chat.type === "private") {
-      set((state) => ({
-        privateChats: state.privateChats.map((pc) =>
-          pc.id === chat.id
-            ? {
-                ...pc,
-                isBlocked: chat.isBlocked,
-                blockedByMe: chat.blockedByMe,
-                amIBlocked: chat.amIBlocked,
-              }
-            : pc,
-        ),
-      }));
+    if (chat) {
+      // Update specific chat properties including resetting unread count
+      if (chat.type === "private") {
+        set((state) => ({
+          privateChats: state.privateChats.map((pc) =>
+            pc.id === chat.id
+              ? {
+                  ...pc,
+                  unreadCount: 0, // Reset unread count when selected
+                  isBlocked: chat.isBlocked,
+                  blockedByMe: chat.blockedByMe,
+                  amIBlocked: chat.amIBlocked,
+                }
+              : pc,
+          ),
+        }));
+      } else if (chat.type === "group") {
+        set((state) => ({
+          groupChats: state.groupChats.map((gc) =>
+            gc.id === chat.id
+              ? {
+                  ...gc,
+                  unreadCount: 0, // Reset unread count when selected
+                }
+              : gc,
+          ),
+        }));
+      }
     }
+
     set({
       selectedChat: chat,
       messages: [],
