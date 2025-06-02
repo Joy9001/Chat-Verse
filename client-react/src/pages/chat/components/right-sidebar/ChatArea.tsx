@@ -208,7 +208,7 @@ export default function ChatArea() {
                             <Button
                               size="icon"
                               variant="ghost"
-                              className="h-8 w-8 rounded-full opacity-70 transition-opacity hover:bg-white/10 hover:opacity-100"
+                              className="h-8 w-8 rounded-full opacity-70 transition-opacity hover:cursor-pointer hover:bg-white/10 hover:opacity-100"
                             >
                               <MoreVertical className="h-4 w-4 text-gray-600" />
                             </Button>
@@ -217,16 +217,28 @@ export default function ChatArea() {
                             align="start"
                             className="w-36 rounded-lg border border-slate-600/50 bg-zinc-700/95 p-1 shadow-lg backdrop-blur-sm"
                           >
-                            <DropdownMenuItem className="cursor-pointer rounded-md px-3 py-2.5 text-sm text-slate-200 transition-colors hover:bg-zinc-600/80 focus:bg-zinc-600/80">
+                            <DropdownMenuItem
+                              disabled
+                              className="cursor-not-allowed rounded-md px-3 py-2.5 text-sm text-slate-400 opacity-50"
+                            >
                               Reply
                             </DropdownMenuItem>
-                            <DropdownMenuItem className="cursor-pointer rounded-md px-3 py-2.5 text-sm text-slate-200 transition-colors hover:bg-zinc-600/80 focus:bg-zinc-600/80">
+                            <DropdownMenuItem
+                              disabled
+                              className="cursor-not-allowed rounded-md px-3 py-2.5 text-sm text-slate-400 opacity-50"
+                            >
                               Forward
                             </DropdownMenuItem>
-                            <DropdownMenuItem className="cursor-pointer rounded-md px-3 py-2.5 text-sm text-slate-200 transition-colors hover:bg-zinc-600/80 focus:bg-zinc-600/80">
+                            <DropdownMenuItem
+                              disabled
+                              className="cursor-not-allowed rounded-md px-3 py-2.5 text-sm text-slate-400 opacity-50"
+                            >
                               Copy
                             </DropdownMenuItem>
-                            <DropdownMenuItem className="cursor-pointer rounded-md px-3 py-2.5 text-sm text-slate-200 transition-colors hover:bg-zinc-600/80 focus:bg-zinc-600/80">
+                            <DropdownMenuItem
+                              disabled
+                              className="cursor-not-allowed rounded-md px-3 py-2.5 text-sm text-slate-400 opacity-50"
+                            >
                               Report
                             </DropdownMenuItem>
                             <DropdownMenuItem
