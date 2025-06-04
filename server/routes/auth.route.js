@@ -48,7 +48,7 @@ router.get("/jwt/refresh-token", async (req, res) => {
         process.env.REFRESH_TOKEN_SECRET,
         {
           expiresIn: "7d",
-        },
+        }
       );
 
       refreshTokenFromDb.refreshToken = newRefreshToken;
@@ -66,7 +66,7 @@ router.get("/jwt/refresh-token", async (req, res) => {
     const accessToken = jwt.sign(
       { user: decoded.user },
       process.env.ACCESS_TOKEN_SECRET,
-      { expiresIn: "30m" },
+      { expiresIn: "30m" }
     );
     res.cookie("accessToken", accessToken, {
       httpOnly: true,
@@ -117,13 +117,13 @@ router.post("/login", (req, res, next) => {
       const accessToken = jwt.sign(
         { user: user._id },
         process.env.ACCESS_TOKEN_SECRET,
-        { expiresIn: "30m" },
+        { expiresIn: "30m" }
       );
 
       const refreshToken = jwt.sign(
         { user: user._id },
         process.env.REFRESH_TOKEN_SECRET,
-        { expiresIn: "7d" },
+        { expiresIn: "7d" }
       );
 
       // Save the refresh token in db
@@ -188,7 +188,7 @@ router.get(
     try {
       if (!req.user) {
         return res.redirect(
-          `${FRONTEND_DOMAIN}/auth/login?error=Authentication failed`,
+          `${FRONTEND_DOMAIN}/auth/login?error=Authentication failed`
         );
       }
 
@@ -197,13 +197,13 @@ router.get(
       const accessToken = jwt.sign(
         { user: userId },
         process.env.ACCESS_TOKEN_SECRET,
-        { expiresIn: "30m" },
+        { expiresIn: "30m" }
       );
 
       const refreshToken = jwt.sign(
         { user: userId },
         process.env.REFRESH_TOKEN_SECRET,
-        { expiresIn: "7d" },
+        { expiresIn: "7d" }
       );
 
       let authEntry = await Auth.findOne({ user: userId });
@@ -229,14 +229,14 @@ router.get(
       });
 
       console.log(
-        "Google auth successful, tokens set, redirecting to frontend.",
+        "Google auth successful, tokens set, redirecting to frontend."
       );
       res.redirect(`${FRONTEND_DOMAIN}/chat`);
     } catch (error) {
       console.error("Error during Google callback token handling:", error);
       res.redirect(`${FRONTEND_DOMAIN}/auth/login?error=Internal Server Error`);
     }
-  },
+  }
 );
 
 // google one tap route
@@ -256,7 +256,7 @@ router.post(
         message: "Authentication failed",
       });
     }
-  },
+  }
 );
 
 // Not needed for API-only server

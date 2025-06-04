@@ -57,7 +57,7 @@ const userSchema = new Schema(
       default: "",
     },
   },
-  { timestamps: true },
+  { timestamps: true }
 );
 
 userSchema.pre("save", function (next) {

@@ -9,7 +9,7 @@ const getUserMap = async () => {
         _id: 1,
         encryptedId: 1,
         name: 1,
-      },
+      }
     );
 
     let userMap = {};
@@ -36,7 +36,7 @@ const getGroupConversationMap = async () => {
       {
         _id: 1,
         groupId: 1,
-      },
+      }
     );
 
     let convMap = {};

@@ -87,7 +87,7 @@ router.post("/change-details", csrfSynchronisedProtection, async (req, res) => {
         name: 1,
         username: 1,
         avatar: 1,
-      },
+      }
     );
 
     allSenders.forEach(async (sender) => {
@@ -110,7 +110,7 @@ router.post("/change-details", csrfSynchronisedProtection, async (req, res) => {
               } else {
                 console.error("Error sending changed details");
               }
-            },
+            }
           );
       }
     });

@@ -43,7 +43,7 @@ export const isAuthenticated = (req, res, next) => {
 
         const decoded = jwt.verify(
           refreshToken,
-          process.env.REFRESH_TOKEN_SECRET,
+          process.env.REFRESH_TOKEN_SECRET
         );
 
         if (refreshtokendb.user.toString() !== decoded.user) {
@@ -61,7 +61,7 @@ export const isAuthenticated = (req, res, next) => {
           const newRefreshToken = jwt.sign(
             { user: decoded.user },
             process.env.REFRESH_TOKEN_SECRET,
-            { expiresIn: "7d" },
+            { expiresIn: "7d" }
           );
           refreshtokendb.refreshToken = newRefreshToken;
           await refreshtokendb.save();
@@ -76,7 +76,7 @@ export const isAuthenticated = (req, res, next) => {
         const accessToken = jwt.sign(
           { user: decoded.user },
           process.env.ACCESS_TOKEN_SECRET,
-          { expiresIn: "30m" },
+          { expiresIn: "30m" }
         );
         res.cookie("accessToken", accessToken, {
           httpOnly: true,
@@ -89,7 +89,7 @@ export const isAuthenticated = (req, res, next) => {
         if (!fullUser) {
           console.error(
             "User not found in DB after successful refresh token validation for ID:",
-            decoded.user,
+            decoded.user
           );
           res.clearCookie("accessToken");
           res.clearCookie("refreshToken");
@@ -113,7 +113,7 @@ export const isAuthenticated = (req, res, next) => {
         } else {
           console.error(
             "Unexpected error during refresh token processing:",
-            error,
+            error
           );
           return res
             .status(500)

@@ -12,7 +12,7 @@ const authSchema = new Schema(
       required: true,
     },
   },
-  { timestamps: true },
+  { timestamps: true }
 );
 
 const Auth = model("Auth", authSchema);

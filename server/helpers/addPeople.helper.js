@@ -12,7 +12,7 @@ const addPeople = async (currentUserId) => {
           name: 1,
           username: 1,
           avatar: 1,
-        },
+        }
       ).lean()
     ).filter((person) => person._id.toString() !== currentUserId.toString());
 

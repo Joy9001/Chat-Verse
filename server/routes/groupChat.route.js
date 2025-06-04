@@ -57,7 +57,7 @@ router.post("/create-group", async (req, res) => {
     // get the new group info
     let groupInfo = await Conversation.findOne(
       { _id: newConversation._id, isGroup: true },
-      { __v: 0, isBlocked: 0, blockedBy: 0 },
+      { __v: 0, isBlocked: 0, blockedBy: 0 }
     ).lean();
 
     // join the group room
@@ -93,7 +93,7 @@ router.post("/get-group-conversation", async (req, res) => {
     {
       _id: 1,
       encryptedId: 1,
-    },
+    }
   );
 
   // Use groupId directly without decryption
@@ -105,7 +105,7 @@ router.post("/get-group-conversation", async (req, res) => {
         isBlocked: 0,
         blockedBy: 0,
         __v: 0,
-      },
+      }
     ).lean();
 
     if (groupConversation) {
@@ -115,7 +115,7 @@ router.post("/get-group-conversation", async (req, res) => {
           {
             groupId: 0,
             __v: 0,
-          },
+          }
         ).lean();
       });
 
@@ -133,7 +133,7 @@ router.post("/get-group-conversation", async (req, res) => {
             message: msg.message,
             createdAt: msg.createdAt,
           };
-        }),
+        })
       );
 
       // Send response first
@@ -147,8 +147,8 @@ router.post("/get-group-conversation", async (req, res) => {
       process.nextTick(async () => {
         let unreadMsgs = groupConversation.unreadMsgCount.filter((obj) =>
           obj.receivers.some(
-            (rec) => rec.toString() === currentUser._id.toString(),
-          ),
+            (rec) => rec.toString() === currentUser._id.toString()
+          )
         );
 
         if (unreadMsgs.length > 0) {
@@ -162,7 +162,7 @@ router.post("/get-group-conversation", async (req, res) => {
               {
                 unreadMsgCount: groupConversation.unreadMsgCount,
               },
-              { new: true },
+              { new: true }
             );
           } catch (error) {
             console.log("Error updating unread count: ", error.message);
@@ -247,19 +247,19 @@ router.post("/send-group-message", async (req, res) => {
                 const unreadResult = await updateUnreadCount(
                   senderId,
                   memberId,
-                  true,
+                  true
                 );
                 if (unreadResult.success) {
                   console.log("Updated unread count successfully");
                 } else {
                   console.error(
                     "Error updating unread count:",
-                    unreadResult.error,
+                    unreadResult.error
                   );
                   throw new Error(unreadResult.error);
                 }
               }
-            },
+            }
           );
       } else if (!userSockets[memberId]) {
         const unreadResult = await updateUnreadCount(senderId, memberId, true);
@@ -374,7 +374,7 @@ router.post("/leave-and-delete-group", async (req, res) => {
     }
 
     findGroup.participants = findGroup.participants.filter(
-      (memberId) => memberId.toString() !== currentUserId.toString(),
+      (memberId) => memberId.toString() !== currentUserId.toString()
     );
 
     if (findGroup.participants.length === 0) {
@@ -392,7 +392,7 @@ router.post("/leave-and-delete-group", async (req, res) => {
 
     if (user) {
       user.groups = user.groups.filter(
-        (group) => group.toString() !== groupId.toString(),
+        (group) => group.toString() !== groupId.toString()
       );
       await user.save();
     }
@@ -418,7 +418,7 @@ router.post("/get-group-members", async (req, res) => {
       {
         participants: 1,
         groupId: 1,
-      },
+      }
     ).lean();
 
     if (!findGroup) {
@@ -436,7 +436,7 @@ router.post("/get-group-members", async (req, res) => {
           name: 1,
           username: 1,
           avatar: 1,
-        },
+        }
       ).lean();
 
       return member;
@@ -474,7 +474,7 @@ router.get("/join-group-via-link", async (req, res) => {
 
     if (
       findGroup.participants.some(
-        (memberId) => memberId.toString() === currentUserId.toString(),
+        (memberId) => memberId.toString() === currentUserId.toString()
       )
     ) {
       return res.redirect("/chat");
@@ -490,7 +490,7 @@ router.get("/join-group-via-link", async (req, res) => {
     if (addedPeopleUser) {
       if (
         addedPeopleUser.groups.some(
-          (group) => group.toString() === groupId.toString(),
+          (group) => group.toString() === groupId.toString()
         )
       ) {
         return res.redirect("/chat");

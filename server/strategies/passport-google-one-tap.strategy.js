@@ -55,7 +55,7 @@ export default passport.use(
           // User exists (e.g., registered locally) but hasn't linked Google yet
           console.log(
             "Linking Google One Tap account to existing user:",
-            email,
+            email
           );
           user.providerId = googleId;
           user.provider = provider;
@@ -82,6 +82,6 @@ export default passport.use(
         console.error("Error in Google One Tap Strategy: ", error.message);
         return done(error, false);
       }
-    },
-  ),
+    }
+  )
 );

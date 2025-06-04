@@ -13,7 +13,7 @@ const getConversation = async (messages) => {
   } catch (error) {
     console.log(
       "Error getting conversation inside getConversation: ",
-      error.message,
+      error.message
     );
   }
 };
@@ -65,7 +65,7 @@ const updateUnreadCount = async (senderId, receiverId, isGroup) => {
   } catch (error) {
     console.log(
       "Error updating unread count inside updateUnreadCount: ",
-      error.message,
+      error.message
     );
     return {
       success: false,

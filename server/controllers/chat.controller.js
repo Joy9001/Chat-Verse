@@ -38,7 +38,7 @@ const messageController = async (req, res) => {
     let currentChatPeople = [];
     if (currentUserAddedPeopleToChat) {
       currentChatPeople = await getCurrentChatPeople(
-        currentUserAddedPeopleToChat.recivers,
+        currentUserAddedPeopleToChat.recivers
       );
     }
 
@@ -53,7 +53,7 @@ const messageController = async (req, res) => {
       // console.log('findConversation: ', findConversation)
       if (findConversation) {
         let findUnreadMsgCount = findConversation.unreadMsgCount.find(
-          (obj) => obj.senderId.toString() === person._id.toString(),
+          (obj) => obj.senderId.toString() === person._id.toString()
         );
 
         if (findUnreadMsgCount) {
@@ -82,8 +82,8 @@ const messageController = async (req, res) => {
         (msg) =>
           msg.senderId.toString() === person._id.toString() &&
           msg.receivers.some(
-            (receiver) => receiver.toString() === currentUserId.toString(),
-          ),
+            (receiver) => receiver.toString() === currentUserId.toString()
+          )
       );
       let totalUnreadMsgCount = 0;
       if (unreadMsg) {
@@ -102,7 +102,7 @@ const messageController = async (req, res) => {
       {
         senderId: currentUserId,
       },
-      { groups: 1 },
+      { groups: 1 }
     ).lean();
 
     if (currentGroups) {
@@ -115,8 +115,8 @@ const messageController = async (req, res) => {
           // console.log('group: ', group)
           let unreadGroupMsgs = group.unreadMsgCount.filter((msg) =>
             msg.receivers.some(
-              (receiver) => receiver.toString() === currentUserId.toString(),
-            ),
+              (receiver) => receiver.toString() === currentUserId.toString()
+            )
           );
           let unreadMsgCount = 0;
           if (unreadGroupMsgs) {
@@ -183,7 +183,7 @@ const sendMessageController = async (req, res) => {
     await msg.save();
     let senderUsername = await User.findOne(
       { _id: senderId },
-      { _id: 0, username: 1 },
+      { _id: 0, username: 1 }
     ).lean();
 
     // Socket functionality
@@ -207,14 +207,14 @@ const sendMessageController = async (req, res) => {
             } else if (responses[0].status === "failure") {
               console.log(
                 "Error sending message to receiver: ",
-                responses[0].error,
+                responses[0].error
               );
             } else {
               // console.log(responses)
               const result = await updateUnreadCount(
                 senderId,
                 receiverId,
-                false,
+                false
               );
               if (result.success) {
                 console.log("Inside sendMessageController: ", result.message);
@@ -223,7 +223,7 @@ const sendMessageController = async (req, res) => {
                 throw new Error(result.error);
               }
             }
-          },
+          }
         );
     } else {
       const result = await updateUnreadCount(senderId, receiverId, false);
@@ -248,7 +248,7 @@ const deleteMessageController = async (req, res) => {
 
   let senderUsername = await User.findOne(
     { _id: senderId },
-    { _id: 0, username: 1 },
+    { _id: 0, username: 1 }
   );
   try {
     // console.log('msgId: ', msgId)
@@ -268,7 +268,7 @@ const deleteMessageController = async (req, res) => {
             io.to(receiverSocketId).emit(
               "deleteMessage",
               msgId,
-              senderUsername.username,
+              senderUsername.username
             );
             // console.log('Deleted Message Id sent to receiver', receiverSocketId)
           }
@@ -356,7 +356,7 @@ const deleteConversationController = async (req, res) => {
       },
       {
         $pull: { recivers: receiverId },
-      },
+      }
     );
 
     // Delete the sender from AddedPeopleToChat
@@ -366,19 +366,19 @@ const deleteConversationController = async (req, res) => {
       },
       {
         $pull: { recivers: senderId },
-      },
+      }
     );
 
     // Socket functionality
     const receiverSocketId = getReceiverSocketId(receiverId);
     let senderUsername = await User.findOne(
       { _id: senderId },
-      { _id: 0, username: 1 },
+      { _id: 0, username: 1 }
     );
     if (receiverSocketId) {
       io.to(receiverSocketId).emit(
         "deleteConversation",
-        senderUsername.username,
+        senderUsername.username
       );
       console.log("Deleted Conversation sent to receiver", receiverSocketId);
     }

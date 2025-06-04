@@ -49,7 +49,7 @@ app.use(morgan("dev"));
 app.use(
   helmet({
     contentSecurityPolicy: false,
-  }),
+  })
 );
 
 // cors with specific configuration for React client
@@ -63,7 +63,7 @@ app.use(
     methods: ["GET", "POST", "PUT", "DELETE"],
     credentials: true,
     allowedHeaders: ["Content-Type", "Authorization"],
-  }),
+  })
 );
 
 // Troubleshooting Proxy Issues
@@ -120,12 +120,12 @@ io.engine.use(
     } else {
       // No authenticated user found by passport
       console.error(
-        "Socket handshake UNAUTHORIZED: No req.user found after passport.session()",
+        "Socket handshake UNAUTHORIZED: No req.user found after passport.session()"
       );
       res.writeHead(401, { "Content-Type": "application/json" });
       res.end(JSON.stringify({ message: "Socket Unauthorized" }));
     }
-  }),
+  })
 );
 
 io.engine.on("connection_error", (err) => {
@@ -142,7 +142,7 @@ const getOnlineUsers = async (userSockets) => {
       User.findById(userId, {
         _id: 1,
         username: 1,
-      }),
+      })
     );
   }
 
@@ -187,7 +187,7 @@ io.on("connection", async (socket) => {
     },
     {
       _id: 1,
-    },
+    }
   ).lean();
 
   groupsUserJoined.forEach((group) => {
@@ -252,7 +252,7 @@ app.use(
       });
     })(req, res, next);
   },
-  express.static(path.resolve("./client/admin-ui/dist")),
+  express.static(path.resolve("./client/admin-ui/dist"))
 );
 
 // API health check route

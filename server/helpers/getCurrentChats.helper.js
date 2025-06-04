@@ -12,7 +12,7 @@ const getCurrentChatPeople = async (receivers) => {
           name: 1,
           username: 1,
           avatar: 1,
-        },
+        }
       ).lean();
       return findReceiver;
     });
@@ -22,7 +22,7 @@ const getCurrentChatPeople = async (receivers) => {
   } catch (error) {
     console.log(
       "Error getting people inside getCurrentChatPeople: ",
-      error.message,
+      error.message
     );
   }
 };
@@ -36,7 +36,7 @@ const getCurrentGroups = async (groups) => {
           isBlocked: 0,
           blockedBy: 0,
           __v: 0,
-        },
+        }
       ).lean();
       return findGroup;
     });
@@ -48,7 +48,7 @@ const getCurrentGroups = async (groups) => {
   } catch (error) {
     console.log(
       "Error getting groups inside getCurrentGroups: ",
-      error.message,
+      error.message
     );
   }
 };

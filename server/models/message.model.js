@@ -20,7 +20,7 @@ const messageSchema = new Schema(
       required: [true, "message is required"],
     },
   },
-  { timestamps: true },
+  { timestamps: true }
 );
 
 // Pre Hooks
@@ -40,7 +40,7 @@ messageSchema.pre(
       }
 
       conversation.messages = conversation.messages.filter(
-        (message) => message.toString() !== this._id.toString(),
+        (message) => message.toString() !== this._id.toString()
       );
 
       // console.log('conversation in msgSchema: ', conversation)
@@ -57,7 +57,7 @@ messageSchema.pre(
           },
           {
             $pull: { recivers: this.receiverId },
-          },
+          }
         );
 
         // Delete the sender from AddedPeopleToChat
@@ -68,7 +68,7 @@ messageSchema.pre(
           },
           {
             $pull: { recivers: this.senderId },
-          },
+          }
         );
       } else {
         console.log("Saving conversation...");
@@ -79,7 +79,7 @@ messageSchema.pre(
       console.log("Error deleting message: ", error.message);
       next(error);
     }
-  },
+  }
 );
 
 // Post hooks
@@ -140,7 +140,7 @@ messageSchema.post("save", async function (doc, next) {
   } catch (error) {
     console.log(
       "Error adding people to chat inside message.model: ",
-      error.message,
+      error.message
     );
     next(error);
   }

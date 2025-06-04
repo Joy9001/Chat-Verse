@@ -69,7 +69,7 @@ const conversationSchema = new Schema(
     },
     unreadMsgCount: [unreadMsgCountSchema],
   },
-  { timestamps: true },
+  { timestamps: true }
 );
 
 // Pre Hooks
@@ -90,7 +90,7 @@ conversationSchema.pre(
       console.log("Error deleting conversation: ", error.message);
       next(error);
     }
-  },
+  }
 );
 
 conversationSchema.post("save", async function (doc, next) {

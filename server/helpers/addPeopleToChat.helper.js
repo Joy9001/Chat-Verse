@@ -10,7 +10,7 @@ const addPeopleToChat = async (senderId, receiverId, next) => {
     if (findSender) {
       if (
         findSender.recivers.some(
-          (receiver) => receiver.toString() === receiverId.toString(),
+          (receiver) => receiver.toString() === receiverId.toString()
         )
       ) {
         return "Already exists in the chat";
@@ -30,7 +30,7 @@ const addPeopleToChat = async (senderId, receiverId, next) => {
   } catch (err) {
     console.error(
       "Error adding people to chat inside addedPeopleToChat.helper: ",
-      err.message,
+      err.message
     );
     next(err);
   }

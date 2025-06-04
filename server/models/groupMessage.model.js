@@ -18,7 +18,7 @@ const groupMessageSchema = new Schema(
       required: [true, "message is required"],
     },
   },
-  { timestamps: true },
+  { timestamps: true }
 );
 
 // Pre Hooks
@@ -38,7 +38,7 @@ groupMessageSchema.pre(
       }
 
       conversation.messages = conversation.messages.filter(
-        (message) => message.toString() !== this._id.toString(),
+        (message) => message.toString() !== this._id.toString()
       );
 
       await conversation.save();
@@ -47,7 +47,7 @@ groupMessageSchema.pre(
       console.log("Error deleting group message: ", error.message);
       next(error);
     }
-  },
+  }
 );
 
 // Post hooks

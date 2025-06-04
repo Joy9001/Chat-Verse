@@ -28,7 +28,7 @@ router.get("/chats", async (req, res) => {
       // Calculate unread count for the current user
       let unreadCount = 0;
       const unreadInfo = conv.unreadMsgCount?.find((uc) =>
-        uc.receivers.some((r) => r.equals(userId)),
+        uc.receivers.some((r) => r.equals(userId))
       );
       if (unreadInfo) {
         unreadCount = unreadInfo.unreadCount;
@@ -53,7 +53,7 @@ router.get("/chats", async (req, res) => {
       } else {
         // Format Private Chat
         const otherParticipant = conv.participants.find(
-          (p) => !p._id.equals(userId),
+          (p) => !p._id.equals(userId)
         );
         if (otherParticipant) {
           // Ensure there is another participant
@@ -118,7 +118,7 @@ router.post("/get-conversation", async (req, res) => {
         try {
           // Reset unread count for the other participant's messages
           const otherParticipant = findConversation.participants.find(
-            (p) => !p.equals(senderId),
+            (p) => !p.equals(senderId)
           );
 
           findConversation.unreadMsgCount.forEach((obj) => {
@@ -173,7 +173,7 @@ router.post("/user-details", async (req, res) => {
         username: 1,
         gender: 1,
         avatar: 1,
-      },
+      }
     ).lean();
 
     if (user) {

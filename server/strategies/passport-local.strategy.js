@@ -62,6 +62,6 @@ export default passport.use(
         console.log("Error in Local Strategy: ", err.message);
         return done(err, null); // Pass error to done
       }
-    },
-  ),
+    }
+  )
 );

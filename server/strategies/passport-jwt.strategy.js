@@ -38,5 +38,5 @@ export default passport.use(
       console.log("Error in passport-jwt.strategy: ", error.message);
       return done(error, false);
     }
-  }),
+  })
 );

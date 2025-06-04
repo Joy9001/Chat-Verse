@@ -78,6 +78,6 @@ export default passport.use(
         console.error("Error in GoogleStrategy: ", error.message);
         return done(error, false);
       }
-    },
-  ),
+    }
+  )
 );

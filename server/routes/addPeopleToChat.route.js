@@ -22,7 +22,7 @@ router.post("/add-people-to-chat", async (req, res) => {
         name: 1,
         username: 1,
         avatar: 1,
-      },
+      }
     ).lean();
 
     // console.log(`findReceiver: ${findReceiver}`);
@@ -51,7 +51,7 @@ router.post("/add-people-to-chat", async (req, res) => {
   } catch (error) {
     console.log(
       "Error adding people to chat inside addedPeopleToChat.route: ",
-      error.message,
+      error.message
     );
     return res.status(500).json({ message: "Internal server error" });
   }
