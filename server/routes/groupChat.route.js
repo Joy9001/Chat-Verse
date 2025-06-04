@@ -297,11 +297,9 @@ router.post("/delete-group-message", async (req, res) => {
   let currentUser = USER_MAP[currentUserId];
 
   try {
-    const decryptedGroupId = decryptWithCryptoJS(groupId);
-
     let groupMessage = await GroupMessage.findOne({
       _id: msgId,
-      groupId: decryptedGroupId,
+      groupId: groupId,
       senderId: currentUserId,
     });
 
@@ -318,7 +316,7 @@ router.post("/delete-group-message", async (req, res) => {
     }
 
     let group = await Conversation.findOne({
-      _id: decryptedGroupId,
+      _id: groupId,
       isGroup: true,
     });
 
@@ -365,10 +363,8 @@ router.post("/leave-and-delete-group", async (req, res) => {
   const currentUserId = req.user._id;
 
   try {
-    const decryptedGroupId = decryptWithCryptoJS(groupId);
-
     let findGroup = await Conversation.findOne({
-      _id: decryptedGroupId,
+      _id: groupId,
       isGroup: true,
     });
 
@@ -396,7 +392,7 @@ router.post("/leave-and-delete-group", async (req, res) => {
 
     if (user) {
       user.groups = user.groups.filter(
-        (group) => group.toString() !== decryptedGroupId.toString(),
+        (group) => group.toString() !== groupId.toString(),
       );
       await user.save();
     }
@@ -417,10 +413,8 @@ router.post("/get-group-members", async (req, res) => {
   const currentUserId = req.user._id;
 
   try {
-    const decryptedGroupId = decryptWithCryptoJS(groupId);
-
     const findGroup = await Conversation.findOne(
-      { _id: decryptedGroupId, isGroup: true },
+      { _id: groupId, isGroup: true },
       {
         participants: 1,
         groupId: 1,
@@ -466,10 +460,9 @@ router.get("/join-group-via-link", async (req, res) => {
       return res.status(400).json({ error: "Invalid group link" });
     }
     const currentUserId = req.user._id;
-    const decryptedGroupId = decryptWithCryptoJS(groupId);
 
     let findGroup = await Conversation.findOne({
-      _id: decryptedGroupId,
+      _id: groupId,
       isGroup: true,
     });
 
@@ -497,18 +490,18 @@ router.get("/join-group-via-link", async (req, res) => {
     if (addedPeopleUser) {
       if (
         addedPeopleUser.groups.some(
-          (group) => group.toString() === decryptedGroupId.toString(),
+          (group) => group.toString() === groupId.toString(),
         )
       ) {
         return res.redirect("/chat");
       } else {
-        addedPeopleUser.groups.push(decryptedGroupId);
+        addedPeopleUser.groups.push(groupId);
         await addedPeopleUser.save();
       }
     } else {
       addedPeopleUser = new AddedPeopleToChat({
         senderId: currentUserId,
-        groups: [decryptedGroupId],
+        groups: [groupId],
       });
 
       await addedPeopleUser.save();

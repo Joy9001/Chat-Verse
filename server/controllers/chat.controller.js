@@ -245,7 +245,6 @@ const sendMessageController = async (req, res) => {
 const deleteMessageController = async (req, res) => {
   const senderId = req.user._id;
   let { receiverId, msgId } = req.body;
-  receiverId = decryptWithCryptoJS(receiverId);
 
   let senderUsername = await User.findOne(
     { _id: senderId },
@@ -337,7 +336,6 @@ const deleteMessageController = async (req, res) => {
 const deleteConversationController = async (req, res) => {
   const senderId = req.user._id;
   let { receiverId } = req.body;
-  receiverId = decryptWithCryptoJS(receiverId);
 
   try {
     const findConversation = await Conversation.findOne({
@@ -394,7 +392,6 @@ const deleteConversationController = async (req, res) => {
 const blockUserController = async (req, res) => {
   const senderId = req.user._id;
   let { receiverId } = req.body;
-  receiverId = decryptWithCryptoJS(receiverId);
 
   try {
     let conversation = await Conversation.findOne({
@@ -431,7 +428,6 @@ const blockUserController = async (req, res) => {
 const unblockUserController = async (req, res) => {
   const senderId = req.user._id;
   let { receiverId } = req.body;
-  receiverId = decryptWithCryptoJS(receiverId);
 
   try {
     let conversation = await Conversation.findOne({
