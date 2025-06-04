@@ -99,6 +99,8 @@ export default function ChatArea() {
       messageId,
       chatId: selectedChat.id,
       chatType: selectedChat.type,
+      receiverId:
+        selectedChat.type === "private" ? selectedChat.otherUser.id : undefined,
     });
   };
 

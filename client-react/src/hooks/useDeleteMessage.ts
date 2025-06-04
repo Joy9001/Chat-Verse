@@ -7,6 +7,7 @@ interface DeleteMessageVariables {
   messageId: string;
   chatId: string;
   chatType: "private" | "group";
+  receiverId?: string;
 }
 
 interface DeleteMessageResponse {
@@ -23,17 +24,21 @@ export const useDeleteMessage = () => {
 
   return useMutation<DeleteMessageResponse, Error, DeleteMessageVariables>({
     mutationFn: async (variables) => {
-      const { messageId, chatId, chatType } = variables;
+      const { messageId, chatId, chatType, receiverId } = variables;
       console.log(
         `Deleting ${chatType} message: ${messageId} from chat ${chatId}`,
       );
 
       if (chatType === "private") {
+        if (!receiverId)
+          throw new Error(
+            "receiverId is required for private chat message deletion",
+          );
         // For private messages
         const response = await api.post<DeleteMessageResponse>(
           "/chat/delete-message",
           {
-            receiverId: chatId,
+            receiverId,
             msgId: messageId,
           },
         );
