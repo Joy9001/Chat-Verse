@@ -105,7 +105,7 @@ router.post("/get-conversation", async (req, res) => {
         .json({ message: "Not authorized to access this conversation" });
     }
 
-    console.log("findConversation", findConversation);
+    console.log("findConversation", findConversation._id);
     if (findConversation) {
       if (findConversation.messages.length === 0) {
         return res.status(200).json({
