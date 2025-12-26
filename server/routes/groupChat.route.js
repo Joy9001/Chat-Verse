@@ -8,6 +8,7 @@ import User from "../models/users.model.js";
 import { GROUP_CONV_MAP, io, USER_MAP, userSockets } from "../server.js";
 
 const router = Router();
+const FRONTEND_DOMAIN = process.env.FRONTEND_DOMAIN || "http://localhost:5172";
 
 router.post("/create-group", async (req, res) => {
   const { groupMembersIds, groupName, groupDescription, groupAvatar } =
@@ -477,7 +478,7 @@ router.get("/join-group-via-link", async (req, res) => {
         (memberId) => memberId.toString() === currentUserId.toString()
       )
     ) {
-      return res.redirect("/chat");
+      return res.redirect(`${FRONTEND_DOMAIN}/chat`);
     } else {
       findGroup.participants.push(currentUserId);
       await findGroup.save();
@@ -493,7 +494,7 @@ router.get("/join-group-via-link", async (req, res) => {
           (group) => group.toString() === groupId.toString()
         )
       ) {
-        return res.redirect("/chat");
+        return res.redirect(`${FRONTEND_DOMAIN}/chat`);
       } else {
         addedPeopleUser.groups.push(groupId);
         await addedPeopleUser.save();
@@ -507,12 +508,10 @@ router.get("/join-group-via-link", async (req, res) => {
       await addedPeopleUser.save();
     }
 
-    return res.status(200).redirect("/chat");
+    return res.status(200).redirect(`${FRONTEND_DOMAIN}/chat`);
   } catch (error) {
     console.error("Error joining group via link:", error.message);
-    return res
-      .status(404)
-      .render("404", { error: "Internal server error", code: 404 });
+    return res.status(404).redirect(`${FRONTEND_DOMAIN}/404`);
   }
 });
 
