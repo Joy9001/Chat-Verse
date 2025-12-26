@@ -28,15 +28,24 @@ const SOCKET_URL =
 
 let socketInstance: Socket | null = null;
 
+// Type for set function from zustand
+type SetState = (
+  partial:
+    | SocketState
+    | Partial<SocketState>
+    | ((state: SocketState) => SocketState | Partial<SocketState>),
+  replace?: boolean | undefined,
+) => void;
+
 // --- Listener Functions ---
 // Define listeners outside so they can be referenced for 'off'
-const onConnect = (set: Function) => () => {
+const onConnect = (set: SetState) => () => {
   console.log("Socket connected successfully! ID:", socketInstance?.id);
   set({ isConnected: true });
   // TODO: Authenticate or join rooms if needed post-connect
 };
 
-const onDisconnect = (set: Function) => (reason: Socket.DisconnectReason) => {
+const onDisconnect = (set: SetState) => (reason: Socket.DisconnectReason) => {
   console.log("Socket disconnected:", reason);
   // Only clear state here, actual instance nulling happens in disconnectSocket action
   set({ isConnected: false, onlineUsers: [] });
@@ -47,13 +56,13 @@ const onDisconnect = (set: Function) => (reason: Socket.DisconnectReason) => {
   }
 };
 
-const onConnectError = (set: Function) => (error: Error) => {
+const onConnectError = (set: SetState) => (error: Error) => {
   console.error("Socket connection error:", error);
   // Don't null socketInstance here, allow potential retries or manual connect later
   set({ isConnected: false, socket: null }); // Clear socket from state on error
 };
 
-const onGetOnlineUsers = (set: Function) => (users: string[]) => {
+const onGetOnlineUsers = (set: SetState) => (users: string[]) => {
   console.log("Received online users:", users);
   set({ onlineUsers: users });
 };
@@ -61,14 +70,12 @@ const onGetOnlineUsers = (set: Function) => (users: string[]) => {
 const onNewMessage = (
   message: NewMessagePayload,
   senderUsername: string,
-  callback: Function,
+  callback: (response: { status: string }) => void,
 ) => {
   console.log("Received newMessage event:", message);
   const {
     selectedChat,
     addMessage: addMessageToStore,
-    setLoadingMessages,
-    setMessages,
   } = useChatStore.getState();
   const currentUser = useAuthStore.getState().user;
 

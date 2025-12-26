@@ -87,15 +87,15 @@ export const addPersonToChat = async (
 };
 
 // --- Send Messages ---
-interface SendMessageResponse extends Message {
-  // Backend might return the created message object
-}
+// interface SendMessageResponse extends Message {
+//   // Backend might return the created message object
+// }
 export const sendPrivateMessage = async (
   receiverId: string,
   message: string,
-): Promise<SendMessageResponse> => {
+): Promise<Message> => {
   try {
-    const response = await api.post<SendMessageResponse>("/chat/send-message", {
+    const response = await api.post<Message>("/chat/send-message", {
       receiverId,
       message,
     });

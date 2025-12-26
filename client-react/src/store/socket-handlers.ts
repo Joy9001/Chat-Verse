@@ -9,7 +9,7 @@ export interface NewMessagePayload extends Message {
 }
 
 // Type-safe set function for socket handlers
-type SetState = (fn: (state: any) => any) => void;
+type SetState = (partial: object | ((state: any) => object)) => void;
 
 // --- Listener Functions ---
 // Define listeners outside so they can be referenced for 'off'
@@ -49,7 +49,6 @@ export const onNewMessage = (
   const {
     selectedChat,
     addMessage: addMessageToStore,
-    setMessages,
     messages,
   } = useChatStore.getState();
   const currentUser = useAuthStore.getState().user;

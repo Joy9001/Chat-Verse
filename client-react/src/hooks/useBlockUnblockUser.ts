@@ -1,6 +1,6 @@
 import { blockUser, unblockUser } from "@/services/chatService";
 import { useChatStore } from "@/store/chatStore";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
 import { toast } from "sonner";
 
 interface BlockUnblockVariables {
@@ -12,7 +12,7 @@ interface BlockUnblockVariables {
  * Custom hook to block or unblock a user using TanStack Query mutation.
  */
 export const useBlockUnblockUser = () => {
-  const queryClient = useQueryClient();
+  // const queryClient = useQueryClient();
   const { updatePrivateChatBlockStatus } = useChatStore(); // Need an action to update store
 
   return useMutation<

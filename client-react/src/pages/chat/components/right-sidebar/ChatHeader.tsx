@@ -29,7 +29,7 @@ import {
 import { useBlockUnblockUser } from "@/hooks/useBlockUnblockUser"; // Import hook
 import { useDeleteConversation } from "@/hooks/useDeleteConversation"; // Import hook
 import { useLeaveGroup } from "@/hooks/useLeaveGroup"; // Import hook
-import { useAuthStore } from "@/store/auth.store"; // Needed for block/unblock logic later
+// import { useAuthStore } from "@/store/auth.store"; // Needed for block/unblock logic later
 import { useChatStore } from "@/store/chatStore"; // Import chat store
 import {
   DoorClosed,
@@ -48,7 +48,7 @@ export default function ChatHeader() {
   // Get selected chat details directly from the chat store
   const { selectedChat } = useChatStore();
   // Get current user for block/unblock logic (TODO)
-  const { user: currentUser } = useAuthStore();
+  // const { user: currentUser } = useAuthStore();
 
   // Use the mutation hooks
   const { mutate: blockUnblockUserMutate, isPending: isBlockingUnblocking } =
