@@ -9,7 +9,7 @@ export interface NewMessagePayload extends Message {
 }
 
 // Type-safe set function for socket handlers
-type SetState = (partial: object | ((state: any) => object)) => void;
+type SetState = (partial: any, replace?: boolean) => void;
 
 // --- Listener Functions ---
 // Define listeners outside so they can be referenced for 'off'
@@ -120,6 +120,84 @@ export const onDeleteMessage = (deletedMsgId: string, chatId: string) => {
   console.log(
     `Received deleteMessage event for msg ${deletedMsgId} in chat ${chatId}`,
   );
-  // Use the removeMessage function we added to chatStore to remove the message
   useChatStore.getState().removeMessage(deletedMsgId);
+};
+
+export const onBlockUser = (senderId: string) => {
+  console.log(`User ${senderId} blocked you`);
+  const { updatePrivateChatBlockStatus } = useChatStore.getState();
+  // Update the chat list/status
+  updatePrivateChatBlockStatus(senderId, true, false); // blocked=true, byMe=false
+};
+
+export const onUnblockUser = (senderId: string) => {
+  console.log(`User ${senderId} unblocked you`);
+  const { updatePrivateChatBlockStatus } = useChatStore.getState();
+  updatePrivateChatBlockStatus(senderId, false, false); // blocked=false, byMe=false
+};
+
+export const onDeleteConversation = (senderUsername: string) => {
+  console.log(`Conversation deleted by ${senderUsername}`);
+  const { privateChats, removePrivateChat } = useChatStore.getState();
+  // Find chat by username (inefficient, but what we have)
+  const chat = privateChats.find(
+    (c) => c.otherUser.username === senderUsername,
+  );
+  if (chat) {
+    removePrivateChat(chat.id);
+  }
+};
+
+export const onReceiverChangedDetails = (
+  oldDetails: any,
+  newDetails: any,
+  callback?: (response: any) => void,
+) => {
+  console.log("Receiver changed details:", newDetails);
+  const { privateChats, setPrivateChats, selectedChat, setSelectedChat } =
+    useChatStore.getState();
+
+  // Update in list
+  const updatedChats = privateChats.map((chat) => {
+    if (chat.otherUser.username === oldDetails.username) {
+      return {
+        ...chat,
+        otherUser: {
+          ...chat.otherUser,
+          name: newDetails.name,
+          username: newDetails.username,
+          avatar: newDetails.avatar,
+        },
+      };
+    }
+    return chat;
+  });
+  setPrivateChats(updatedChats);
+
+  // Update selected chat if it matches
+  if (
+    selectedChat &&
+    selectedChat.type === "private" &&
+    selectedChat.otherUser.username === oldDetails.username
+  ) {
+    setSelectedChat({
+      ...selectedChat,
+      otherUser: {
+        ...selectedChat.otherUser,
+        name: newDetails.name,
+        username: newDetails.username,
+        avatar: newDetails.avatar,
+      },
+    });
+  }
+
+  if (callback) callback({ status: "success", message: "details updated" });
+};
+
+export const onJoinGroup = (data: any) => {
+  console.log("Joined group:", data);
+  // Need to emit join-room to server
+  // This might be handled better in the socketStore directly as it needs the socket instance
+  // Or we just refresh the group list
+  // useChatStore.getState().addGroupChat(data.groupInfo); // Assuming we have this action
 };

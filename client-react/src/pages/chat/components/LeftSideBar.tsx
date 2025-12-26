@@ -18,6 +18,7 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { AddChatDialog } from "./AddChatDialog"; // Import the new component
 import { ScrollArea } from "@/components/ui/scroll-area";
 import {
   Select,
@@ -116,6 +117,7 @@ export default function LeftSideBar() {
 
   const [isChangeDetailsModalOpen, setIsChangeDetailsModalOpen] =
     useState(false);
+  const [isAddChatModalOpen, setIsAddChatModalOpen] = useState(false); // State for Add Chat Modal
   const [editName, setEditName] = useState("");
   const [editUsername, setEditUsername] = useState("");
   const [editGender, setEditGender] = useState<"male" | "female" | "other">(
@@ -288,35 +290,32 @@ export default function LeftSideBar() {
         <div className="text-primary ml-4 text-xl font-bold max-lg:text-lg max-md:text-base max-sm:text-sm">
           <h1>ChatVerse</h1>
         </div>
-        <Dialog>
-          <TooltipProvider delayDuration={100}>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <DialogTrigger asChild>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="hover:bg-primary/80 bg-primary group mr-2 h-10 w-10"
-                  >
-                    <UserPlus className="text-primary-foreground group-hover:text-primary-foreground h-6 w-6" />
-                  </Button>
-                </DialogTrigger>
-              </TooltipTrigger>
-              <TooltipContent
-                side="left"
-                className="bg-accent text-accent-foreground"
+        {/* Add User/Group Button & Dialog */}
+        <TooltipProvider delayDuration={100}>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => setIsAddChatModalOpen(true)}
+                className="hover:bg-primary/80 bg-primary group mr-2 h-10 w-10"
               >
-                <p>New User/Group</p>
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
-          <DialogContent className="bg-card text-card-foreground sm:max-w-[425px]">
-            <DialogHeader>
-              <DialogTitle>Add New Chat / Group</DialogTitle>
-            </DialogHeader>
-            <div className="p-4">Placeholder for Add User/Group Content</div>
-          </DialogContent>
-        </Dialog>
+                <UserPlus className="text-primary-foreground group-hover:text-primary-foreground h-6 w-6" />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent
+              side="left"
+              className="bg-accent text-accent-foreground"
+            >
+              <p>New User/Group</p>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
+
+        <AddChatDialog
+          isOpen={isAddChatModalOpen}
+          onOpenChange={setIsAddChatModalOpen}
+        />
       </div>
 
       <div className="text-foreground mx-5 mb-2 flex items-center justify-between">

@@ -252,7 +252,7 @@ app.use(
       });
     })(req, res, next);
   },
-  express.static(path.resolve("./client/admin-ui/dist"))
+  express.static(path.resolve("./server/admin-ui/dist"))
 );
 
 // API health check route
