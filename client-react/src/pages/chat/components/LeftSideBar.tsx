@@ -438,10 +438,9 @@ export default function LeftSideBar() {
               </Button>
               <div className="flex space-x-2">
                 <DialogClose asChild>
-                  {" "}
                   <Button type="button" variant="secondary">
                     Cancel
-                  </Button>{" "}
+                  </Button>
                 </DialogClose>
                 <Button type="button" onClick={handleChangeDetailsSubmit}>
                   Save Changes
