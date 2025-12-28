@@ -214,7 +214,7 @@ export default function LeftSideBar() {
   const handleAvatarChange = async () => {
     console.log("Fetching new avatar via api.get...");
     try {
-      const response = await api.get<{ avatar: string }>("/get-avatar");
+      const response = await api.get<{ avatar: string }>("/user/get-avatar");
       setEditAvatar(response.data.avatar);
     } catch (error: any) {
       console.error("Error fetching avatar:", error);
