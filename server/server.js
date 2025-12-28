@@ -264,7 +264,7 @@ app.get("/api/health", (req, res) => {
 app.use("/api", indexRouter);
 
 // API 404 route
-app.get("/api/*", function (req, res) {
+app.get("/api/*path", function (req, res) {
   return res.status(404).json({ error: "API endpoint not found", code: 404 });
 });
 
