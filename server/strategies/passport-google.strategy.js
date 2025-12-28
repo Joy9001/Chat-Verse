@@ -20,6 +20,7 @@ export default passport.use(
       callbackURL: process.env.GOOGLE_CALLBACK_URL,
       scope: ["email", "profile"],
       state: true,
+      proxy: true,
     },
     async (accessToken, refreshToken, profile, done) => {
       console.log("profile in google: ", profile);
