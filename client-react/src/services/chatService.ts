@@ -87,15 +87,15 @@ export const addPersonToChat = async (
 };
 
 // --- Send Messages ---
-interface SendMessageResponse extends Message {
-  // Backend might return the created message object
-}
+// interface SendMessageResponse extends Message {
+//   // Backend might return the created message object
+// }
 export const sendPrivateMessage = async (
   receiverId: string,
   message: string,
-): Promise<SendMessageResponse> => {
+): Promise<Message> => {
   try {
-    const response = await api.post<SendMessageResponse>("/chat/send-message", {
+    const response = await api.post<Message>("/chat/send-message", {
       receiverId,
       message,
     });
@@ -243,5 +243,24 @@ export const fetchGroupMembers = async (
   }
 };
 
-// TODO: Add create group function
-// export const createGroup = async (groupData: ...) => { ... }
+interface CreateGroupData {
+  groupName: string;
+  groupDescription: string;
+  groupAvatar: string;
+  members: string[]; // User IDs
+}
+
+export const createGroup = async (
+  groupData: CreateGroupData,
+): Promise<{ success: boolean; message: string }> => {
+  try {
+    const response = await api.post<{ success: boolean; message: string }>(
+      "/group-chat/create-group",
+      groupData as unknown as Record<string, unknown>,
+    );
+    return response.data;
+  } catch (error) {
+    console.error("Error creating group:", error);
+    throw new Error("Failed to create group.");
+  }
+};

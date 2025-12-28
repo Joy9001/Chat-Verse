@@ -55,7 +55,7 @@ export const useDeleteMessage = () => {
         return response.data;
       }
     },
-    onSuccess: (data, variables) => {
+    onSuccess: (_, variables) => {
       // Remove the message from the local state
       removeMessage(variables.messageId);
 

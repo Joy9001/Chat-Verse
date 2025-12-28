@@ -1,4 +1,5 @@
 import App from "@/App";
+import NotFoundPage from "@/pages/404";
 import LoginPage from "@/pages/auth/login";
 import RegisterPage from "@/pages/auth/register";
 import ChatPage from "@/pages/chat";
@@ -14,6 +15,7 @@ import { z } from "zod";
 // Root route
 const rootRoute = createRootRoute({
   component: App,
+  notFoundComponent: NotFoundPage,
 });
 
 // Auth routes

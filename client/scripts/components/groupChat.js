@@ -412,7 +412,7 @@ export const groupMemberComponent = (member) => {
   component.innerHTML = `
         <img draggable="false" class="group-member-avatar h-10 w-10 rounded-full" src="${member.avatar}" alt="${member.username}" />
         <div class="group-memeber-name-parent w-4/5 pl-2">
-            <h3 
+            <h3
                 class="group-member-name overflow-hidden text-ellipsis whitespace-nowrap pl-2 text-sm font-semibold text-white group-hover:text-black"
             >
                 ${member.name}

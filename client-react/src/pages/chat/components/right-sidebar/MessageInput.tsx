@@ -89,7 +89,19 @@ export default function MessageInput() {
   // Store specific disabled states for better handling
   const noSelectedChat = !selectedChat;
   const socketDisconnected = !socket?.connected;
-  const isDisabled = noSelectedChat || socketDisconnected || isSendingMessage;
+  const isBlocked = selectedChat?.type === "private" && selectedChat.amIBlocked;
+  const isDisabled =
+    noSelectedChat || socketDisconnected || isSendingMessage || isBlocked;
+
+  if (isBlocked) {
+    return (
+      <div className="border-border flex h-16 items-center justify-center border-t bg-red-50 p-4 dark:bg-red-900/20">
+        <span className="font-semibold text-red-600 dark:text-red-400">
+          You conversation is blocked
+        </span>
+      </div>
+    );
+  }
 
   return (
     <div

@@ -145,7 +145,7 @@ export default function RegisterPage() {
       setTimeout(() => {
         navigate({ to: "/auth/login" });
       }, 1500);
-    } catch (error) {
+    } catch {
       // Error is handled by the auth store and displayed via the useEffect
     }
   };

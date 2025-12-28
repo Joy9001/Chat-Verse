@@ -1,15 +1,15 @@
 import { leaveAndDeleteGroup } from "@/services/chatService";
 import { useChatStore } from "@/store/chatStore";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
 import { toast } from "sonner";
 
 /**
  * Custom hook to leave and delete a group using TanStack Query mutation.
  */
 export const useLeaveGroup = () => {
-  const queryClient = useQueryClient();
+  // const queryClient = useQueryClient();
   // Use removeGroupChat action
-  const { clearSelectedChat, removeGroupChat } = useChatStore();
+  const { removeGroupChat } = useChatStore();
 
   return useMutation<
     { success: boolean }, // Success response type

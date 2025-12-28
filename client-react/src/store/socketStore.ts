@@ -2,8 +2,14 @@ import { io, Socket } from "socket.io-client";
 import { create } from "zustand";
 import { useAuthStore } from "./auth.store"; // Import auth store if needed for user ID
 import { Message, useChatStore } from "./chatStore"; // Import chat store to add messages
-
-// Define the structure for a received message event (adjust based on actual payload)
+import {
+  onBlockUser,
+  onDeleteConversation,
+  onDeleteMessage,
+  onJoinGroup,
+  onReceiverChangedDetails,
+  onUnblockUser,
+} from "./socket-handlers";
 interface NewMessagePayload extends Message {
   groupId?: string; // Or some other identifier to link message to chat
   receiverId?: string; // Needed for private chat routing check
@@ -28,15 +34,19 @@ const SOCKET_URL =
 
 let socketInstance: Socket | null = null;
 
+// Type for set function from zustand
+// Simplified for socket handlers to avoid complex type mismatch issues
+type SetState = (partial: any, replace?: boolean) => void;
+
 // --- Listener Functions ---
 // Define listeners outside so they can be referenced for 'off'
-const onConnect = (set: Function) => () => {
+const onConnect = (set: SetState) => () => {
   console.log("Socket connected successfully! ID:", socketInstance?.id);
   set({ isConnected: true });
   // TODO: Authenticate or join rooms if needed post-connect
 };
 
-const onDisconnect = (set: Function) => (reason: Socket.DisconnectReason) => {
+const onDisconnect = (set: SetState) => (reason: Socket.DisconnectReason) => {
   console.log("Socket disconnected:", reason);
   // Only clear state here, actual instance nulling happens in disconnectSocket action
   set({ isConnected: false, onlineUsers: [] });
@@ -47,13 +57,13 @@ const onDisconnect = (set: Function) => (reason: Socket.DisconnectReason) => {
   }
 };
 
-const onConnectError = (set: Function) => (error: Error) => {
+const onConnectError = (set: SetState) => (error: Error) => {
   console.error("Socket connection error:", error);
   // Don't null socketInstance here, allow potential retries or manual connect later
   set({ isConnected: false, socket: null }); // Clear socket from state on error
 };
 
-const onGetOnlineUsers = (set: Function) => (users: string[]) => {
+const onGetOnlineUsers = (set: SetState) => (users: string[]) => {
   console.log("Received online users:", users);
   set({ onlineUsers: users });
 };
@@ -61,14 +71,12 @@ const onGetOnlineUsers = (set: Function) => (users: string[]) => {
 const onNewMessage = (
   message: NewMessagePayload,
   senderUsername: string,
-  callback: Function,
+  callback: (response: { status: string }) => void,
 ) => {
   console.log("Received newMessage event:", message);
   const {
     selectedChat,
     addMessage: addMessageToStore,
-    setLoadingMessages,
-    setMessages,
   } = useChatStore.getState();
   const currentUser = useAuthStore.getState().user;
 
@@ -142,23 +150,23 @@ const onNewMessage = (
   }
 };
 
-const onDeleteMessage = (deletedMsgId: string, chatId: string) => {
-  console.log(
-    `Received deleteMessage event for msg ${deletedMsgId} in chat ${chatId}`,
-  );
-  // Use the removeMessage function we added to chatStore to remove the message
-  useChatStore.getState().removeMessage(deletedMsgId);
-};
+// const onDeleteMessage = (deletedMsgId: string, chatId: string) => {
+//   console.log(
+//     `Received deleteMessage event for msg ${deletedMsgId} in chat ${chatId}`,
+//   );
+//   // Use the removeMessage function we added to chatStore to remove the message
+//   useChatStore.getState().removeMessage(deletedMsgId);
+// };
 
 // --- Store Definition ---
 export const useSocketStore = create<SocketState>((set, get) => {
   // Moved listener function definitions outside
 
   // Wrap set calls for listeners
-  const handleConnect = onConnect(set);
-  const handleDisconnect = onDisconnect(set);
-  const handleConnectError = onConnectError(set);
-  const handleGetOnlineUsers = onGetOnlineUsers(set);
+  const handleConnect = onConnect(set as any);
+  const handleDisconnect = onDisconnect(set as any);
+  const handleConnectError = onConnectError(set as any);
+  const handleGetOnlineUsers = onGetOnlineUsers(set as any);
   // onNewMessage and onDeleteMessage interact with other stores directly
 
   const setupListeners = () => {
@@ -170,7 +178,15 @@ export const useSocketStore = create<SocketState>((set, get) => {
     socketInstance.on("getOnlineUsers", handleGetOnlineUsers);
     socketInstance.on("newMessage", onNewMessage);
     socketInstance.on("deleteMessage", onDeleteMessage);
-    // Add other listeners here
+    socketInstance.on("blockUser", onBlockUser);
+    socketInstance.on("unblockUser", onUnblockUser);
+    socketInstance.on("deleteConversation", onDeleteConversation);
+    socketInstance.on("receiver-changed-details", onReceiverChangedDetails);
+
+    socketInstance.on("join-group", (data) => {
+      onJoinGroup(data);
+      socketInstance?.emit("join-room", { roomId: data.roomId });
+    });
   };
 
   const cleanupListeners = () => {
@@ -182,7 +198,11 @@ export const useSocketStore = create<SocketState>((set, get) => {
     socketInstance.off("getOnlineUsers", handleGetOnlineUsers);
     socketInstance.off("newMessage", onNewMessage);
     socketInstance.off("deleteMessage", onDeleteMessage);
-    // Remove other listeners here
+    socketInstance.off("blockUser", onBlockUser);
+    socketInstance.off("unblockUser", onUnblockUser);
+    socketInstance.off("deleteConversation", onDeleteConversation);
+    socketInstance.off("receiver-changed-details", onReceiverChangedDetails);
+    socketInstance.off("join-group");
   };
 
   return {

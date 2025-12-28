@@ -1,15 +1,15 @@
 import { deleteConversation } from "@/services/chatService";
 import { useChatStore } from "@/store/chatStore";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
 import { toast } from "sonner";
 
 /**
  * Custom hook to delete a private conversation using TanStack Query mutation.
  */
 export const useDeleteConversation = () => {
-  const queryClient = useQueryClient();
+  // const queryClient = useQueryClient();
   // Use removePrivateChat action
-  const { clearSelectedChat, removePrivateChat } = useChatStore();
+  const { removePrivateChat } = useChatStore();
 
   return useMutation<
     any, // Success response type
